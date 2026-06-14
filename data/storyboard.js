@@ -19,6 +19,13 @@ SEKI.storyboard = [
     commanders:[{zh:"石田三成",en:"Ishida Mitsunari"},{zh:"德川家康",en:"Tokugawa Ieyasu"}],
     focus:["ishida","tokugawa"], side:"both" },
 
+  { t:-14, hold:11, cam:{lng:136.585, lat:35.389, dist:205, az:65, el:34, orbit:0.5},
+    dateLabel:"九月 · 戰略背景", title_zh:"秀忠遲滯 · 真田封路",
+    title_en:"Hidetada Delayed at Ueda",
+    narration_zh:"家康嫡子德川秀忠率三萬八千主力沿中山道南下，卻被信濃上田城的真田昌幸父子牽制阻滯，未能趕赴關原。家康手中可用之兵驟減——這場「天下分け目」之戰，竟是以偏師決勝。",
+    commanders:[{zh:"德川秀忠",en:"Tokugawa Hidetada"},{zh:"真田昌幸",en:"Sanada Masayuki"}],
+    focus:["tokugawa"], side:"east" },
+
   { t:-6, hold:12, cam:{lng:136.600, lat:35.352, dist:170, az:70, el:40, orbit:0.7},
     dateLabel:"九月十四日 · 夕", title_zh:"杭瀬川之戰 · 西軍前哨小勝",
     title_en:"Skirmish at Kuisegawa",
@@ -111,4 +118,11 @@ SEKI.storyboard = [
     title_en:"The West Army Collapses — Tokugawa Triumphant",
     narration_zh:"開戰僅約六小時，西軍全面崩潰。此役奠定德川家康霸權，三年後開創江戶幕府，日本進入二百六十年太平。",
     commanders:[{zh:"德川家康",en:"Tokugawa Ieyasu"}], focus:["tokugawa"], side:"east" },
+
+  { t:14.5, hold:14, cam:{lng:136.466, lat:35.366, dist:265, az:42, el:40, orbit:0.4},
+    dateLabel:"戰後 · Aftermath", title_zh:"戰後 · 天下歸德川",
+    title_en:"Aftermath — The Realm Falls to Tokugawa",
+    narration_zh:"石田三成、小西行長、安國寺惠瓊被捕，於京都六条河原處刑；西軍諸將改易減封，居城佐和山旋即陷落。家康盡攬天下實權，慶長八年（1603）受封征夷大將軍，開創江戶幕府——日本自此進入二百六十餘年太平。",
+    commanders:[{zh:"德川家康",en:"Tokugawa Ieyasu"},{zh:"石田三成",en:"Ishida Mitsunari"}],
+    focus:["tokugawa","ishida"], side:"east" },
 ];
