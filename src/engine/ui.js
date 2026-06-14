@@ -35,7 +35,7 @@ window.SEKI = window.SEKI || {};
   S.initUI = function () {
     const ids = ['caption','evDate','evTitle','evTitleEn','evNarr','evCmd','btnPlay','scrub','spd','btnMode',
       'tlabel','barEast','barWest','valEast','valWest','balLabel','card','cardBody','cardClose','btnAudio','bgm',
-      'btnNotes','notes','notesBody','notesClose','roster','btnRoster','toast'];
+      'btnNotes','notes','notesBody','notesClose','roster','btnRoster','toast','markers'];
     ids.forEach(id => el[id] = document.getElementById(id));
 
     const init = S.sideStrength();
@@ -71,6 +71,9 @@ window.SEKI = window.SEKI || {};
       } else { el.bgm.pause(); el.btnAudio.textContent = '🔈 配樂'; }
     };
 
+    // 時間軸事件節點（各鏡頭）：懸停顯示名稱、點擊跳到該鏡頭播放
+    buildMarkers();
+
     // 軍隊面板開關
     if (el.btnRoster) el.btnRoster.onclick = () => {
       el.roster.classList.toggle('show'); el.btnRoster.classList.toggle('on');
@@ -91,6 +94,30 @@ window.SEKI = window.SEKI || {};
 
   function syncPlay() {
     if (el.btnPlay) el.btnPlay.textContent = S.player.playing ? '⏸' : '▶';
+  }
+
+  function buildMarkers() {
+    if (!el.markers || !S.storyboard) return;
+    const min = S.player.T_START, max = S.player.T_END;
+    el.markers.innerHTML = S.storyboard.map((s, i) => {
+      const pct = (s.t - min) / (max - min) * 100;
+      if (pct < -0.5 || pct > 100.5) return '';
+      const hot = /★/.test(s.title_zh) ? ' hot' : '';
+      const title = s.title_zh.replace('★', '').trim();
+      const left = Math.max(0, Math.min(100, pct));
+      return `<div class="mk${hot}" data-i="${i}" style="left:${left}%">` +
+             `<span class="mk-dot"></span><span class="mk-lbl">${title}</span></div>`;
+    }).filter(Boolean).join('');
+    el.markers.querySelectorAll('.mk').forEach(m => {
+      m.onclick = () => {
+        const i = +m.dataset.i;
+        if (!S.player.program) {
+          S.setProgramMode(true);
+          el.btnMode.textContent = '🎬 節目模式'; el.btnMode.classList.add('on');
+        }
+        S.gotoShot(i); S.player.playing = true; syncPlay();
+      };
+    });
   }
 
   // 關鍵事件提示橫幅
