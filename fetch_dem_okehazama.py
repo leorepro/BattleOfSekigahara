@@ -6,10 +6,11 @@
 """
 import json, time, urllib.request, urllib.parse, sys
 
-# 桶狹間古戰場核心區（含熱田、鳴海、大高、桶狹間、沓掛）
-LNG_MIN, LNG_MAX = 136.895, 137.030   # 西:熱田  東:沓掛城
-LAT_MIN, LAT_MAX = 35.040, 35.140     # 南:桶狹間  北:熱田神宮
-COLS, ROWS = 109, 97                   # 約 110m 解析度
+# 大幅擴大顯示範圍（約 5 倍面積，填滿畫面）：
+#   西北納入清洲城(信長出陣起點)、名古屋；東至三河方向；南含知多・伊勢灣
+LNG_MIN, LNG_MAX = 136.800, 137.140   # 西:清洲・名古屋   東:沓掛以東三河方向
+LAT_MIN, LAT_MAX = 34.990, 35.240     # 南:知多・三河灣   北:清洲・名古屋市中心
+COLS, ROWS = 161, 141                  # 約 190m 解析度（更大範圍）
 API = "https://api.opentopodata.org/v1/srtm30m"
 
 # 由南到北(row 0 = LAT_MIN)、由西到東(col 0 = LNG_MIN)建格點

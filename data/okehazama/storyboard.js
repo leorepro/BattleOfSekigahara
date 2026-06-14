@@ -8,7 +8,7 @@ window.SEKI = window.SEKI || {};
 
 SEKI.storyboard = [
   /* ---------------- 戰略階段（五月十八日） ---------------- */
-  { t:-8, hold:13, cam:{lng:136.990, lat:35.066, dist:205, az:70, el:32, orbit:0.4},
+  { t:-8, hold:13, cam:{lng:136.955, lat:35.100, dist:300, az:65, el:34, orbit:0.35},
     dateLabel:"永祿三年五月十八日 · 尾張南部", title_zh:"今川大軍西上 · 沓掛布陣",
     title_en:"Imagawa's Host Advances West",
     narration_zh:"今川義元親率大軍（史料號二萬~四萬五千，眾說紛紜）自駿府西進，入沓掛城布陣。其鋒已楔入尾張南部，鳴海、大高、沓掛三城皆附今川，直逼織田領。一說為上洛、近年學界多主張為侵攻尾張。",
@@ -21,7 +21,7 @@ SEKI.storyboard = [
     commanders:[{zh:"松平元康",en:"Matsudaira Motoyasu"}], focus:["matsudaira"], side:"west" },
 
   /* ---------------- 決戰階段（五月十九日） ---------------- */
-  { t:3, hold:12, cam:{lng:136.910, lat:35.116, dist:120, az:20, el:36, orbit:0.5},
+  { t:3, hold:12, cam:{lng:136.8436, lat:35.2166, dist:120, az:20, el:36, orbit:0.5},
     dateLabel:"五月十九日 · 拂曉 · 清洲", title_zh:"敦盛之舞 · 信長單騎出陣",
     title_en:"The Dance of Atsumori",
     narration_zh:"鷲津・丸根告急的急報連夜傳至清洲。信長起身舞幸若舞「敦盛」——『人間五十年，下天のうちをくらぶれば、夢幻のごとくなり』——舞罷著具足、立食、僅率少數隨從策馬先行出陣。",
@@ -98,7 +98,7 @@ SEKI.storyboard = [
     commanders:[{zh:"今川義元",en:"Imagawa Yoshimoto"},{zh:"毛利新介",en:"Mōri Shinsuke"},{zh:"服部小平太",en:"Hattori Koheita"}],
     focus:["yoshimoto","nobunaga"], side:"both" },
 
-  { t:14, hold:13, cam:{lng:136.965, lat:35.066, dist:185, az:30, el:32, orbit:0.4},
+  { t:14, hold:13, cam:{lng:136.955, lat:35.095, dist:300, az:30, el:34, orbit:0.35},
     dateLabel:"未刻 · 戰終 · Aftermath", title_zh:"桶狹間之後 · 信長崛起",
     title_en:"Aftermath — Nobunaga Rises",
     narration_zh:"主將既亡，今川大軍瓦解東歸。此役除去信長東方的最大威脅，使他得以統一尾張、進取美濃，七年後入主岐阜、舉『天下布武』。人質松平元康則撤回三河岡崎、脫離今川獨立，奠定日後德川霸業之始。",
