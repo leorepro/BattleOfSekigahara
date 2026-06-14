@@ -42,6 +42,18 @@ SEKI.armies = [
       { t:12.5,lng:136.4650, lat:35.3662, s:14000, st:'attack' },
       { t:13.5,lng:136.4610, lat:35.3690, s:8000, st:'rout' },
     ]},
+  { name_zh:"小西行長", name_ja:"小西行長", side:'west', crest:'gionmamori', kind:'matchlock',
+    title:"西軍 · 天滿山北（北天滿山）", troops:6000,
+    track:[
+      { t:-16, lng:136.617, lat:35.361, s:6000, st:'hold' },
+      { t:-3,  lng:136.617, lat:35.361, s:6000, st:'hold' },
+      { t:2,   lng:136.4523,lat:35.3693,s:6000, st:'march' },
+      { t:6,   lng:136.4523,lat:35.3693,s:6000, st:'hold' },
+      { t:8,   lng:136.4523, lat:35.3693, s:6000, st:'hold' },
+      { t:10,  lng:136.4570, lat:35.3690, s:6000, st:'attack' },  // 對加藤・田中
+      { t:12.5,lng:136.4560, lat:35.3700, s:4500, st:'attack' },
+      { t:13.3,lng:136.4520, lat:35.3720, s:2000, st:'rout' },    // 小早川倒戈後潰
+    ]},
   { name_zh:"大谷吉繼", name_ja:"大谷吉継", side:'west', crest:'mukaiCho', kind:'infantry',
     title:"西軍 · 山中 · 松尾山麓", troops:5000,
     track:[
@@ -70,6 +82,12 @@ SEKI.armies = [
       { t:-16, lng:136.5098,lat:35.3468,s:15000, st:'hold' },    // 南宮山
       { t:8,   lng:136.5098, lat:35.3468, s:15000, st:'hold' },
       { t:14,  lng:136.5098, lat:35.3468, s:15000, st:'hold' },
+    ]},
+  { name_zh:"吉川廣家", name_ja:"吉川広家", side:'west', crest:'hikiryo', kind:'infantry',
+    title:"南宮山麓 · 暗通家康（空弁当）", troops:3000,
+    track:[
+      { t:-16, lng:136.5000, lat:35.3460, s:3000, st:'hold' },   // 南宮山西麓
+      { t:14,  lng:136.5000, lat:35.3460, s:3000, st:'hold' },   // 全程按兵不動，封堵毛利下山
     ]},
   { name_zh:"島津義弘", name_ja:"島津義弘", side:'west', crest:'maruJuji', kind:'matchlock',
     title:"西軍 · 敵中突破", troops:1500,

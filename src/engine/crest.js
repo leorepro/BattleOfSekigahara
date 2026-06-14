@@ -154,6 +154,36 @@ window.SEKI = window.SEKI || {};
       arrowLeaf(cx - R * 0.5, cy + R * 0.35, 0.66);
       arrowLeaf(cx + R * 0.5, cy + R * 0.35, 0.66);
     },
+    /* 吉川 — 丸に三つ引（圈內三橫） */
+    hikiryo(ctx, cx, cy, R) {
+      ring(ctx, cx, cy, R, R * 0.12);
+      bar(ctx, cx, cy - R * 0.42, R * 1.2, R * 0.2);
+      bar(ctx, cx, cy,            R * 1.2, R * 0.2);
+      bar(ctx, cx, cy + R * 0.42, R * 1.2, R * 0.2);
+    },
+    /* 小西 — 中結祇園守（守袋結紋，簡化） */
+    gionmamori(ctx, cx, cy, R) {
+      // 直立守袋
+      ctx.save();
+      ctx.beginPath();
+      const w = R * 0.5, h = R * 1.5, rr = R * 0.18;
+      const x0 = cx - w / 2, y0 = cy - h / 2;
+      ctx.moveTo(x0 + rr, y0);
+      ctx.arcTo(x0 + w, y0, x0 + w, y0 + h, rr);
+      ctx.arcTo(x0 + w, y0 + h, x0, y0 + h, rr);
+      ctx.arcTo(x0, y0 + h, x0, y0, rr);
+      ctx.arcTo(x0, y0, x0 + w, y0, rr);
+      ctx.fill();
+      ctx.restore();
+      // 中央結帶（挖空 + 橫帶）
+      ctx.save(); ctx.globalCompositeOperation = 'destination-out';
+      bar(ctx, cx, cy, R * 0.9, R * 0.16);
+      ctx.restore();
+      bar(ctx, cx, cy, R * 1.0, R * 0.26);
+      // 上下小結
+      disc(ctx, cx, cy - R * 0.62, R * 0.12);
+      disc(ctx, cx, cy + R * 0.62, R * 0.12);
+    },
     /* 大谷 — 対い蝶（蝴蝶紋，簡化單蝶） */
     mukaiCho(ctx, cx, cy, R) {
       bar(ctx, cx, cy, R * 0.16, R * 1.1);                     // 身

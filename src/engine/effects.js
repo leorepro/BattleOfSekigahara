@@ -143,7 +143,7 @@ window.SEKI = window.SEKI || {};
       size0: 7 + Math.random()*5, size1: 1, r: 1.0, g: 0.7, b: 0.32 });
     for (let i = 0; i < 5; i++) smoke.emit(tx + rnd(2.5), y + 1.5, tz + rnd(2.5), {
       vx: rnd(1.5), vy: 1.2 + Math.random(), vz: rnd(1.5),
-      life: 1.8 + Math.random(), size0: 2, size1: 12 + Math.random()*5, r: 0.3, g: 0.29, b: 0.27 });
+      life: 1.6 + Math.random(), size0: 2, size1: 11 + Math.random()*4, r: 0.55, g: 0.52, b: 0.48 });
   }
 
   S.updateEffects = function (t, dt) {

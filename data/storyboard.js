@@ -60,6 +60,13 @@ SEKI.storyboard = [
     commanders:[{zh:"宇喜多秀家",en:"Ukita Hideie"},{zh:"福島正則",en:"Fukushima Masanori"}],
     focus:["ukita","fukushima","kuroda","hosokawa"], side:"both" },
 
+  { t:10.7, hold:12, cam:{lng:136.503, lat:35.346, dist:165, az:235, el:38, orbit:0.5},
+    dateLabel:"巳刻", title_zh:"南宮山の空弁当 · 毛利按兵不動",
+    title_en:"The Empty Lunchboxes of Nangūsan",
+    narration_zh:"南宮山上毛利秀元、長宗我部、安國寺擁兵兩萬餘，卻被暗通家康的吉川廣家堵在山麓。秀元屢欲出擊，廣家託辭「正在用飯」拒不讓道，史稱「宰相殿の空弁当」——西軍最大一支生力軍就此凍結，未發一矢。",
+    commanders:[{zh:"吉川廣家",en:"Kikkawa Hiroie"},{zh:"毛利秀元",en:"Mōri Hidemoto"}],
+    focus:["kikkawa","mori"], side:"west" },
+
   { t:11.4, hold:12, cam:{lng:136.450, lat:35.349, dist:120, az:160, el:46, orbit:0.6},
     dateLabel:"午刻將近", title_zh:"松尾山上 · 小早川按兵不動",
     title_en:"Kobayakawa Hesitates on Matsuoyama",
