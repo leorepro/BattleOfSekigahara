@@ -34,6 +34,15 @@
   .lbl-unit.dim .troops{ display:none; }
   .side-east{ color:#9cc0ff; } .side-west{ color:#ff9c9c; }
 
+  /* 交戰標記 A ⚔ B */
+  .clash{ transform:translate(-50%,-50%); white-space:nowrap; pointer-events:none;
+          font-size:13px; font-weight:700; padding:2px 9px; border-radius:13px;
+          background:rgba(10,12,16,.74); border:1px solid rgba(255,210,90,.55);
+          text-shadow:0 1px 3px #000; animation:clashPulse 1s ease-in-out infinite; }
+  .clash .x{ color:#ffd24a; margin:0 5px; }
+  .clash .cn-east{ color:#9cc0ff; } .clash .cn-west{ color:#ff9c9c; }
+  @keyframes clashPulse{ 0%,100%{ opacity:.82; } 50%{ opacity:1; } }
+
   /* 標題卡 */
   #titlecard{ position:fixed; left:0; right:0; bottom:8%; text-align:center;
               pointer-events:none; transition:opacity .6s; }
@@ -231,6 +240,7 @@
   <script src="data/weather.js"></script>
   <script src="data/storyboard.js"></script>
   <script src="data/sources.js"></script>
+  <script src="data/engagements.js"></script>
 
   <!-- 引擎（依序載入，掛到全域 SEKI 命名空間） -->
   <script src="src/engine/scene.js"></script>
@@ -240,6 +250,7 @@
   <script src="src/engine/units.js"></script>
   <script src="src/engine/routes.js"></script>
   <script src="src/engine/effects.js"></script>
+  <script src="src/engine/engage.js"></script>
   <script src="src/engine/weather.js"></script>
   <script src="src/engine/storyboard.js"></script>
   <script src="src/engine/ui.js"></script>

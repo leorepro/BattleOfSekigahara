@@ -25,6 +25,7 @@
     S.buildUnits();
     S.buildRoutes();
     S.initEffects();
+    S.buildEngagements();
     S.initWeather();
     S.initUI();
     S.setProgramMode(true);                 // 預設進入節目模式（自動運鏡）
@@ -55,6 +56,7 @@
       S.waveFlags(elapsed);
       S.updateWeather(t, elapsed);
       S.updateEffects(t, dt);
+      S.updateEngagements(t, dt);
       S.updateUI(t);
 
       clockEl.textContent = S.fmtTime ? S.fmtTime(t) : '';

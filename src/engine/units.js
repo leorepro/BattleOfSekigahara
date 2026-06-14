@@ -15,6 +15,8 @@ window.SEKI = window.SEKI || {};
   let _focus = null;                       // Set of 聚焦 unit id；null = 全部正常
 
   S.setFocus = function (ids) { _focus = (ids && ids.length) ? new Set(ids) : null; };
+  S.isFocused = function (id) { return !_focus || _focus.has(id); };
+  S.hasFocus = function () { return !!_focus; };
 
   function fmt(n) { return Math.round(n).toLocaleString('en-US'); }
 
@@ -173,6 +175,9 @@ window.SEKI = window.SEKI || {};
   };
 
   S.getPickables = function () { return _units.map(u => u.hit); };
+
+  // 依 id 取部隊（供交戰配對）
+  S.unitById = function (id) { return _units.find(u => u.data.id === id) || null; };
 
   // 雙方目前總兵力
   S.sideStrength = function () {

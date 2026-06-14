@@ -146,25 +146,30 @@ window.SEKI = window.SEKI || {};
       life: 1.6 + Math.random(), size0: 2, size1: 11 + Math.random()*4, r: 0.55, g: 0.52, b: 0.48 });
   }
 
+  // 兩軍接觸點的交戰爆發（鉄砲齊射 + 硝煙，雙方對打的焦點）
+  S.combatBurst = function (x, y, z) {
+    muzzle(x, y + 0.5, z, 3, 1.0, 0.9, 0.5, 6);
+    gunSmoke(x, y, z, 3, false);
+  };
+
   S.updateEffects = function (t, dt) {
     if (!smoke) return;
     _acc += dt;
     const tick = _acc >= 0.06;
     if (tick) {
       _acc = 0;
+      // per-unit 火光調低為輕量環境煙；焦點交戰由 engage.js 的接觸點負責
       const pts = S.firePoints ? S.firePoints() : [];
       for (const p of pts) {
-        // 前進方向；若靜止則朝戰場中央
         let fx = p.moveDir ? p.moveDir.dx : 0, fz = p.moveDir ? p.moveDir.dz : 0;
         let m = Math.hypot(fx, fz);
         if (m < 1e-4) { fx = -p.x; fz = -p.z; m = Math.hypot(fx, fz) || 1; }
         fx /= m; fz /= m;
         switch (p.kind) {
-          case 'artillery': if (Math.random() < 0.18) artilleryFire(p.x, p.y, p.z, fx, fz); break;
-          case 'matchlock': if (Math.random() < 0.8)  teppoVolley(p.x, p.y, p.z, true); break;
-          case 'cavalry':   cavalryDust(p.x, p.y, p.z, fx, fz); break;
-          case 'command':   if (Math.random() < 0.15) gunSmoke(p.x, p.y, p.z, 1, false); break;
-          default:          if (Math.random() < 0.5) teppoVolley(p.x, p.y, p.z, false);
+          case 'artillery': if (Math.random() < 0.16) artilleryFire(p.x, p.y, p.z, fx, fz); break;  // 石田大筒(保留)
+          case 'cavalry':   if (Math.random() < 0.5)  cavalryDust(p.x, p.y, p.z, fx, fz); break;
+          case 'matchlock': if (Math.random() < 0.18) teppoVolley(p.x, p.y, p.z, false); break;
+          default:          if (Math.random() < 0.1)  gunSmoke(p.x, p.y, p.z, 1, false);
         }
       }
     }
