@@ -29,7 +29,8 @@ window.SEKI = window.SEKI || {};
 
   S.initUI = function () {
     const ids = ['caption','evDate','evTitle','evTitleEn','evNarr','evCmd','btnPlay','scrub','spd','btnMode',
-      'tlabel','barEast','barWest','valEast','valWest','card','cardBody','cardClose','btnAudio','bgm'];
+      'tlabel','barEast','barWest','valEast','valWest','card','cardBody','cardClose','btnAudio','bgm',
+      'btnNotes','notes','notesBody','notesClose'];
     ids.forEach(id => el[id] = document.getElementById(id));
 
     const init = S.sideStrength();
@@ -65,6 +66,11 @@ window.SEKI = window.SEKI || {};
       } else { el.bgm.pause(); el.btnAudio.textContent = '🔈 配樂'; }
     };
 
+    // 史料面板
+    buildNotes();
+    el.btnNotes.onclick = () => el.notes.classList.toggle('show');
+    el.notesClose.onclick = () => el.notes.classList.remove('show');
+
     // 點選部隊 → 卡片
     raycaster = new THREE.Raycaster(); mouse = new THREE.Vector2();
     S.engine.renderer.domElement.addEventListener('click', onClick);
@@ -75,6 +81,17 @@ window.SEKI = window.SEKI || {};
 
   function syncPlay() {
     if (el.btnPlay) el.btnPlay.textContent = S.player.playing ? '⏸' : '▶';
+  }
+
+  function buildNotes() {
+    const s = S.sources; if (!s || !el.notesBody) return;
+    const list = (arr, cls) => '<ul>' + arr.map(x => `<li class="${cls||''}">${x}</li>`).join('') + '</ul>';
+    el.notesBody.innerHTML =
+      `<p>${s.overview}</p>` +
+      `<h3>考據與呈現說明 · Caveats</h3>${list(s.caveats, 'caveat')}` +
+      `<h3>參考書目 · Books</h3>${list(s.books)}` +
+      `<h3>近世史料 · Primary Sources</h3>${list(s.primary)}` +
+      `<h3>資料來源 · Data</h3>${list(s.data)}`;
   }
 
   function onClick(ev) {

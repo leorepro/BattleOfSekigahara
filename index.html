@@ -60,6 +60,31 @@
   #evCmd .chip .en{ opacity:.6; font-size:10px; }
   #caption.hot #evTitle{ color:#ffd24a; text-shadow:0 0 18px rgba(255,160,0,.85),0 2px 8px #000; }
 
+  /* 符號圖例 */
+  #legend{ position:fixed; top:70px; right:16px; width:210px; background:rgba(16,20,26,.72);
+           border:1px solid #2c343f; border-radius:9px; padding:11px 13px; font-size:11.5px;
+           line-height:1.5; letter-spacing:.5px; }
+  #legend .lg-row{ display:flex; align-items:center; gap:7px; margin:3px 0; }
+  #legend .sw{ width:13px; height:13px; border-radius:3px; display:inline-block; }
+  #legend .ic{ display:inline-block; min-width:15px; text-align:center; }
+  #legend .lg-hr{ height:1px; background:#2c343f; margin:7px 0; }
+
+  /* 史料面板 */
+  #notes{ position:fixed; left:50%; top:50%; transform:translate(-50%,-50%) scale(.97);
+          width:min(720px,90vw); max-height:82vh; overflow-y:auto; background:rgba(17,21,27,.97);
+          border:1px solid #3a4350; border-radius:13px; padding:24px 28px; z-index:8;
+          opacity:0; pointer-events:none; transition:opacity .22s, transform .22s;
+          box-shadow:0 16px 50px rgba(0,0,0,.6); }
+  #notes.show{ opacity:1; pointer-events:auto; transform:translate(-50%,-50%) scale(1); }
+  #notes h2{ font-size:18px; letter-spacing:3px; margin-bottom:14px; color:#f0ead2; }
+  #notes h3{ font-size:14px; color:#e8c87a; margin:16px 0 7px; letter-spacing:2px; }
+  #notes p{ font-size:13px; line-height:1.8; opacity:.92; }
+  #notes ul{ margin:4px 0 4px 4px; list-style:none; }
+  #notes li{ font-size:12.5px; line-height:1.7; opacity:.88; padding-left:14px; position:relative; }
+  #notes li::before{ content:"·"; position:absolute; left:2px; color:#e8c87a; }
+  #notes li.caveat::before{ content:"⚠"; font-size:10px; }
+  #notesClose{ position:absolute; top:14px; right:18px; cursor:pointer; opacity:.6; font-size:15px; }
+
   /* 兵力儀表 */
   #bars{ position:fixed; top:14px; right:16px; width:210px; font-size:12px; letter-spacing:1px;
          text-shadow:0 1px 3px #000; }
@@ -111,6 +136,25 @@
     <div>拖曳 = 運鏡　·　滾輪 = 縮放　·　右鍵 = 平移</div>
   </div>
 
+  <!-- 符號圖例（常駐右上） -->
+  <div id="legend">
+    <div class="lg-row"><span class="sw" style="background:var(--east)"></span>東軍（德川）</div>
+    <div class="lg-row"><span class="sw" style="background:var(--west)"></span>西軍（石田）</div>
+    <div class="lg-hr"></div>
+    <div class="lg-row"><span class="ic">⚑</span>武將本陣（軍旗 · 家紋）</div>
+    <div class="lg-row"><span class="ic">➤</span>行軍 / 進攻方向（緞帶）</div>
+    <div class="lg-row"><span class="ic">▲</span>山 ·　<span class="ic">🏯</span>城 ·　<span class="ic">⚔</span>古戰場</div>
+    <div class="lg-row"><span class="ic">🔥</span>鉄砲齊射 / 砲擊　<span class="ic">⛓</span>潰滅</div>
+    <div class="lg-row" style="opacity:.7">兵種：鉄砲 · 騎馬 · 足軽 · 大筒</div>
+  </div>
+
+  <!-- 史料面板（按鈕開啟） -->
+  <div id="notes">
+    <span id="notesClose">✕</span>
+    <h2>史料說明 · Notes &amp; Sources</h2>
+    <div id="notesBody"></div>
+  </div>
+
   <!-- 兵力儀表 -->
   <div id="bars">
     <div class="row"><span class="name side-east">東軍</span>
@@ -143,6 +187,7 @@
       <option value="1.4">4×</option>
     </select>
     <button id="btnMode" class="on">🎬 節目模式</button>
+    <button id="btnNotes">📜 史料</button>
     <button id="btnAudio">🔈 配樂</button>
   </div>
 
@@ -161,6 +206,7 @@
   <script src="data/armies.js"></script>
   <script src="data/weather.js"></script>
   <script src="data/storyboard.js"></script>
+  <script src="data/sources.js"></script>
 
   <!-- 引擎（依序載入，掛到全域 SEKI 命名空間） -->
   <script src="src/engine/scene.js"></script>
