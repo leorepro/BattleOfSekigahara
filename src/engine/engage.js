@@ -26,7 +26,7 @@ window.SEKI = window.SEKI || {};
       el.className = 'clash';
       const tag = new THREE.CSS2DObject(el);
       eng.scene.add(tag);
-      _eng.push({ data: e, line, geo, tag, el });
+      _eng.push({ data: e, line, geo, tag, el, idx: _eng.length });
     }
     return _eng;
   };
@@ -48,7 +48,8 @@ window.SEKI = window.SEKI || {};
         continue;
       }
       const pa = A.group.position, pb = B.group.position;
-      _mid.addVectors(pa, pb).multiplyScalar(0.5); _mid.y += 4;
+      _mid.addVectors(pa, pb).multiplyScalar(0.5);
+      _mid.y += 4 + (o.idx % 3) * 2.6;        // 錯開高度，避免多組標記重疊
 
       // 連線
       const arr = o.geo.attributes.position.array;
