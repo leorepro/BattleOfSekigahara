@@ -246,8 +246,12 @@ window.SEKI = window.SEKI || {};
     const all = S.armies.map(a => { const u = S.unitById(a.id);
       return { a, s: Math.round(u && u.cur ? u.cur.s : a.troops), e: sideOf(u || { data: a }) }; })
       .filter(x => x.s > 0).sort((x, y) => y.s - x.s);
-    for (const it of all)
-      h += `<div class="rs-row"><span class="${it.e}">${it.a.name_zh}</span><span class="s">${nf(it.s)}</span></div>`;
+    const maxS = all.length ? all[0].s : 1;            // 最大兵力作為 bar 滿格基準
+    for (const it of all) {
+      const pct = Math.max(3, Math.round(it.s / maxS * 100));
+      h += `<div class="rs-row rs-nb"><span class="${it.e}">${it.a.name_zh}</span><span class="s">${nf(it.s)}</span></div>` +
+           `<div class="rs-bar"><i class="${it.e}" style="width:${pct}%"></i></div>`;
+    }
     el.roster.innerHTML = h;
   }
 

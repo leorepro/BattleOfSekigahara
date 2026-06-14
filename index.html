@@ -64,14 +64,14 @@
         background:linear-gradient(180deg, rgba(24,20,16,.90), rgba(15,13,11,.86));
         border:1px solid rgba(232,200,122,.26); border-radius:9px; padding:7px 14px 8px;
         color:#ece3cf; box-shadow:0 5px 18px rgba(0,0,0,.45); }
-  #hud .clk{ font-size:12.5px; letter-spacing:1.5px; }
+  #hud .clk{ font-size:12.5px; letter-spacing:1.5px; white-space:nowrap; }
   #hud b{ color:#e8c87a; font-weight:700; }
   #hud #phase{ color:#d8ccb0; }
-  #hud .hint{ font-size:10px; opacity:.6; letter-spacing:.5px; margin-top:3px; padding-top:3px;
+  #hud .hint{ font-size:10px; opacity:.6; letter-spacing:.5px; white-space:nowrap; margin-top:3px; padding-top:3px;
         border-top:1px solid rgba(232,200,122,.14); }
 
   /* 戰役切換（關原 ⇄ 桶狹間） */
-  #campaign-switch{ position:fixed; top:70px; left:16px; z-index:9; display:flex;
+  #campaign-switch{ position:fixed; top:84px; left:16px; z-index:9; display:flex;
         border:1px solid rgba(201,168,106,.42); border-radius:8px; overflow:hidden; font-size:12px;
         letter-spacing:1px; box-shadow:0 2px 10px rgba(0,0,0,.5); }
   #campaign-switch .cs-item{ padding:6px 13px; background:rgba(20,15,10,.85); color:#cdd4de;
@@ -133,7 +133,7 @@
   #legend .kbadge{ margin:0; flex:0 0 auto; }
 
   /* 軍隊清單面板（可收合，置於左側） */
-  #roster{ position:fixed; left:14px; top:110px; width:236px; max-height:70vh; overflow-y:auto;
+  #roster{ position:fixed; left:14px; top:124px; width:236px; max-height:64vh; overflow-y:auto;
            background:rgba(16,12,8,.84); border:1px solid rgba(201,168,106,.34); border-radius:9px;
            padding:9px 11px; font-size:11.5px; letter-spacing:.4px; line-height:1.45;
            display:none; z-index:6; }
@@ -147,6 +147,12 @@
   #roster .rs-pair .vs{ color:#ffd24a; }
   #roster .s{ opacity:.85; }
   #roster .e{ color:#9cc0ff; } #roster .w{ color:#ff9c9c; }
+  /* 兵力長條（東軍藍 / 西軍紅，長度對應兵力差距） */
+  #roster .rs-nb{ margin:5px 0 0; }
+  #roster .rs-bar{ height:5px; background:rgba(255,255,255,.07); border-radius:3px; overflow:hidden; margin:2px 0 1px; }
+  #roster .rs-bar i{ display:block; height:100%; border-radius:3px; transition:width .25s linear; }
+  #roster .rs-bar i.e{ background:linear-gradient(90deg,#2a54d6,#5b86f5); }
+  #roster .rs-bar i.w{ background:linear-gradient(90deg,#d12a2a,#f2615f); }
 
   /* 兵種徽章 */
   .kbadge{ display:inline-block; min-width:14px; padding:0 3px; margin-right:4px; border-radius:3px;
