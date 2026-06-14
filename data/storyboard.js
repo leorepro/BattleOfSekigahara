@@ -70,9 +70,9 @@ SEKI.storyboard = [
   { t:10.7, hold:12, cam:{lng:136.503, lat:35.346, dist:165, az:235, el:38, orbit:0.5},
     dateLabel:"巳刻", title_zh:"南宮山の空弁当 · 毛利按兵不動",
     title_en:"The Empty Lunchboxes of Nangūsan",
-    narration_zh:"南宮山上毛利秀元、長宗我部、安國寺擁兵兩萬餘，卻被暗通家康的吉川廣家堵在山麓。秀元屢欲出擊，廣家託辭「正在用飯」拒不讓道，史稱「宰相殿の空弁当」——西軍最大一支生力軍就此凍結，未發一矢。",
-    commanders:[{zh:"吉川廣家",en:"Kikkawa Hiroie"},{zh:"毛利秀元",en:"Mōri Hidemoto"}],
-    focus:["kikkawa","mori"], side:"west" },
+    narration_zh:"南宮山上毛利秀元、長宗我部盛親擁兵兩萬餘，卻被暗通家康的吉川廣家堵在山麓。秀元屢欲出擊，廣家託辭「正在用飯」拒不讓道，史稱「宰相殿の空弁当」。山下東軍山內一豐、池田輝政嚴陣押え——西軍最大一支生力軍就此凍結，未發一矢。",
+    commanders:[{zh:"吉川廣家",en:"Kikkawa Hiroie"},{zh:"毛利秀元",en:"Mōri Hidemoto"},{zh:"山內一豐",en:"Yamauchi Kazutoyo"}],
+    focus:["kikkawa","mori","chosokabe","yamanouchi"], side:"west" },
 
   { t:11.0, hold:12, cam:{lng:136.458, lat:35.355, dist:100, az:25, el:42, orbit:0.7},
     dateLabel:"巳刻過半", title_zh:"西軍右翼死守 · 大谷防藤堂・京極",

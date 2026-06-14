@@ -184,6 +184,38 @@ window.SEKI = window.SEKI || {};
       disc(ctx, cx, cy - R * 0.62, R * 0.12);
       disc(ctx, cx, cy + R * 0.62, R * 0.12);
     },
+    /* 長宗我部 — 七つ片喰（酢漿草·三心葉） */
+    katabami(ctx, cx, cy, R) {
+      for (let i = 0; i < 3; i++) {
+        ctx.save(); ctx.translate(cx, cy); ctx.rotate(i * 2 * Math.PI / 3);
+        ctx.translate(0, -R * 0.5); const s = R * 0.5;
+        ctx.beginPath();                                   // 心形，尖端朝中心
+        ctx.moveTo(0, s * 0.55);
+        ctx.bezierCurveTo(s * 0.95, -s * 0.15, s * 0.45, -s * 0.95, 0, -s * 0.4);
+        ctx.bezierCurveTo(-s * 0.45, -s * 0.95, -s * 0.95, -s * 0.15, 0, s * 0.55);
+        ctx.fill(); ctx.restore();
+      }
+      disc(ctx, cx, cy, R * 0.12);
+    },
+    /* 山內 — 三つ柏（柏葉三枚） */
+    mitsugashiwa(ctx, cx, cy, R) {
+      for (let i = 0; i < 3; i++) {
+        ctx.save(); ctx.translate(cx, cy); ctx.rotate(i * 2 * Math.PI / 3);
+        const s = R;
+        ctx.beginPath();                                   // 葉尖朝外的柏葉
+        ctx.moveTo(0, -s * 0.95);
+        ctx.bezierCurveTo(s * 0.5, -s * 0.7, s * 0.42, -s * 0.3, s * 0.3, 0);
+        ctx.bezierCurveTo(s * 0.42, s * 0.18, s * 0.3, s * 0.35, s * 0.16, s * 0.45);
+        ctx.bezierCurveTo(s * 0.08, s * 0.5, -s * 0.08, s * 0.5, -s * 0.16, s * 0.45);
+        ctx.bezierCurveTo(-s * 0.3, s * 0.35, -s * 0.42, s * 0.18, -s * 0.3, 0);
+        ctx.bezierCurveTo(-s * 0.42, -s * 0.3, -s * 0.5, -s * 0.7, 0, -s * 0.95);
+        ctx.fill();
+        ctx.save(); ctx.globalCompositeOperation = 'destination-out';
+        ctx.lineWidth = s * 0.06; ctx.beginPath();
+        ctx.moveTo(0, s * 0.4); ctx.lineTo(0, -s * 0.7); ctx.stroke();
+        ctx.restore(); ctx.restore();
+      }
+    },
     /* 加藤 — 蛇の目（粗圓環） */
     janome(ctx, cx, cy, R) {
       disc(ctx, cx, cy, R);

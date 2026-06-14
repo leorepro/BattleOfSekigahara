@@ -89,6 +89,12 @@ SEKI.armies = [
       { t:-16, lng:136.5000, lat:35.3460, s:3000, st:'hold' },   // 南宮山西麓
       { t:14,  lng:136.5000, lat:35.3460, s:3000, st:'hold' },   // 全程按兵不動，封堵毛利下山
     ]},
+  { id:"chosokabe", name_zh:"長宗我部盛親", name_ja:"長宗我部盛親", side:'west', crest:'katabami', kind:'infantry',
+    title:"南宮山（栗原山）· 受堵未戰", troops:6600,
+    track:[
+      { t:-16, lng:136.5150, lat:35.3420, s:6600, st:'hold' },   // 南宮山東·栗原山
+      { t:14,  lng:136.5150, lat:35.3420, s:6600, st:'hold' },   // 受吉川阻塞，全程未交戰
+    ]},
   { id:"shimazu", name_zh:"島津義弘", name_ja:"島津義弘", side:'west', crest:'maruJuji', kind:'matchlock',
     title:"西軍 · 敵中突破", troops:1500,
     track:[
@@ -211,5 +217,14 @@ SEKI.armies = [
       { t:10,  lng:136.4640, lat:35.3735, s:3000, st:'attack' },  // 攻石田笹尾山
       { t:13,  lng:136.4600, lat:35.3770, s:3000, st:'attack' },
       { t:14,  lng:136.4575, lat:35.3795, s:3000, st:'attack' },
+    ]},
+  { id:"yamanouchi", name_zh:"山內一豐", name_ja:"山内一豊", side:'east', crest:'mitsugashiwa', kind:'infantry',
+    title:"中山道 · 押え南宮山", troops:2000,
+    track:[
+      { t:-16, lng:136.583, lat:35.385, s:2000, st:'hold' },
+      { t:0,   lng:136.583, lat:35.385, s:2000, st:'hold' },
+      { t:6,   lng:136.4900,lat:35.3550,s:2000, st:'march' },    // 進駐垂井·南宮山西麓
+      { t:8,   lng:136.4900, lat:35.3550, s:2000, st:'hold' },   // 監視南宮山西軍,未積極交戰
+      { t:14,  lng:136.4880, lat:35.3560, s:2000, st:'hold' },
     ]},
 ];
