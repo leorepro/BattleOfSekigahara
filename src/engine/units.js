@@ -20,7 +20,8 @@ window.SEKI = window.SEKI || {};
 
   function fmt(n) { return Math.round(n).toLocaleString('en-US'); }
 
-  S.sampleTrack = function (track, t) {
+  // 關鍵影格間取樣；ctrls[i] 存在則該段沿二次貝茲曲線(繞地形)行進，否則直線。
+  S.sampleTrack = function (track, t, ctrls) {
     if (t <= track[0].t) return { ...track[0] };
     const last = track[track.length - 1];
     if (t >= last.t) return { ...last };
@@ -28,11 +29,65 @@ window.SEKI = window.SEKI || {};
       const a = track[i], b = track[i + 1];
       if (t >= a.t && t <= b.t) {
         const k = (t - a.t) / (b.t - a.t);
+        const C = ctrls && ctrls[i];
+        if (C) {                                   // 二次貝茲：A→控制點→B（彎過高地）
+          const u = 1 - k;
+          return { lng: u*u*a.lng + 2*u*k*C.lng + k*k*b.lng,
+                   lat: u*u*a.lat + 2*u*k*C.lat + k*k*b.lat,
+                   s: a.s+(b.s-a.s)*k, st: a.st };
+        }
         return { lng:a.lng+(b.lng-a.lng)*k, lat:a.lat+(b.lat-a.lat)*k,
                  s:a.s+(b.s-a.s)*k, st:a.st };
       }
     }
     return { ...last };
+  };
+
+  /* ---- 地形感知路徑：為每段移動算一個讓「沿途最高點最低」的控制點 ----
+     部隊因此自動繞開丘陵、沿低處(谷地/道路走廊)行進；平地則維持近直線。 */
+  function elevAt(lng, lat) {
+    const p = S.engine.project(lng, lat, 0);
+    return S.terrain ? S.terrain.heightAt(p.x, p.z) : 0;
+  }
+  // 路徑成本：偏好低地(谷地/平原)，但懲罰水域(避免被拉進海/湖)與高地。
+  const SEA_Y = 0.5;        // 場景 Y 低於此視為水域
+  const WATER_PENALTY = 60; // 經過水域的重罰
+  function pathCost(A, B, C) {
+    let sum = 0, n = 0;
+    for (let s = 0; s <= 1.0001; s += 0.1) {
+      let lng, lat;
+      if (C) { const u = 1 - s; lng = u*u*A.lng + 2*u*s*C.lng + s*s*B.lng;
+               lat = u*u*A.lat + 2*u*s*C.lat + s*s*B.lat; }
+      else { lng = A.lng + (B.lng-A.lng)*s; lat = A.lat + (B.lat-A.lat)*s; }
+      const e = elevAt(lng, lat);
+      sum += (e < SEA_Y ? WATER_PENALTY : e);      // 水域重罰；陸地以高度為成本(偏好低處)
+      n++;
+    }
+    return sum / n;
+  }
+  S.precomputeRoutes = function () {
+    for (const a of S.armies) {
+      const tk = a.track;
+      a._ctrl = new Array(tk.length - 1).fill(null);
+      for (let i = 0; i < tk.length - 1; i++) {
+        const A = tk[i], B = tk[i + 1];
+        const cosLat = Math.cos(A.lat * Math.PI / 180);
+        const dxm = (B.lng - A.lng) * cosLat, dym = (B.lat - A.lat);
+        const segM = Math.hypot(dxm, dym);
+        if (segM < 0.0045) continue;                 // 太短(~<450m)不彎
+        const pxm = -dym / segM, pym = dxm / segM;    // 公制空間中的垂直單位向量
+        const mid = { lng: (A.lng+B.lng)/2, lat: (A.lat+B.lat)/2 };
+        const straight = pathCost(A, B, null);
+        let bestCost = straight, best = null;
+        for (const off of [0.12, 0.20, 0.28, -0.12, -0.20, -0.28]) {
+          const C = { lng: mid.lng + (pxm*off*segM)/cosLat, lat: mid.lat + (pym*off*segM) };
+          const cost = pathCost(A, B, C);
+          // 須明顯較佳、且本身不經水域，才採用此彎道
+          if (cost < bestCost * 0.92 && cost < WATER_PENALTY * 0.5) { bestCost = cost; best = C; }
+        }
+        a._ctrl[i] = best;
+      }
+    }
   };
 
   S.buildUnits = function () {
@@ -91,6 +146,7 @@ window.SEKI = window.SEKI || {};
       hit.userData.unit = u;
       _units.push(u);
     }
+    S.precomputeRoutes();          // 依地形預算各部隊路徑控制點（繞開丘陵）
     return _units;
   };
 
@@ -100,12 +156,12 @@ window.SEKI = window.SEKI || {};
     const eng = S.engine;
     // 1) 取樣位置
     for (const u of _units) {
-      const s = S.sampleTrack(u.data.track, t);
+      const s = S.sampleTrack(u.data.track, t, u.data._ctrl);
       const p = eng.project(s.lng, s.lat, 0);
       const y = S.terrain ? S.terrain.heightAt(p.x, p.z) : 0;
       u.p.set(p.x, y, p.z); u.cur = s;
       // 移動方向：比較稍後時刻
-      const s2 = S.sampleTrack(u.data.track, t + 0.12);
+      const s2 = S.sampleTrack(u.data.track, t + 0.12, u.data._ctrl);
       u.moveDir = { dx: s2.lng - s.lng, dz: -(s2.lat - s.lat) };
     }
     // 2) 防重疊（XZ 平面分離，數次迭代）
