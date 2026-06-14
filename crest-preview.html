@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>家紋預覽 — 關原之戰</title>
+<style>
+  body{ margin:0; background:#15181e; color:#e9e4d4; font-family:"Noto Serif TC",serif; padding:24px; }
+  h1{ font-size:20px; letter-spacing:3px; margin:0 0 4px; }
+  p{ opacity:.6; font-size:13px; margin:0 0 20px; }
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:16px; }
+  .cell{ background:#1f242c; border-radius:8px; padding:12px; text-align:center; }
+  .cell canvas{ width:120px; height:120px; background:#0c0e12; border-radius:6px; }
+  .cell .zh{ font-weight:700; margin-top:8px; font-size:15px; }
+  .cell .ja{ opacity:.6; font-size:12px; }
+  .cell .who{ opacity:.75; font-size:11px; margin-top:2px; }
+  .east .zh{ color:#9cc0ff; } .west .zh{ color:#ff9c9c; }
+</style>
+</head>
+<body>
+  <h1>關原之戰 · 家紋程序化繪製預覽</h1>
+  <p>12 紋皆由 Canvas 即時繪製（白紋）。<span style="color:#9cc0ff">藍=東軍</span>　<span style="color:#ff9c9c">紅=西軍</span></p>
+  <div class="grid" id="grid"></div>
+
+  <script src="src/engine/crest.js"></script>
+  <script>
+    // crest.js 依賴 THREE.CanvasTexture，僅在 flagTexture 用到；此頁只用 SEKI.crests，故補一個樁
+    window.THREE = window.THREE || { CanvasTexture:function(){}, sRGBEncoding:0 };
+
+    const ROSTER = [
+      { key:'mitsubaAoi',          zh:'三つ葉葵', ja:'三つ葉葵', who:'徳川家康',   side:'east' },
+      { key:'omodaka',             zh:'澤瀉',     ja:'沢瀉',     who:'福島正則',   side:'east' },
+      { key:'tachibana',           zh:'井伊橘',   ja:'橘',       who:'井伊直政',   side:'east' },
+      { key:'tachiAoi',            zh:'立葵',     ja:'立葵',     who:'本多忠勝',   side:'east' },
+      { key:'fujiTomoe',           zh:'藤巴',     ja:'藤巴',     who:'黒田長政',   side:'east' },
+      { key:'kuyo',                zh:'九曜',     ja:'九曜',     who:'細川忠興',   side:'east' },
+      { key:'daiichi',             zh:'大一大万大吉', ja:'大一大万大吉', who:'石田三成', side:'west' },
+      { key:'jiMonji',             zh:'児文字',   ja:'児文字',   who:'宇喜多秀家', side:'west' },
+      { key:'chigaiKama',          zh:'違い鎌',   ja:'違い鎌',   who:'小早川秀秋', side:'west' },
+      { key:'maruJuji',            zh:'丸に十字', ja:'丸に十字', who:'島津義弘',   side:'west' },
+      { key:'ichimonjiMitsuboshi', zh:'一文字三星', ja:'一文字三星', who:'毛利秀元', side:'west' },
+      { key:'mukaiCho',            zh:'対い蝶',   ja:'対い蝶',   who:'大谷吉継',   side:'west' },
+    ];
+
+    const grid = document.getElementById('grid');
+    for (const r of ROSTER) {
+      const cell = document.createElement('div');
+      cell.className = 'cell ' + r.side;
+      const cv = document.createElement('canvas');
+      cv.width = 240; cv.height = 240;
+      const ctx = cv.getContext('2d');
+      ctx.fillStyle = '#ffffff'; ctx.strokeStyle = '#ffffff';
+      ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+      (SEKI.crests[r.key] || function(){})(ctx, 120, 120, 80);
+      cell.appendChild(cv);
+      cell.insertAdjacentHTML('beforeend',
+        `<div class="zh">${r.zh}</div><div class="ja">${r.ja}</div><div class="who">${r.who}</div>`);
+      grid.appendChild(cell);
+    }
+  </script>
+</body>
+</html>
