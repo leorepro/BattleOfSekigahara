@@ -60,6 +60,13 @@ SEKI.storyboard = [
     commanders:[{zh:"井伊直政",en:"Ii Naomasa"},{zh:"松平忠吉",en:"Matsudaira Tadayoshi"},{zh:"福島正則",en:"Fukushima Masanori"}],
     focus:["ii","matsudaira","fukushima","ukita"], side:"both" },
 
+  { t:9.3, hold:11, cam:{lng:136.460, lat:35.374, dist:95, az:-50, el:44, orbit:0.7},
+    dateLabel:"辰刻末", title_zh:"島左近奮戰 · 西軍前衛逞威",
+    title_en:"Shima Sakon's Furious Charge",
+    narration_zh:"石田家老島左近率前衛精兵自笹尾山殺出，鐵炮齊射、長槍突進，猛攻黑田・田中隊，一度壓制東軍北翼——時人謂「三成有過分之物二：島左近與佐和山城」。",
+    commanders:[{zh:"島左近",en:"Shima Sakon"},{zh:"黑田長政",en:"Kuroda Nagamasa"}],
+    focus:["ishida","kuroda","tanaka"], side:"west" },
+
   { t:10.0, hold:13, cam:{lng:136.463, lat:35.366, dist:120, az:-8, el:38, orbit:0.7},
     dateLabel:"巳刻 · 10:00", title_zh:"天滿山前血戰",
     title_en:"The Clash before Tenmanyama",
@@ -107,11 +114,25 @@ SEKI.storyboard = [
     narration_zh:"病軀坐輿的大谷吉繼早料小早川有變，奮力反擊一度擊退，終因眾叛寡不敵眾，命部下介錯、藏首自盡，西軍中堅崩潰。",
     commanders:[{zh:"大谷吉繼",en:"Ōtani Yoshitsugu"}], focus:["otani","kobayakawa"], side:"west" },
 
+  { t:13.2, hold:11, cam:{lng:136.456, lat:35.370, dist:92, az:18, el:46, orbit:0.7},
+    dateLabel:"未刻", title_zh:"小西行長隊潰走",
+    title_en:"Konishi's Line Breaks",
+    narration_zh:"右翼既崩，加藤嘉明、田中吉政轉攻北天滿山。基督教大名小西行長兵潰，本人棄陣逃入伊吹山中，數日後被捕；因信仰不肯切腹，後與三成同於六条河原處刑。",
+    commanders:[{zh:"小西行長",en:"Konishi Yukinaga"},{zh:"加藤嘉明",en:"Katō Yoshiaki"}],
+    focus:["konishi","kato","tanaka"], side:"west" },
+
   { t:13.6, hold:12, cam:{lng:136.468, lat:35.360, dist:120, az:30, el:42, orbit:0.8},
     dateLabel:"未刻", title_zh:"島津義弘 · 敵中突破",
     title_en:"Shimazu's Charge through the Enemy",
     narration_zh:"西軍總崩，孤立的島津義弘僅千餘人，竟選擇向家康本陣正面突圍，穿越東軍陣中向伊勢街道退卻——史稱「島津の退き口」，以慘烈犧牲換得主將生還。",
     commanders:[{zh:"島津義弘",en:"Shimazu Yoshihiro"}], focus:["shimazu","tokugawa"], side:"west" },
+
+  { t:13.9, hold:11, cam:{lng:136.472, lat:35.357, dist:95, az:35, el:44, orbit:0.8},
+    dateLabel:"未刻", title_zh:"島津「捨て奸」· 死兵殿後",
+    title_en:"Shimazu's Sutegamari Rearguard",
+    narration_zh:"突圍途中島津以「捨て奸（捨てがまり）」死戰殿後：留下小股死兵就地坐定、逐一犧牲拖住追兵。井伊直政中彈、松平忠吉負傷；甥豐久戰死。義弘終得脫出，僅餘八十餘騎生還薩摩。",
+    commanders:[{zh:"島津義弘",en:"Shimazu Yoshihiro"},{zh:"井伊直政",en:"Ii Naomasa"}],
+    focus:["shimazu","ii","honda"], side:"west" },
 
   { t:14.0, hold:12, cam:{lng:136.466, lat:35.364, dist:165, az:14, el:30, orbit:0.5},
     dateLabel:"未刻 · 14:00 · 戰終", title_zh:"西軍瓦解 · 天下歸於德川",

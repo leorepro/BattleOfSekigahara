@@ -44,10 +44,10 @@ window.SEKI = window.SEKI || {};
     // 播放/暫停
     el.btnPlay.onclick = () => { S.player.playing = !S.player.playing; syncPlay(); };
     // 時間軸
-    el.scrub.min = S.player.T_START; el.scrub.max = S.player.T_END; el.scrub.step = 0.01;
+    el.scrub.min = 0; el.scrub.max = 1000; el.scrub.step = 1;      // 用位置(非線性對應時刻)
     el.scrub.addEventListener('input', () => {
       scrubbing = true;
-      const v = parseFloat(el.scrub.value);
+      const v = posToTime(parseFloat(el.scrub.value) / 1000);
       if (S.player.program) {
         S.gotoShot(nearestShotIndex(v));      // 節目模式：跳到最近的鏡頭，運鏡帶過去，維持節目模式
       } else {
@@ -97,6 +97,19 @@ window.SEKI = window.SEKI || {};
     if (el.btnPlay) el.btnPlay.textContent = S.player.playing ? '⏸' : '▶';
   }
 
+  // 非線性時間軸：戰前(T_START~7)佔 SPLIT 比例,決戰(7~T_END)佔其餘 → 決戰段拉長
+  const TB = 7, SPLIT = 0.25;
+  function timeToPos(t) {                    // 時刻 → 0..1
+    const T0 = S.player.T_START, T1 = S.player.T_END;
+    if (t <= TB) return Math.max(0, (t - T0) / (TB - T0)) * SPLIT;
+    return SPLIT + Math.min(1, (t - TB) / (T1 - TB)) * (1 - SPLIT);
+  }
+  function posToTime(p) {                    // 0..1 → 時刻
+    const T0 = S.player.T_START, T1 = S.player.T_END;
+    if (p <= SPLIT) return T0 + (p / SPLIT) * (TB - T0);
+    return TB + ((p - SPLIT) / (1 - SPLIT)) * (T1 - TB);
+  }
+
   function nearestShotIndex(v) {
     const sb = S.storyboard; let best = 0, bd = Infinity;
     for (let i = 0; i < sb.length; i++) { const d = Math.abs(sb[i].t - v); if (d < bd) { bd = d; best = i; } }
@@ -105,9 +118,8 @@ window.SEKI = window.SEKI || {};
 
   function buildMarkers() {
     if (!el.markers || !S.storyboard) return;
-    const min = S.player.T_START, max = S.player.T_END;
     el.markers.innerHTML = S.storyboard.map((s, i) => {
-      const pct = (s.t - min) / (max - min) * 100;
+      const pct = timeToPos(s.t) * 100;       // 非線性:決戰節點自然散開
       if (pct < -0.5 || pct > 100.5) return '';
       const hot = /★/.test(s.title_zh) ? ' hot' : '';
       const title = s.title_zh.replace('★', '').trim();
@@ -223,7 +235,7 @@ window.SEKI = window.SEKI || {};
   }
 
   S.updateUI = function (t) {
-    if (!scrubbing && el.scrub) el.scrub.value = t;
+    if (!scrubbing && el.scrub) el.scrub.value = timeToPos(t) * 1000;
     if (el.tlabel) el.tlabel.textContent = timeStr(t);
     if (el.roster && el.roster.classList.contains('show') && (++_rframe % 12) === 0) updateRoster(t);
 
