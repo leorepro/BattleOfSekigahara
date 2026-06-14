@@ -63,6 +63,19 @@
   #hud{ position:fixed; top:14px; left:16px; font-size:12px; opacity:.7; line-height:1.6;
         letter-spacing:1px; }
   #hud b{ color:#fff; }
+
+  /* 戰役切換（關原 ⇄ 桶狹間） */
+  #campaign-switch{ position:fixed; top:60px; left:16px; z-index:9; display:flex;
+        border:1px solid #3a4350; border-radius:8px; overflow:hidden; font-size:12px;
+        letter-spacing:1px; box-shadow:0 2px 10px rgba(0,0,0,.5); }
+  #campaign-switch .cs-item{ padding:6px 13px; background:rgba(16,20,26,.85); color:#cdd4de;
+        text-decoration:none; cursor:pointer; transition:background .15s,color .15s; white-space:nowrap; }
+  #campaign-switch .cs-item small{ opacity:.6; font-size:9px; margin-left:4px; }
+  #campaign-switch .cs-item + .cs-item{ border-left:1px solid #3a4350; }
+  #campaign-switch .cs-item:hover{ background:rgba(44,52,64,.95); color:#fff; }
+  #campaign-switch .cs-item.active{ background:#e8c87a; color:#16181c; font-weight:700; cursor:default; }
+  #campaign-switch .cs-item.active:hover{ background:#e8c87a; }
+
   #loading{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
             background:#0a0d12; z-index:10; transition:opacity .8s; font-size:15px; letter-spacing:3px; }
 
@@ -194,6 +207,8 @@
   /* 手機 / 窄螢幕響應式（橫向觀看體驗最佳） */
   @media (max-width: 760px){
     #hud{ font-size:10px; top:8px; left:10px; }
+    #campaign-switch{ top:42px; left:10px; font-size:10px; }
+    #campaign-switch .cs-item{ padding:4px 9px; }
     #bars{ width:132px; font-size:10px; top:8px; right:8px; }
     #legend{ width:148px; font-size:9px; line-height:1.4; top:58px; right:8px; padding:7px 8px; }
     #legend .lg-hr{ margin:5px 0; }
@@ -226,6 +241,12 @@
     <div><b id="clock">辰刻 08:00</b> <span id="phase" style="opacity:.85"></span></div>
     <div>拖曳 = 運鏡　·　滾輪 = 縮放　·　右鍵 = 平移</div>
   </div>
+
+  <!-- 戰役切換 -->
+  <nav id="campaign-switch" aria-label="切換戰役">
+    <span class="cs-item active">關原之戰<small>1600</small></span>
+    <a class="cs-item" href="okehazama.html">桶狹間之戰<small>1560</small></a>
+  </nav>
 
   <!-- 符號圖例（常駐右上） -->
   <div id="legend">
