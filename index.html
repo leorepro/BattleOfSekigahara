@@ -59,13 +59,19 @@
   #titlecard h1{ font-size:30px; letter-spacing:6px; text-shadow:0 2px 12px #000; }
   #titlecard p{ margin-top:6px; font-size:14px; opacity:.8; letter-spacing:2px; }
 
-  /* HUD：載入/操作提示 */
-  #hud{ position:fixed; top:14px; left:16px; font-size:12px; opacity:.7; line-height:1.6;
-        letter-spacing:1px; }
-  #hud b{ color:#fff; }
+  /* HUD：時刻 / 操作提示 — 和風精緻版 */
+  #hud{ position:fixed; top:14px; left:16px; font-size:12px; line-height:1.65; letter-spacing:1px;
+        background:linear-gradient(180deg, rgba(24,20,16,.90), rgba(15,13,11,.86));
+        border:1px solid rgba(232,200,122,.26); border-radius:9px; padding:7px 14px 8px;
+        color:#ece3cf; box-shadow:0 5px 18px rgba(0,0,0,.45); }
+  #hud .clk{ font-size:12.5px; letter-spacing:1.5px; }
+  #hud b{ color:#e8c87a; font-weight:700; }
+  #hud #phase{ color:#d8ccb0; }
+  #hud .hint{ font-size:10px; opacity:.6; letter-spacing:.5px; margin-top:3px; padding-top:3px;
+        border-top:1px solid rgba(232,200,122,.14); }
 
   /* 戰役切換（關原 ⇄ 桶狹間） */
-  #campaign-switch{ position:fixed; top:60px; left:16px; z-index:9; display:flex;
+  #campaign-switch{ position:fixed; top:70px; left:16px; z-index:9; display:flex;
         border:1px solid #3a4350; border-radius:8px; overflow:hidden; font-size:12px;
         letter-spacing:1px; box-shadow:0 2px 10px rgba(0,0,0,.5); }
   #campaign-switch .cs-item{ padding:6px 13px; background:rgba(16,20,26,.85); color:#cdd4de;
@@ -109,14 +115,21 @@
   #evCmd .chip .en{ opacity:.6; font-size:10px; }
   #caption.hot #evTitle{ color:#ffd24a; text-shadow:0 0 18px rgba(255,160,0,.85),0 2px 8px #000; }
 
-  /* 符號圖例 */
-  #legend{ position:fixed; top:14px; right:16px; width:210px; background:rgba(16,20,26,.72);
-           border:1px solid #2c343f; border-radius:9px; padding:11px 13px; font-size:11.5px;
-           line-height:1.5; letter-spacing:.5px; }
-  #legend .lg-row{ display:flex; align-items:center; gap:5px; margin:3px 0; white-space:nowrap; }
-  #legend .sw{ width:13px; height:13px; border-radius:3px; display:inline-block; flex:0 0 auto; }
-  #legend .ic{ display:inline-block; min-width:14px; text-align:center; flex:0 0 auto; }
-  #legend .lg-hr{ height:1px; background:#2c343f; margin:7px 0; }
+  /* 符號圖例（凡例）— 和風精緻版 */
+  #legend{ position:fixed; top:14px; right:16px; width:224px;
+           background:linear-gradient(180deg, rgba(24,20,16,.93), rgba(15,13,11,.91));
+           border:1px solid rgba(232,200,122,.30); border-radius:10px;
+           padding:12px 15px 13px; font-size:11.5px; line-height:1.5; letter-spacing:.6px;
+           color:#e7dec9; box-shadow:0 6px 22px rgba(0,0,0,.5); }
+  #legend .lg-title{ text-align:center; color:#e8c87a; font-size:12px; letter-spacing:9px;
+           font-weight:700; text-indent:9px; padding-bottom:9px;
+           border-bottom:1px solid rgba(232,200,122,.24); }
+  #legend .lg-sec{ color:#cba968; font-size:9.5px; letter-spacing:4px; margin:10px 0 4px; text-indent:1px; }
+  #legend .lg-row{ display:flex; align-items:center; gap:8px; margin:4px 0; white-space:nowrap; }
+  #legend .sw{ width:14px; height:14px; border-radius:3px; display:inline-block; flex:0 0 auto;
+           box-shadow:0 0 0 1px rgba(0,0,0,.45); }
+  #legend .ic{ display:inline-block; width:16px; text-align:center; flex:0 0 auto; opacity:.92; }
+  #legend .kbadge{ margin:0; flex:0 0 auto; }
 
   /* 軍隊清單面板（可收合，置於左側） */
   #roster{ position:fixed; left:14px; top:64px; width:236px; max-height:76vh; overflow-y:auto;
@@ -172,12 +185,15 @@
 
   /* 控制列 */
   #controls{ position:fixed; left:0; right:0; bottom:0; height:84px; display:flex; align-items:center;
-             gap:14px; padding:0 20px; background:linear-gradient(0deg,rgba(8,10,14,.92),rgba(8,10,14,0));
-             font-size:13px; }
-  #controls button{ background:#1c222b; color:var(--ink); border:1px solid #333b47; border-radius:7px;
-             padding:8px 12px; cursor:pointer; font-family:inherit; font-size:13px; letter-spacing:1px; }
-  #controls button:hover{ background:#28303b; }
-  #controls button.on{ border-color:#6f87ff; color:#cdd8ff; }
+             gap:14px; padding:0 20px; background:none;
+             font-size:13px; text-shadow:0 1px 4px rgba(0,0,0,.85); }
+  #controls button{ background:linear-gradient(180deg,#3a2f1e,#221a10); color:#ecdfc4;
+             border:1px solid rgba(201,168,106,.6); border-radius:7px;
+             padding:8px 14px; cursor:pointer; font-family:inherit; font-size:13px; letter-spacing:1px;
+             box-shadow:0 2px 6px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,232,180,.12); }
+  #controls button:hover{ background:linear-gradient(180deg,#4d3f28,#2e2415); border-color:rgba(232,200,122,.85); }
+  #controls button.on{ background:linear-gradient(180deg,#f1d68c,#dcb45c); border-color:#f0d488; color:#1a1206;
+             font-weight:700; box-shadow:0 2px 8px rgba(232,200,122,.45), inset 0 1px 0 rgba(255,255,255,.4); }
   #scrubwrap{ flex:1; position:relative; display:flex; align-items:center; }
   #scrub{ width:100%; accent-color:#ff6a5b; cursor:pointer; }
   #markers{ position:absolute; left:0; right:0; top:0; bottom:0; pointer-events:none; }
@@ -211,8 +227,8 @@
 
   /* 手機 / 窄螢幕響應式（橫向觀看體驗最佳） */
   @media (max-width: 760px){
-    #hud{ font-size:10px; top:8px; left:10px; }
-    #campaign-switch{ top:42px; left:10px; font-size:10px; }
+    #hud{ font-size:10px; top:8px; left:10px; padding:5px 9px 6px; }
+    #campaign-switch{ top:52px; left:10px; font-size:10px; }
     #campaign-switch .cs-item{ padding:4px 9px; }
     #bars{ width:132px; font-size:10px; top:8px; right:8px; }
     #legend{ width:148px; font-size:9px; line-height:1.4; top:58px; right:8px; padding:7px 8px; }
@@ -244,8 +260,8 @@
   </div>
 
   <div id="hud">
-    <div><b id="clock">辰刻 08:00</b> <span id="phase" style="opacity:.85"></span></div>
-    <div>拖曳 = 運鏡　·　滾輪 = 縮放　·　右鍵 = 平移</div>
+    <div class="clk"><b id="clock">辰刻 08:00</b> <span id="phase" style="opacity:.85"></span></div>
+    <div class="hint">拖曳 = 運鏡　·　滾輪 = 縮放　·　右鍵 = 平移</div>
   </div>
 
   <!-- 戰役切換 -->
@@ -256,14 +272,24 @@
 
   <!-- 符號圖例（常駐右上） -->
   <div id="legend">
+    <div class="lg-title">凡 例</div>
+
+    <div class="lg-sec">陣　營</div>
     <div class="lg-row"><span class="sw" style="background:var(--east)"></span>東軍（德川）</div>
     <div class="lg-row"><span class="sw" style="background:var(--west)"></span>西軍（石田）</div>
-    <div class="lg-hr"></div>
-    <div class="lg-row"><span class="ic">⚑</span>武將本陣（軍旗 · 家紋）</div>
-    <div class="lg-row"><span class="ic">➤</span>行軍 / 進攻方向（緞帶）</div>
-    <div class="lg-row"><span class="ic">▲</span>山 ·　<span class="ic">🏯</span>城 ·　<span class="ic">⚔</span>古戰場</div>
-    <div class="lg-row"><span class="ic">🔥</span>鉄砲齊射 / 砲擊　<span class="ic">⛓</span>潰滅</div>
-    <div class="lg-row" style="opacity:.7">兵種：鉄砲 · 騎馬 · 足軽 · 大筒</div>
+
+    <div class="lg-sec">圖　示</div>
+    <div class="lg-row"><span class="ic">⚑</span>武將本陣（軍旗・家紋）</div>
+    <div class="lg-row"><span class="ic">➤</span>行軍・進攻方向</div>
+    <div class="lg-row"><span class="ic">▲</span>山<span class="ic">🏯</span>城<span class="ic">⚔</span>古戰場</div>
+    <div class="lg-row"><span class="ic">🔥</span>鉄砲齊射・砲擊<span class="ic">⛓</span>潰滅</div>
+
+    <div class="lg-sec">兵　種</div>
+    <div class="lg-row"><span class="kbadge k-command">本</span>本陣・旗本</div>
+    <div class="lg-row"><span class="kbadge k-cavalry">騎</span>騎馬隊</div>
+    <div class="lg-row"><span class="kbadge k-matchlock">銃</span>鉄砲（火縄銃）</div>
+    <div class="lg-row"><span class="kbadge k-artillery">砲</span>大筒</div>
+    <div class="lg-row"><span class="kbadge k-infantry">槍</span>足軽・長槍</div>
   </div>
 
   <!-- 軍隊清單面板（右側） -->
@@ -310,15 +336,14 @@
       <div id="markers"></div>
     </span>
     <select id="spd">
-      <option value="0.2">0.5×</option>
+      <option value="0.07">0.2×</option>
+      <option value="0.175">0.5×</option>
       <option value="0.35" selected>1×</option>
       <option value="0.7">2×</option>
-      <option value="1.4">4×</option>
     </select>
     <button id="btnMode" class="on">🎬 節目模式</button>
     <button id="btnRoster">📋 軍隊</button>
     <button id="btnNotes">📜 史料</button>
-    <button id="btnAudio">🔈 配樂</button>
   </div>
 
   <audio id="bgm" src="assets/audio/bgm.mp3" loop preload="none"></audio>
