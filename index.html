@@ -153,6 +153,12 @@
   #roster .rs-bar i{ display:block; height:100%; border-radius:3px; transition:width .25s linear; }
   #roster .rs-bar i.e{ background:linear-gradient(90deg,#2a54d6,#5b86f5); }
   #roster .rs-bar i.w{ background:linear-gradient(90deg,#d12a2a,#f2615f); }
+  /* 交戰拉鋸條：左右兩方兵力比例對撞 */
+  #roster .rs-cbar{ display:flex; height:5px; border-radius:3px; overflow:hidden; margin:2px 0 7px;
+                    box-shadow:0 0 0 1px rgba(0,0,0,.3) inset; }
+  #roster .rs-cbar i{ height:100%; }
+  #roster .rs-cbar i.e{ background:linear-gradient(90deg,#5b86f5,#2a54d6); }
+  #roster .rs-cbar i.w{ background:linear-gradient(90deg,#d12a2a,#f2615f); }
 
   /* 兵種徽章 */
   .kbadge{ display:inline-block; min-width:14px; padding:0 3px; margin-right:4px; border-radius:3px;

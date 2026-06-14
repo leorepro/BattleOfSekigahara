@@ -238,9 +238,13 @@ window.SEKI = window.SEKI || {};
     h += `<div class="rs-row" style="opacity:.85"><span>交戰投入</span><span class="s"><span class="e">${nf(eE)}</span> · <span class="w">${nf(eW)}</span></span></div>`;
     if (pairs.length) {
       h += `<div class="rs-sec">⚔ 交戰中（誰打誰）</div>`;
-      for (const p of pairs)
+      for (const p of pairs) {
         h += `<div class="rs-pair"><span class="${sideOf(p.A)}">${p.A.data.name_zh} <span class="s">${nf(p.sA)}</span></span>` +
              `<span class="vs">⚔</span><span class="${sideOf(p.B)}">${p.B.data.name_zh} <span class="s">${nf(p.sB)}</span></span></div>`;
+        const tot = Math.max(p.sA + p.sB, 1), aw = Math.round(p.sA / tot * 100);  // 拉鋸條:雙方兵力比例
+        h += `<div class="rs-cbar"><i class="${sideOf(p.A)}" style="width:${aw}%"></i>` +
+             `<i class="${sideOf(p.B)}" style="width:${100 - aw}%"></i></div>`;
+      }
     }
     h += `<div class="rs-sec">全軍兵力（依多寡）</div>`;
     const all = S.armies.map(a => { const u = S.unitById(a.id);
