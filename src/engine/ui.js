@@ -34,7 +34,7 @@ window.SEKI = window.SEKI || {};
 
   S.initUI = function () {
     const ids = ['caption','evDate','evTitle','evTitleEn','evNarr','evCmd','btnPlay','scrub','spd','btnMode',
-      'tlabel','barEast','barWest','valEast','valWest','card','cardBody','cardClose','btnAudio','bgm',
+      'tlabel','barEast','barWest','valEast','valWest','balLabel','card','cardBody','cardClose','btnAudio','bgm',
       'btnNotes','notes','notesBody','notesClose','roster','btnRoster'];
     ids.forEach(id => el[id] = document.getElementById(id));
 
@@ -178,11 +178,15 @@ window.SEKI = window.SEKI || {};
 
     const ss = S.sideStrength();
     if (el.barEast) {
-      const cm = Math.max(eastMax, westMax);            // 同一刻度,才看得出差距與交叉
-      el.barEast.style.width = Math.max(0, Math.min(100, ss.east / cm * 100)) + '%';
-      el.barWest.style.width = Math.max(0, Math.min(100, ss.west / cm * 100)) + '%';
-      el.valEast.textContent = Math.round(ss.east).toLocaleString('en-US');
-      el.valWest.textContent = Math.round(ss.west).toLocaleString('en-US');
+      const tot = Math.max(ss.east + ss.west, 1);        // 抗衡拉鋸:藍紅各佔比例,交會點即優勢
+      el.barEast.style.width = (ss.east / tot * 100) + '%';
+      el.barWest.style.width = (ss.west / tot * 100) + '%';
+      el.valEast.textContent = nf(ss.east);
+      el.valWest.textContent = nf(ss.west);
+      if (el.balLabel) {
+        const d = (ss.east - ss.west) / tot;
+        el.balLabel.textContent = Math.abs(d) < 0.08 ? '抗衡' : (d > 0 ? '東軍優勢' : '西軍優勢');
+      }
     }
   };
 })(window.SEKI);
