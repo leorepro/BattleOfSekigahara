@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-"""抓取國土地理院 GSI seamlessphoto 高解析航空影像，拼接並對齊關原 DEM 範圍。
+"""抓取 ESRI World Imagery 衛星鑲嵌影像，拼接並對齊關原 DEM 範圍。
    輸出覆蓋 assets/terrain/satellite.jpg（index.html / 關原頁使用的貼圖）。
    範圍須與 fetch_dem.py 一致。
+   （原用 GSI seamlessphoto，因航照圖磚跨年份色差嚴重改用 ESRI；色彩較一致。
+     ESRI 圖磚路徑為 {z}/{row}/{col} = {z}/{y}/{x}，軸序與 GSI 相反。）
 """
 import math, io, time, urllib.request
 from concurrent.futures import ThreadPoolExecutor
@@ -13,7 +15,7 @@ LAT_MIN, LAT_MAX = 35.240, 35.480
 Z = 15
 TILE = 256
 MAX_W = 6144                                # 最終貼圖最大寬度（控制檔案大小/GPU）
-URL = "https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg"
+URL = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
 SEA = (60, 96, 120)
 
 def lonlat_to_px(lon, lat, z):
@@ -33,7 +35,7 @@ print(f"zoom={Z}  tiles {ncol}x{nrow} = {ncol*nrow}  mosaic {ncol*TILE}x{nrow*TI
 mosaic = Image.new("RGB", (ncol * TILE, nrow * TILE), SEA)
 
 def fetch(tx, ty):
-    url = URL.format(z=Z, x=tx, y=ty)
+    url = URL.format(z=Z, y=ty, x=tx)
     for _ in range(3):
         try:
             req = urllib.request.Request(url, headers={"User-Agent": "sekigahara-map/1.0"})
