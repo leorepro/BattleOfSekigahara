@@ -70,7 +70,8 @@ window.SEKI = window.SEKI || {};
 
       const el = document.createElement('div');
       el.className = `lbl lbl-unit side-${a.side}`;
-      el.innerHTML = `<div>${a.name_zh}<span class="ja"> ${a.name_ja}</span></div><div class="troops"></div>`;
+      el.innerHTML = `<div>${a.name_zh}<span class="ja"> ${a.name_ja}</span></div>` +
+        `<div class="hp"><i></i></div><div class="troops"></div>`;
       const tag = new THREE.CSS2DObject(el);
       tag.position.set(0, POLE_H + 2.5 + (_units.length % 4) * 3.6, 0); group.add(tag); // 錯開避免重疊
 
@@ -82,7 +83,8 @@ window.SEKI = window.SEKI || {};
       arrow.visible = false; eng.scene.add(arrow);
 
       const u = { data:a, group, flag, fmat, ring, pole, hit, el,
-        troopsEl: el.querySelector('.troops'), arrow, p: new THREE.Vector3() };
+        troopsEl: el.querySelector('.troops'), hpEl: el.querySelector('.hp i'),
+        arrow, p: new THREE.Vector3() };
       hit.userData.unit = u;
       _units.push(u);
     }
@@ -138,6 +140,12 @@ window.SEKI = window.SEKI || {};
       u.el.style.opacity = (dead ? 0.45 : 1) * (isDim ? 0.35 : 1);
       u.el.classList.toggle('focus', isFocus);
       u.el.classList.toggle('dim', isDim);
+      // 血條：兵力 / 初始兵力
+      if (u.hpEl) {
+        const pct = Math.max(0, Math.min(100, (s.s / u.data.troops) * 100));
+        u.hpEl.style.width = pct + '%';
+        u.hpEl.classList.toggle('low', pct < 40);
+      }
 
       // 箭頭：行軍/交戰/突破且確有位移時顯示
       const moving = !dead && (s.st === 'march' || s.st === 'attack' || s.st === 'breakthrough');

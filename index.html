@@ -32,6 +32,13 @@
   .lbl-unit.focus{ font-size:15px; text-shadow:0 1px 4px #000,0 0 8px rgba(255,220,140,.5); }
   .lbl-unit.dim{ font-size:10px; }
   .lbl-unit.dim .troops{ display:none; }
+  /* 各部隊血條 */
+  .lbl-unit .hp{ width:60px; height:4px; margin:2px auto 1px; background:rgba(0,0,0,.5);
+                 border-radius:2px; overflow:hidden; box-shadow:0 0 2px #000; }
+  .lbl-unit .hp i{ display:block; height:100%; width:100%; border-radius:2px; transition:width .3s linear; }
+  .side-east .hp i{ background:#5b93ff; } .side-west .hp i{ background:#ff5b5b; }
+  .lbl-unit .hp i.low{ background:#d8a838; }
+  .lbl-unit.dim .hp{ display:none; }
   .side-east{ color:#9cc0ff; } .side-west{ color:#ff9c9c; }
 
   /* 交戰標記 A ⚔ B */
@@ -98,15 +105,16 @@
   #notesClose{ position:absolute; top:14px; right:18px; cursor:pointer; opacity:.6; font-size:15px; }
 
   /* 兵力儀表 */
-  #bars{ position:fixed; top:14px; right:16px; width:210px; font-size:12px; letter-spacing:1px;
-         text-shadow:0 1px 3px #000; }
-  #bars .row{ display:flex; align-items:center; gap:8px; margin-bottom:6px; }
-  #bars .name{ width:54px; text-align:right; }
-  #bars .track{ flex:1; height:10px; background:rgba(255,255,255,.12); border-radius:5px; overflow:hidden; }
-  #bars .fill{ height:100%; transition:width .25s; border-radius:5px; }
-  #barEast{ background:linear-gradient(90deg,#1f4fd6,#5b93ff); }
+  #bars{ position:fixed; top:12px; right:16px; width:264px; font-size:13px; letter-spacing:1px;
+         text-shadow:0 1px 3px #000; background:rgba(12,15,20,.5); padding:8px 11px; border-radius:9px; }
+  #bars .row{ display:flex; align-items:center; gap:8px; margin-bottom:7px; }
+  #bars .row:last-child{ margin-bottom:0; }
+  #bars .name{ width:42px; text-align:right; font-weight:700; }
+  #bars .track{ flex:1; height:15px; background:rgba(255,255,255,.1); border-radius:4px; overflow:hidden; }
+  #bars .fill{ height:100%; transition:width .3s; border-radius:4px; }
+  #barEast{ background:linear-gradient(90deg,#1f4fd6,#6ba0ff); }
   #barWest{ background:linear-gradient(90deg,#cc1f1f,#ff6a5b); }
-  #bars .val{ width:46px; }
+  #bars .val{ width:54px; font-variant-numeric:tabular-nums; }
 
   /* 控制列 */
   #controls{ position:fixed; left:0; right:0; bottom:0; height:84px; display:flex; align-items:center;

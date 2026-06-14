@@ -139,8 +139,9 @@ window.SEKI = window.SEKI || {};
 
     const ss = S.sideStrength();
     if (el.barEast) {
-      el.barEast.style.width = Math.max(0, Math.min(100, ss.east / eastMax * 100)) + '%';
-      el.barWest.style.width = Math.max(0, Math.min(100, ss.west / westMax * 100)) + '%';
+      const cm = Math.max(eastMax, westMax);            // 同一刻度,才看得出差距與交叉
+      el.barEast.style.width = Math.max(0, Math.min(100, ss.east / cm * 100)) + '%';
+      el.barWest.style.width = Math.max(0, Math.min(100, ss.west / cm * 100)) + '%';
       el.valEast.textContent = Math.round(ss.east).toLocaleString('en-US');
       el.valWest.textContent = Math.round(ss.west).toLocaleString('en-US');
     }
