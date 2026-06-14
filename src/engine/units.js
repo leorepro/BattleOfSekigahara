@@ -12,6 +12,9 @@ window.SEKI = window.SEKI || {};
   const EAST = 0x3a78ff, WEST = 0xff3b3b;
   const FW = 4, FH = 6, POLE_H = 10;
   let _units = [];
+  let _focus = null;                       // Set of 聚焦 unit id；null = 全部正常
+
+  S.setFocus = function (ids) { _focus = (ids && ids.length) ? new Set(ids) : null; };
 
   function fmt(n) { return Math.round(n).toLocaleString('en-US'); }
 
@@ -117,12 +120,18 @@ window.SEKI = window.SEKI || {};
 
       const dead = s.s <= 1;
       const op = dead ? 0.12 : 1;
-      u.fmat.opacity = op;
-      u.pole.material.transparent = true; u.pole.material.opacity = op;
-      u.ring.material.opacity = dead ? 0 : (s.st === 'attack' ? 0.8 : 0.5);
+      // 聚焦突顯：本鏡相關武將全亮，其餘淡化
+      const isFocus = !!_focus && _focus.has(u.data.id);
+      const isDim = !!_focus && !isFocus;
+      const emph = isDim ? 0.3 : 1;
+      u.fmat.opacity = op * emph;
+      u.pole.material.transparent = true; u.pole.material.opacity = op * emph;
+      u.ring.material.opacity = (dead ? 0 : (s.st === 'attack' ? 0.8 : 0.5)) * emph;
       u.troopsEl.innerHTML = dead ? `<span style="opacity:.7">潰滅</span>`
         : `${fmt(s.s)} <span style="opacity:.65">${ST_LABEL[s.st] || ''}</span>`;
-      u.el.style.opacity = dead ? 0.45 : 1;
+      u.el.style.opacity = (dead ? 0.45 : 1) * (isDim ? 0.35 : 1);
+      u.el.classList.toggle('focus', isFocus);
+      u.el.classList.toggle('dim', isDim);
 
       // 箭頭：行軍/交戰/突破且確有位移時顯示
       const moving = !dead && (s.st === 'march' || s.st === 'attack' || s.st === 'breakthrough');

@@ -22,14 +22,19 @@ window.SEKI = window.SEKI || {};
 
   S.startProgram = function () { idx = 0; phase = 'tween'; shotTimer = tweenTimer = 0;
     az = S.storyboard[0].cam.az; S.player.time = S.storyboard[0].t;
-    if (S.setEventCard) S.setEventCard(S.storyboard[0]); };
+    if (S.setEventCard) S.setEventCard(S.storyboard[0]);
+    if (S.setFocus) S.setFocus(S.storyboard[0].focus); };
 
   S.currentShot = null;
 
   S.updateStoryboard = function (dt) {
     if (!S.player || !S.player.program) return;
     const sb = S.storyboard, cur = sb[idx];
-    if (S.currentShot !== cur) { S.currentShot = cur; if (S.setEventCard) S.setEventCard(cur); }
+    if (S.currentShot !== cur) {
+      S.currentShot = cur;
+      if (S.setEventCard) S.setEventCard(cur);
+      if (S.setFocus) S.setFocus(cur.focus);
+    }
     const eng = S.engine, cam = eng.camera, tgt = targetOf(cur);
 
     if (phase === 'tween') {
@@ -62,6 +67,7 @@ window.SEKI = window.SEKI || {};
     S.player.program = on;
     S.engine.controls.enabled = !on;
     if (on) S.startProgram();
+    else if (S.setFocus) S.setFocus(null);   // 自由模式不淡化
   };
 
   // 給 UI：跳到指定鏡
