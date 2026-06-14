@@ -99,6 +99,19 @@ window.SEKI = window.SEKI || {};
       `<h3>資料來源 · Data</h3>${list(s.data)}`;
   }
 
+  const CREST_NAME = { daiichi:'大一大万大吉', jiMonji:'児文字', mukaiCho:'対い蝶',
+    chigaiKama:'違い鎌', ichimonjiMitsuboshi:'一文字三星', maruJuji:'丸に十字',
+    mitsubaAoi:'三つ葉葵', omodaka:'澤瀉', tachibana:'井伊橘', tachiAoi:'立葵',
+    fujiTomoe:'藤巴', kuyo:'九曜' };
+  const KIND_ARMS = {
+    command:   ['本陣 · 旗本', '鉄砲・大筒兼備的總大將直屬部隊'],
+    artillery: ['大筒・鉄砲', '配大筒砲擊（※大筒於關原屬通俗演繹，史實以鉄砲為主）'],
+    matchlock: ['鉄砲（火縄銃）', '以火縄銃輪番齊射著稱'],
+    cavalry:   ['騎馬隊', '騎馬突擊（如井伊「赤備え」朱漆精騎）'],
+    infantry:  ['足軽 · 長槍 · 鉄砲', '長槍足軽為主，配屬鉄砲'],
+  };
+  const ST_ZH = { hold:'布陣', march:'行軍', attack:'交戰', rout:'潰走', breakthrough:'敵中突破' };
+
   function onClick(ev) {
     const r = S.engine.renderer.domElement.getBoundingClientRect();
     mouse.x = ((ev.clientX - r.left) / r.width) * 2 - 1;
@@ -108,12 +121,15 @@ window.SEKI = window.SEKI || {};
     if (!hits.length) return;
     const u = hits[0].object.userData.unit; if (!u) return;
     const a = u.data, s = u.cur || { s: a.troops, st: 'hold' };
-    const sideZh = a.side === 'east' ? '東軍' : '西軍';
+    const sideZh = a.side === 'east' ? '東軍（德川）' : '西軍（石田）';
+    const arms = KIND_ARMS[a.kind] || KIND_ARMS.infantry;
     el.cardBody.innerHTML =
       `<div class="card-name side-${a.side}">${a.name_zh}<span class="ja"> ${a.name_ja}</span></div>` +
       `<div class="card-row">${sideZh} · ${a.title}</div>` +
-      `<div class="card-row">兵力　<b>${Math.round(Math.max(s.s,0)).toLocaleString('en-US')}</b> / ${a.troops.toLocaleString('en-US')}</div>` +
-      `<div class="card-row">家紋　${a.crest}</div>`;
+      `<div class="card-row">兵力　<b>${Math.round(Math.max(s.s,0)).toLocaleString('en-US')}</b> / ${a.troops.toLocaleString('en-US')}　<span style="opacity:.7">${ST_ZH[s.st]||''}</span></div>` +
+      `<div class="card-row">兵種　<b>${arms[0]}</b></div>` +
+      `<div class="card-row" style="opacity:.78;font-size:12px">${arms[1]}</div>` +
+      `<div class="card-row">家紋　${CREST_NAME[a.crest] || a.crest}</div>`;
     el.card.classList.add('show');
   }
 
