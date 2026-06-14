@@ -4,7 +4,7 @@
  *   主迴圈推進戰場時刻並驅動：部隊內插、幟旗、天氣、特效、自動運鏡、UI。
  * ======================================================================= */
 (function (S) {
-  S.player = { time: -10, playing: true, speed: 0.35, program: true, T_START: -10, T_END: 14 };
+  S.player = { time: -10, playing: true, speed: 0.35, program: true, T_START: -10, T_END: 16 };
 
   function phase(t) {
     if (t < -10)  return '大垣對峙 · 兩軍集結';

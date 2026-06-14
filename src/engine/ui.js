@@ -127,9 +127,10 @@ window.SEKI = window.SEKI || {};
       const pct = timeToPos(e.t) * 100;       // 非線性:決戰節點自然散開
       if (pct < -0.5 || pct > 100.5) return '';
       const hot = /★/.test(e.zh) ? ' hot' : '';
+      const conj = e.conj ? ' conj' : '';     // 史料較弱/軍記:暗色節點
       const title = e.zh.replace('★', '').trim();
       const left = Math.max(0, Math.min(100, pct));
-      return `<div class="mk${hot}" data-t="${e.t}" style="left:${left}%">` +
+      return `<div class="mk${hot}${conj}" data-t="${e.t}" style="left:${left}%">` +
              `<span class="mk-dot"></span><span class="mk-lbl">${title}</span></div>`;
     }).filter(Boolean).join('');
     el.markers.querySelectorAll('.mk').forEach(m => {
