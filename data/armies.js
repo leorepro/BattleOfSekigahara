@@ -57,10 +57,8 @@ SEKI.armies = [
   { id:"otani", name_zh:"大谷吉繼", name_ja:"大谷吉継", side:'west', crest:'mukaiCho', kind:'infantry',
     title:"西軍 · 山中 · 松尾山麓", troops:5000,
     track:[
-      { t:-16, lng:136.612, lat:35.358, s:5000, st:'hold' },
-      { t:-3,  lng:136.612, lat:35.358, s:5000, st:'hold' },
-      { t:2,   lng:136.4560,lat:35.3540,s:5000, st:'march' },
-      { t:6,   lng:136.4560,lat:35.3540,s:5000, st:'hold' },
+      { t:-16, lng:136.4500, lat:35.3530, s:5000, st:'hold' },   // 自敦賀來,早布陣山中(關原西端)
+      { t:6,   lng:136.4545, lat:35.3535, s:5000, st:'hold' },
       { t:8,   lng:136.4560, lat:35.3540, s:5000, st:'hold' },
       { t:12,  lng:136.4565, lat:35.3545, s:5000, st:'attack' },
       { t:12.8,lng:136.4560, lat:35.3548, s:2500, st:'rout' },
