@@ -67,6 +67,13 @@ SEKI.storyboard = [
     commanders:[{zh:"吉川廣家",en:"Kikkawa Hiroie"},{zh:"毛利秀元",en:"Mōri Hidemoto"}],
     focus:["kikkawa","mori"], side:"west" },
 
+  { t:11.0, hold:12, cam:{lng:136.458, lat:35.355, dist:100, az:25, el:42, orbit:0.7},
+    dateLabel:"巳刻過半", title_zh:"西軍右翼死守 · 大谷防藤堂・京極",
+    title_en:"Ōtani Holds the Right Flank",
+    narration_zh:"大谷吉繼於藤川台死守，正面擊退藤堂高虎、京極高知的猛攻。病軀坐輿的他早已洞悉松尾山小早川的異心，特意分兵布陣面向松尾山——這道防備，將是西軍最後的支柱。",
+    commanders:[{zh:"大谷吉繼",en:"Ōtani Yoshitsugu"},{zh:"藤堂高虎",en:"Tōdō Takatora"}],
+    focus:["otani","todo","kyogoku"], side:"both" },
+
   { t:11.4, hold:12, cam:{lng:136.450, lat:35.349, dist:120, az:160, el:46, orbit:0.6},
     dateLabel:"午刻將近", title_zh:"松尾山上 · 小早川按兵不動",
     title_en:"Kobayakawa Hesitates on Matsuoyama",

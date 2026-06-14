@@ -184,6 +184,37 @@ window.SEKI = window.SEKI || {};
       disc(ctx, cx, cy - R * 0.62, R * 0.12);
       disc(ctx, cx, cy + R * 0.62, R * 0.12);
     },
+    /* 藤堂 — 蔦（藤蔓葉） */
+    tsuta(ctx, cx, cy, R) {
+      ctx.save(); ctx.translate(cx, cy + R * 0.1);
+      ctx.beginPath();
+      ctx.moveTo(0, -R * 0.95);                                   // 中裂瓣（上）
+      ctx.bezierCurveTo(R * 0.5, -R * 0.85, R * 0.95, -R * 0.5, R * 0.85, -R * 0.05);
+      ctx.bezierCurveTo(R * 0.8, R * 0.25, R * 0.5, R * 0.3, R * 0.42, R * 0.55); // 右側裂瓣
+      ctx.bezierCurveTo(R * 0.3, R * 0.8, R * 0.12, R * 0.85, 0, R * 0.72);
+      ctx.bezierCurveTo(-R * 0.12, R * 0.85, -R * 0.3, R * 0.8, -R * 0.42, R * 0.55);
+      ctx.bezierCurveTo(-R * 0.5, R * 0.3, -R * 0.8, R * 0.25, -R * 0.85, -R * 0.05);
+      ctx.bezierCurveTo(-R * 0.95, -R * 0.5, -R * 0.5, -R * 0.85, 0, -R * 0.95);
+      ctx.fill();
+      ctx.save(); ctx.globalCompositeOperation = 'destination-out';  // 葉脈
+      ctx.lineWidth = R * 0.08; ctx.beginPath();
+      ctx.moveTo(0, R * 0.6); ctx.lineTo(0, -R * 0.7);
+      ctx.moveTo(0, -R * 0.2); ctx.lineTo(R * 0.5, -R * 0.4);
+      ctx.moveTo(0, -R * 0.2); ctx.lineTo(-R * 0.5, -R * 0.4); ctx.stroke();
+      ctx.restore();
+      ctx.restore();
+    },
+    /* 京極 — 平四つ目結（四方框「目」） */
+    yotsumeyui(ctx, cx, cy, R) {
+      const s = R * 0.62, off = R * 0.36;
+      [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([sx, sy]) => {
+        const x = cx + sx * off, y = cy + sy * off;
+        ctx.fillRect(x - s / 2, y - s / 2, s, s);
+        ctx.save(); ctx.globalCompositeOperation = 'destination-out';
+        ctx.fillRect(x - s * 0.22, y - s * 0.22, s * 0.44, s * 0.44);  // 中央挖空成「目」
+        ctx.restore();
+      });
+    },
     /* 大谷 — 対い蝶（蝴蝶紋，簡化單蝶） */
     mukaiCho(ctx, cx, cy, R) {
       bar(ctx, cx, cy, R * 0.16, R * 1.1);                     // 身

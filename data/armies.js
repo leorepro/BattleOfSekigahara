@@ -168,4 +168,26 @@ SEKI.armies = [
       { t:10,  lng:136.4655, lat:35.3715, s:5000, st:'attack' },
       { t:14,  lng:136.4615, lat:35.3745, s:4600, st:'attack' },
     ]},
+  { name_zh:"藤堂高虎", name_ja:"藤堂高虎", side:'east', crest:'tsuta', kind:'infantry',
+    title:"東軍 · 中山道 · 對大谷", troops:2500,
+    track:[
+      { t:-16, lng:136.586, lat:35.387, s:2500, st:'hold' },
+      { t:0,   lng:136.586, lat:35.387, s:2500, st:'hold' },
+      { t:6,   lng:136.4660,lat:35.3580,s:2500, st:'march' },
+      { t:8,   lng:136.4660, lat:35.3580, s:2500, st:'hold' },
+      { t:10,  lng:136.4610, lat:35.3560, s:2500, st:'attack' },  // 攻大谷
+      { t:12.5,lng:136.4585, lat:35.3550, s:2500, st:'attack' },
+      { t:14,  lng:136.4560, lat:35.3545, s:2500, st:'attack' },
+    ]},
+  { name_zh:"京極高知", name_ja:"京極高知", side:'east', crest:'yotsumeyui', kind:'infantry',
+    title:"東軍 · 藤堂隊旁 · 對大谷", troops:3000,
+    track:[
+      { t:-16, lng:136.587, lat:35.386, s:3000, st:'hold' },
+      { t:0,   lng:136.587, lat:35.386, s:3000, st:'hold' },
+      { t:6,   lng:136.4690,lat:35.3570,s:3000, st:'march' },
+      { t:8,   lng:136.4690, lat:35.3570, s:3000, st:'hold' },
+      { t:10,  lng:136.4630, lat:35.3555, s:3000, st:'attack' },
+      { t:12.5,lng:136.4600, lat:35.3548, s:3000, st:'attack' },
+      { t:14,  lng:136.4575, lat:35.3542, s:3000, st:'attack' },
+    ]},
 ];
