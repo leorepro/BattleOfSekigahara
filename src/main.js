@@ -45,8 +45,10 @@
       const dt = Math.min(eng.clock.getDelta(), 0.1);
       const elapsed = eng.clock.elapsedTime;
 
-      if (S.player.playing) {
-        S.player.time += dt * S.player.speed;
+      if (S.player.program) {
+        S.updateStoryboard(dt);                    // 程式模式：storyboard 擁有時刻
+      } else if (S.player.playing) {
+        S.player.time += dt * S.player.speed;       // 自由模式：依倍速推進
         if (S.player.time > S.player.T_END) S.player.time = S.player.T_START;
       }
       const t = S.player.time;
@@ -56,7 +58,6 @@
       S.waveFlags(elapsed);
       S.updateWeather(t, elapsed);
       S.updateEffects(t, dt);
-      S.updateStoryboard(t, dt);
       S.updateUI(t);
 
       clockEl.textContent = clockJP(t);

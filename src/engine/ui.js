@@ -15,14 +15,20 @@ window.SEKI = window.SEKI || {};
     const hh = Math.floor(t), mm = Math.floor((t - hh) * 60);
     return `${n} ${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
   }
-  function captionAt(t) {
-    const sb = S.storyboard; let cur = sb[0];
-    for (const s of sb) if (t >= s.t) cur = s; else break;
-    return cur;
-  }
+  // 由 storyboard 推進時呼叫，更新底部事件卡
+  S.setEventCard = function (shot) {
+    if (!el.caption || !shot) return;
+    el.evDate.textContent = shot.dateLabel || '';
+    el.evTitle.textContent = shot.title_zh || '';
+    el.evTitleEn.textContent = shot.title_en || '';
+    el.evNarr.textContent = shot.narration_zh || '';
+    el.evCmd.innerHTML = (shot.commanders || []).map(c =>
+      `<span class="chip">${c.zh}<span class="en"> ${c.en}</span></span>`).join('');
+    el.caption.classList.toggle('hot', /★/.test(shot.title_zh || ''));
+  };
 
   S.initUI = function () {
-    const ids = ['caption','capMain','capSub','btnPlay','scrub','spd','btnMode',
+    const ids = ['caption','evDate','evTitle','evTitleEn','evNarr','evCmd','btnPlay','scrub','spd','btnMode',
       'tlabel','barEast','barWest','valEast','valWest','card','cardBody','cardClose','btnAudio','bgm'];
     ids.forEach(id => el[id] = document.getElementById(id));
 
@@ -88,11 +94,6 @@ window.SEKI = window.SEKI || {};
     if (!scrubbing && el.scrub) el.scrub.value = t;
     if (el.tlabel) el.tlabel.textContent = timeStr(t);
 
-    const cap = captionAt(t);
-    if (cap && el.capMain) {
-      el.capMain.textContent = cap.cap; el.capSub.textContent = cap.sub;
-      el.caption.classList.toggle('hot', /★/.test(cap.cap));
-    }
     const ss = S.sideStrength();
     if (el.barEast) {
       el.barEast.style.width = Math.max(0, Math.min(100, ss.east / eastMax * 100)) + '%';
