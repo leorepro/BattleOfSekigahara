@@ -65,7 +65,7 @@ SEKI.armies = [
       { t:13.2,lng:136.4560, lat:35.3548, s:0, st:'rout' },
     ]},
   { id:"kobayakawa", name_zh:"小早川秀秋", name_ja:"小早川秀秋", side:'west', crest:'chigaiKama', kind:'infantry',
-    title:"松尾山 · 正午倒戈", troops:15600,
+    title:"松尾山 · 正午倒戈", troops:15600, defectAt:12,
     track:[
       { t:-16, lng:136.4480,lat:35.3470,s:15600, st:'hold' },    // 九月十四日已占松尾山
       { t:6,   lng:136.4480,lat:35.3470,s:15600, st:'hold' },
@@ -73,6 +73,14 @@ SEKI.armies = [
       { t:11.9,lng:136.4480, lat:35.3470, s:15600, st:'hold' },
       { t:12,  lng:136.4500, lat:35.3490, s:15600, st:'attack' },
       { t:12.8,lng:136.4555, lat:35.3535, s:15600, st:'attack' },
+    ]},
+  { id:"wakisaka", name_zh:"脇坂安治", name_ja:"脇坂安治", side:'west', crest:'wachigai', kind:'matchlock',
+    title:"松尾山麓 · 隨小早川倒戈", troops:1000, defectAt:12,
+    track:[
+      { t:-16, lng:136.4520, lat:35.3520, s:1000, st:'hold' },   // 松尾山麓(脇坂・小川・朽木・赤座)
+      { t:11.9,lng:136.4520, lat:35.3520, s:1000, st:'hold' },
+      { t:12,  lng:136.4540, lat:35.3530, s:1000, st:'attack' }, // 與小早川同時反叛,攻大谷
+      { t:12.8,lng:136.4560, lat:35.3545, s:1000, st:'attack' },
     ]},
   { id:"mori", name_zh:"毛利秀元", name_ja:"毛利秀元", side:'west', crest:'ichimonjiMitsuboshi', kind:'infantry',
     title:"南宮山 · 按兵不動", troops:15000,

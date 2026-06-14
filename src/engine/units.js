@@ -126,9 +126,13 @@ window.SEKI = window.SEKI || {};
       const emph = isDim ? 0.3 : 1;
       u.fmat.opacity = op * emph;
       u.pole.material.transparent = true; u.pole.material.opacity = op * emph;
+      // 倒戈視覺：金色旗環 + 「⚡裏切」標示
+      const defected = u.data.defectAt != null && t >= u.data.defectAt;
+      u.ring.material.color.setHex(defected ? 0xffc23a : (u.data.side === 'east' ? EAST : WEST));
       u.ring.material.opacity = (dead ? 0 : (s.st === 'attack' ? 0.8 : 0.5)) * emph;
-      u.troopsEl.innerHTML = dead ? `<span style="opacity:.7">潰滅</span>`
-        : `${fmt(s.s)} <span style="opacity:.65">${ST_LABEL[s.st] || ''}</span>`;
+      u.troopsEl.innerHTML = (dead ? `<span style="opacity:.7">潰滅</span>`
+        : `${fmt(s.s)} <span style="opacity:.65">${ST_LABEL[s.st] || ''}</span>`)
+        + (defected && !dead ? ` <span style="color:#ffd24a">⚡裏切</span>` : '');
       u.el.style.opacity = (dead ? 0.45 : 1) * (isDim ? 0.35 : 1);
       u.el.classList.toggle('focus', isFocus);
       u.el.classList.toggle('dim', isDim);

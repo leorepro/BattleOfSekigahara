@@ -184,6 +184,11 @@ window.SEKI = window.SEKI || {};
       disc(ctx, cx, cy - R * 0.62, R * 0.12);
       disc(ctx, cx, cy + R * 0.62, R * 0.12);
     },
+    /* 脇坂 — 輪違い（雙環交疊） */
+    wachigai(ctx, cx, cy, R) {
+      ring(ctx, cx - R * 0.34, cy, R * 0.6, R * 0.14);
+      ring(ctx, cx + R * 0.34, cy, R * 0.6, R * 0.14);
+    },
     /* 長宗我部 — 七つ片喰（酢漿草·三心葉） */
     katabami(ctx, cx, cy, R) {
       for (let i = 0; i < 3; i++) {

@@ -92,7 +92,7 @@ SEKI.storyboard = [
     title_en:"Kobayakawa's Betrayal — The Tide Turns",
     narration_zh:"小早川秀秋終於下松尾山倒戈，一萬五千之眾殺向友軍大谷吉繼。脇坂、朽木等四將亦隨之反叛，西軍右翼瞬間崩解。",
     commanders:[{zh:"小早川秀秋",en:"Kobayakawa Hideaki"},{zh:"大谷吉繼",en:"Ōtani Yoshitsugu"}],
-    focus:["kobayakawa","otani"], side:"both" },
+    focus:["kobayakawa","otani","wakisaka"], side:"both" },
 
   { t:12.8, hold:12, cam:{lng:136.456, lat:35.354, dist:82, az:96, el:50, orbit:0.8},
     dateLabel:"未刻將近", title_zh:"大谷吉繼力戰自盡",
