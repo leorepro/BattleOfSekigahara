@@ -35,7 +35,7 @@ window.SEKI = window.SEKI || {};
   S.initUI = function () {
     const ids = ['caption','evDate','evTitle','evTitleEn','evNarr','evCmd','btnPlay','scrub','spd','btnMode',
       'tlabel','barEast','barWest','valEast','valWest','card','cardBody','cardClose','btnAudio','bgm',
-      'btnNotes','notes','notesBody','notesClose'];
+      'btnNotes','notes','notesBody','notesClose','roster'];
     ids.forEach(id => el[id] = document.getElementById(id));
 
     const init = S.sideStrength();
@@ -133,9 +133,43 @@ window.SEKI = window.SEKI || {};
     el.card.classList.add('show');
   }
 
+  function nf(n) { return Math.round(Math.max(n, 0)).toLocaleString('en-US'); }
+  function sideOf(u) { return ((u.data.side === 'east') || u.defected) ? 'e' : 'w'; }
+  let _rframe = 0;
+  function updateRoster(t) {
+    if (!el.roster) return;
+    const pairs = [];
+    for (const e of (S.engagements || [])) {
+      const A = S.unitById(e.a), B = S.unitById(e.b); if (!A || !B) continue;
+      const sA = A.cur ? A.cur.s : A.data.troops, sB = B.cur ? B.cur.s : B.data.troops;
+      if (t >= e.from && t <= e.to && sA > 1 && sB > 1) pairs.push({ A, B, sA, sB });
+    }
+    const ss = S.sideStrength();
+    const eng = new Set(); pairs.forEach(p => { eng.add(p.A.data.id); eng.add(p.B.data.id); });
+    let eE = 0, eW = 0;
+    eng.forEach(id => { const u = S.unitById(id); const s = Math.max(u.cur ? u.cur.s : u.data.troops, 0);
+      if (sideOf(u) === 'e') eE += s; else eW += s; });
+    let h = `<div class="rs-tot"><span class="e">東軍 ${nf(ss.east)}</span> · <span class="w">西軍 ${nf(ss.west)}</span></div>`;
+    h += `<div class="rs-row" style="opacity:.85"><span>交戰投入</span><span class="s"><span class="e">${nf(eE)}</span> · <span class="w">${nf(eW)}</span></span></div>`;
+    if (pairs.length) {
+      h += `<div class="rs-sec">⚔ 交戰中（誰打誰）</div>`;
+      for (const p of pairs)
+        h += `<div class="rs-pair"><span class="${sideOf(p.A)}">${p.A.data.name_zh} <span class="s">${nf(p.sA)}</span></span>` +
+             `<span class="vs">⚔</span><span class="${sideOf(p.B)}">${p.B.data.name_zh} <span class="s">${nf(p.sB)}</span></span></div>`;
+    }
+    h += `<div class="rs-sec">全軍兵力（依多寡）</div>`;
+    const all = S.armies.map(a => { const u = S.unitById(a.id);
+      return { a, s: Math.round(u && u.cur ? u.cur.s : a.troops), e: sideOf(u || { data: a }) }; })
+      .filter(x => x.s > 0).sort((x, y) => y.s - x.s);
+    for (const it of all)
+      h += `<div class="rs-row"><span class="${it.e}">${it.a.name_zh}</span><span class="s">${nf(it.s)}</span></div>`;
+    el.roster.innerHTML = h;
+  }
+
   S.updateUI = function (t) {
     if (!scrubbing && el.scrub) el.scrub.value = t;
     if (el.tlabel) el.tlabel.textContent = timeStr(t);
+    if ((++_rframe % 12) === 0) updateRoster(t);
 
     const ss = S.sideStrength();
     if (el.barEast) {
