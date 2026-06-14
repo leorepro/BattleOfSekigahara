@@ -7,6 +7,8 @@ window.SEKI = window.SEKI || {};
 
 (function (S) {
   const D2R = Math.PI / 180;
+  // 聚焦戰鬥過程:決戰鏡頭(t≥7.6)停留更久,戰前背景短一點;整段約 5 分鐘
+  function holdOf(shot) { return shot.hold * (shot.t >= 7.6 ? 1.6 : 0.7); }
   const _t = new THREE.Vector3(), _p = new THREE.Vector3();
   let idx = 0, phase = 'tween', shotTimer = 0, tweenTimer = 0, az = 0;
 
@@ -56,7 +58,7 @@ window.SEKI = window.SEKI || {};
       cam.position.lerp(want, 1 - Math.exp(-dt * 4));
       eng.controls.target.lerp(tgt, 1 - Math.exp(-dt * 4));
       S.player.time = cur.t;
-      if (shotTimer >= cur.hold && S.player.playing) {
+      if (shotTimer >= holdOf(cur) && S.player.playing) {
         idx = (idx + 1) % sb.length; phase = 'tween'; tweenTimer = 0;
       }
     }

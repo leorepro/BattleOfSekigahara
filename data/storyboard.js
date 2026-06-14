@@ -12,15 +12,15 @@ window.SEKI = window.SEKI || {};
 
 SEKI.storyboard = [
   /* ---------------- 戰略階段（戰前一週） ---------------- */
-  { t:-16, hold:13, cam:{lng:136.610, lat:35.366, dist:300, az:35, el:36, orbit:0.5},
-    dateLabel:"慶長五年九月 · 美濃", title_zh:"大垣對峙 · 兩軍集結",
+  { t:-10, hold:13, cam:{lng:136.610, lat:35.366, dist:300, az:35, el:36, orbit:0.5},
+    dateLabel:"慶長五年九月十四日 · 美濃", title_zh:"大垣對峙 · 兩軍集結",
     title_en:"The Standoff at Ōgaki",
     narration_zh:"石田三成以大垣城為前線據點，集結西軍；德川家康率東軍主力進駐西方的赤坂、岡山，兩軍隔濃尾平原對峙。八月底岐阜城已先陷落，西軍戰略陷於被動。",
     commanders:[{zh:"石田三成",en:"Ishida Mitsunari"},{zh:"德川家康",en:"Tokugawa Ieyasu"}],
     focus:["ishida","tokugawa"], side:"both" },
 
-  { t:-14, hold:11, cam:{lng:136.585, lat:35.389, dist:205, az:65, el:34, orbit:0.5},
-    dateLabel:"九月 · 戰略背景", title_zh:"秀忠遲滯 · 真田封路",
+  { t:-9, hold:11, cam:{lng:136.585, lat:35.389, dist:205, az:65, el:34, orbit:0.5},
+    dateLabel:"九月十四日 · 戰略背景", title_zh:"秀忠遲滯 · 真田封路",
     title_en:"Hidetada Delayed at Ueda",
     narration_zh:"家康嫡子德川秀忠率三萬八千主力沿中山道南下，卻被信濃上田城的真田昌幸父子牽制阻滯，未能趕赴關原。家康手中可用之兵驟減——這場「天下分け目」之戰，竟是以偏師決勝。",
     commanders:[{zh:"德川秀忠",en:"Tokugawa Hidetada"},{zh:"真田昌幸",en:"Sanada Masayuki"}],

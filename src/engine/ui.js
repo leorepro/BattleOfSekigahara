@@ -35,7 +35,7 @@ window.SEKI = window.SEKI || {};
   S.initUI = function () {
     const ids = ['caption','evDate','evTitle','evTitleEn','evNarr','evCmd','btnPlay','scrub','spd','btnMode',
       'tlabel','barEast','barWest','valEast','valWest','balLabel','card','cardBody','cardClose','btnAudio','bgm',
-      'btnNotes','notes','notesBody','notesClose','roster','btnRoster'];
+      'btnNotes','notes','notesBody','notesClose','roster','btnRoster','toast'];
     ids.forEach(id => el[id] = document.getElementById(id));
 
     const init = S.sideStrength();
@@ -92,6 +92,23 @@ window.SEKI = window.SEKI || {};
   function syncPlay() {
     if (el.btnPlay) el.btnPlay.textContent = S.player.playing ? '⏸' : '▶';
   }
+
+  // 關鍵事件提示橫幅
+  let _toastTimer = null, _lastEvT = -999;
+  S.showToast = function (text) {
+    if (!el.toast) return;
+    el.toast.textContent = text; el.toast.classList.add('show');
+    if (_toastTimer) clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(() => el.toast.classList.remove('show'), 3400);
+  };
+  S.updateEvents = function (t) {
+    const evs = S.events; if (!evs) return;
+    if (t < _lastEvT - 0.2) { _lastEvT = t; return; }      // 倒帶/循環:重置不觸發
+    if (t > _lastEvT) {
+      for (const e of evs) if (e.t > _lastEvT && e.t <= t) S.showToast(e.zh);
+      _lastEvT = t;
+    }
+  };
 
   function buildNotes() {
     const s = S.sources; if (!s || !el.notesBody) return;

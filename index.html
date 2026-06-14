@@ -66,6 +66,15 @@
   #loading{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
             background:#0a0d12; z-index:10; transition:opacity .8s; font-size:15px; letter-spacing:3px; }
 
+  /* 關鍵事件提示橫幅 */
+  #toast{ position:fixed; top:52px; left:50%; transform:translate(-50%,-8px); z-index:7;
+          pointer-events:none; opacity:0; transition:opacity .35s, transform .35s;
+          background:linear-gradient(90deg,rgba(20,16,10,.2),rgba(40,30,14,.92),rgba(20,16,10,.2));
+          padding:7px 26px; border-radius:5px; font-size:16px; font-weight:700; letter-spacing:2px;
+          color:#ffe6a8; text-shadow:0 1px 6px #000,0 0 10px rgba(255,160,0,.5);
+          border-top:1px solid rgba(255,200,90,.4); border-bottom:1px solid rgba(255,200,90,.4); }
+  #toast.show{ opacity:1; transform:translate(-50%,0); }
+
   /* 事件卡（旁白） */
   #caption{ position:fixed; left:50%; transform:translateX(-50%); bottom:104px; width:min(820px,86vw);
             text-align:center; pointer-events:none; transition:opacity .5s; }
@@ -236,6 +245,9 @@
     <div class="bal-track"><i id="barEast"></i><i id="barWest"></i></div>
   </div>
 
+  <!-- 關鍵事件提示橫幅 -->
+  <div id="toast"></div>
+
   <!-- 事件卡（旁白） -->
   <div id="caption">
     <div id="evDate"></div>
@@ -282,6 +294,7 @@
   <script src="data/storyboard.js"></script>
   <script src="data/sources.js"></script>
   <script src="data/engagements.js"></script>
+  <script src="data/events.js"></script>
 
   <!-- 引擎（依序載入，掛到全域 SEKI 命名空間） -->
   <script src="src/engine/scene.js"></script>
