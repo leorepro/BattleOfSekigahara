@@ -58,6 +58,14 @@ SEKI.geography = {
     { name_zh:"藤川", name_ja:"藤川", type:"river", lng:136.4560, lat:35.3640, h:120, note:"關原盆地中央小河，西軍各隊沿河布陣" },
     { name_zh:"杭瀬川", name_ja:"杭瀬川", type:"river", lng:136.5972, lat:35.3480, h:10, note:"大垣城西，決戰前一日「杭瀬川之戰」西軍小勝" },
 
+    /* --- 擴大範圍周邊地標（山・川・平原） ----------------------- */
+    { name_zh:"伊吹山", name_ja:"伊吹山", type:"mountain", lng:136.4136, lat:35.4185, h:1377, note:"關原西北最高峰（標高1377m），近江・美濃國界" },
+    { name_zh:"池田山", name_ja:"池田山", type:"mountain", lng:136.5494, lat:35.4319, h:924, note:"南宮山北方，濃尾平原西緣" },
+    { name_zh:"養老山", name_ja:"養老山", type:"mountain", lng:136.5080, lat:35.2950, h:859, note:"關原南方養老山地" },
+    { name_zh:"揖斐川", name_ja:"揖斐川", type:"river", lng:136.6550, lat:35.3300, h:5, note:"濃尾平原西側大河，流經大垣東" },
+    { name_zh:"長良川", name_ja:"長良川", type:"river", lng:136.7400, lat:35.4050, h:8, note:"流經岐阜的大河" },
+    { name_zh:"木曽川", name_ja:"木曽川", type:"river", lng:136.7900, lat:35.3550, h:8, note:"濃尾平原東側大河，岐阜城之戰東軍渡河處" },
+
     /* --- 街道代表點 --------------------------------------------- */
     { name_zh:"中山道", name_ja:"中山道", type:"road", lng:136.4660, lat:35.3630, h:125, note:"江戶—京都幹道，貫穿關原盆地，東軍主進軍路" },
     { name_zh:"北國街道", name_ja:"北国街道", type:"road", lng:136.4575, lat:35.3730, h:135, note:"笹尾山北側分歧，通往北陸，三成扼此要衝" },

@@ -12,14 +12,14 @@ window.SEKI = window.SEKI || {};
 
 SEKI.storyboard = [
   /* ---------------- 戰略階段（戰前一週） ---------------- */
-  { t:-10, hold:13, cam:{lng:136.610, lat:35.366, dist:300, az:35, el:36, orbit:0.5},
+  { t:-10, hold:13, cam:{lng:136.560, lat:35.366, dist:195, az:35, el:30, orbit:0.5},
     dateLabel:"慶長五年九月十四日 · 美濃", title_zh:"大垣對峙 · 兩軍集結",
     title_en:"The Standoff at Ōgaki",
     narration_zh:"石田三成以大垣城為前線據點，集結西軍；德川家康率東軍主力進駐西方的赤坂、岡山，兩軍隔濃尾平原對峙。八月底岐阜城已先陷落，西軍戰略陷於被動。",
     commanders:[{zh:"石田三成",en:"Ishida Mitsunari"},{zh:"德川家康",en:"Tokugawa Ieyasu"}],
     focus:["ishida","tokugawa"], side:"both" },
 
-  { t:-9, hold:11, cam:{lng:136.585, lat:35.389, dist:205, az:65, el:34, orbit:0.5},
+  { t:-9, hold:11, cam:{lng:136.585, lat:35.389, dist:150, az:65, el:30, orbit:0.5},
     dateLabel:"九月十四日 · 戰略背景", title_zh:"秀忠遲滯 · 真田封路",
     title_en:"Hidetada Delayed at Ueda",
     narration_zh:"家康嫡子德川秀忠率三萬八千主力沿中山道南下，卻被信濃上田城的真田昌幸父子牽制阻滯，未能趕赴關原。家康手中可用之兵驟減——這場「天下分け目」之戰，竟是以偏師決勝。",
@@ -33,14 +33,14 @@ SEKI.storyboard = [
     commanders:[{zh:"島左近",en:"Shima Sakon"},{zh:"明石全登",en:"Akashi Takenori"}],
     focus:["ishida"], side:"west" },
 
-  { t:-3, hold:13, cam:{lng:136.545, lat:35.360, dist:400, az:20, el:30, orbit:0.4},
+  { t:-3, hold:13, cam:{lng:136.520, lat:35.362, dist:255, az:20, el:27, orbit:0.4},
     dateLabel:"九月十四日 · 夜 · 雨", title_zh:"雨夜強行軍 · 直奔關原",
     title_en:"The Rainy Night March to Sekigahara",
     narration_zh:"是夜西軍冒雨自大垣城出發，沿中山道強行軍十餘里，搶占關原盆地的笹尾山、天滿山一線，封鎖中山道與北國街道咽喉；東軍隨後跟進。決戰之勢就此成形。",
     commanders:[{zh:"石田三成",en:"Ishida Mitsunari"}], focus:["ishida","ukita","shimazu"], side:"west" },
 
   /* ---------------- 決戰階段（九月十五日） ---------------- */
-  { t:7.6, hold:11, cam:{lng:136.466, lat:35.362, dist:230, az:18, el:34, orbit:0.6},
+  { t:7.6, hold:11, cam:{lng:136.466, lat:35.362, dist:165, az:18, el:30, orbit:0.6},
     dateLabel:"慶長五年九月十五日 · 拂曉", title_zh:"關原布陣 · 晨霧瀰漫",
     title_en:"Dawn Deployment at Sekigahara",
     narration_zh:"冒雨夜行軍的西軍搶先抵達關原，沿笹尾山—天滿山—松尾山布成包圍之勢，封鎖中山道；東軍自桃配山方向跟進。濃霧蔽野，兩軍對峙。",
@@ -113,13 +113,13 @@ SEKI.storyboard = [
     narration_zh:"西軍總崩，孤立的島津義弘僅千餘人，竟選擇向家康本陣正面突圍，穿越東軍陣中向伊勢街道退卻——史稱「島津の退き口」，以慘烈犧牲換得主將生還。",
     commanders:[{zh:"島津義弘",en:"Shimazu Yoshihiro"}], focus:["shimazu","tokugawa"], side:"west" },
 
-  { t:14.0, hold:12, cam:{lng:136.466, lat:35.364, dist:215, az:14, el:34, orbit:0.5},
+  { t:14.0, hold:12, cam:{lng:136.466, lat:35.364, dist:165, az:14, el:30, orbit:0.5},
     dateLabel:"未刻 · 14:00 · 戰終", title_zh:"西軍瓦解 · 天下歸於德川",
     title_en:"The West Army Collapses — Tokugawa Triumphant",
     narration_zh:"開戰僅約六小時，西軍全面崩潰。此役奠定德川家康霸權，三年後開創江戶幕府，日本進入二百六十年太平。",
     commanders:[{zh:"德川家康",en:"Tokugawa Ieyasu"}], focus:["tokugawa"], side:"east" },
 
-  { t:14.5, hold:14, cam:{lng:136.466, lat:35.366, dist:265, az:42, el:40, orbit:0.4},
+  { t:14.5, hold:14, cam:{lng:136.466, lat:35.366, dist:190, az:42, el:34, orbit:0.4},
     dateLabel:"戰後 · Aftermath", title_zh:"戰後 · 天下歸德川",
     title_en:"Aftermath — The Realm Falls to Tokugawa",
     narration_zh:"石田三成、小西行長、安國寺惠瓊被捕，於京都六条河原處刑；西軍諸將改易減封，居城佐和山旋即陷落。家康盡攬天下實權，慶長八年（1603）受封征夷大將軍，開創江戶幕府——日本自此進入二百六十餘年太平。",

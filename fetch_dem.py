@@ -2,10 +2,10 @@
 """抓取關原一帶 SRTM 30m 高程，存成 data/heightmap.js"""
 import json, time, urllib.request, urllib.parse, sys
 
-# 擴大涵蓋 關原盆地 ~ 大垣城（東),以呈現戰前戰略調動與雨夜強行軍
-LNG_MIN, LNG_MAX = 136.420, 136.660   # 西:關原西緣  東:大垣城以東
-LAT_MIN, LAT_MAX = 35.320, 35.420     # 南:南宮山    北:笹尾山/赤坂
-COLS, ROWS = 97, 41                    # 約 230m 解析度
+# 大幅擴大顯示範圍(約 5 倍面積):關原以西 ~ 岐阜以東、南北各延伸,填滿畫面
+LNG_MIN, LNG_MAX = 136.320, 136.800   # 西:關原以西   東:岐阜城以東
+LAT_MIN, LAT_MAX = 35.240, 35.480     # 南北各延伸
+COLS, ROWS = 161, 99                   # 約 270m 解析度(更大範圍)
 API = "https://api.opentopodata.org/v1/srtm30m"
 
 # 由南到北(row 0 = LAT_MIN)、由西到東(col 0 = LNG_MIN)建格點
