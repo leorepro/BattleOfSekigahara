@@ -311,8 +311,8 @@ window.SEKI = window.SEKI || {};
   };
 
   /* ---- 幟旗材質：陣營色底 + 白色家紋 ------------------------------ */
-  const EAST = ['#5b93ff', '#1f4fd6'];  // 東軍 藍 漸層
-  const WEST = ['#ff6a5b', '#cc1f1f'];  // 西軍 紅 漸層
+  const EAST = ['#3a6ae8', '#10288f'];  // 軍旗 藍 漸層（加深 + 高彩度）
+  const WEST = ['#e23529', '#8f0c0c'];  // 軍旗 紅 漸層（加深 + 高彩度）
   const _cache = {};
 
   S.flagTexture = function (crestKey, side) {

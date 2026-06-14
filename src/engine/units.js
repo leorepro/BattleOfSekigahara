@@ -9,7 +9,7 @@
 window.SEKI = window.SEKI || {};
 
 (function (S) {
-  const EAST = 0x3a78ff, WEST = 0xff3b3b;
+  const EAST = 0x1c46d2, WEST = 0xd11418;        // 軍隊色：加深 + 提高彩度（在亮底圖上更突出）
   const FW = 2, FH = 3.2, POLE_H = 8.5;          // 軍旗縮小為陣型上方識別旗
   let _units = [];
   let _focus = null;                       // Set of 聚焦 unit id；null = 全部正常
