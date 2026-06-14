@@ -9,11 +9,12 @@ window.SEKI = window.SEKI || {};
 (function (S) {
   const M_PER_DEG_LAT = 111320;
   const WS = 1 / 60;          // 必須與 scene.js WORLD_SCALE 一致
-  const EXAG = 2.4;           // 垂直誇張，讓山勢更明顯
+  // 垂直誇張：可由 SEKI.config.exag 覆寫（桶狹間丘陵低矮，需更大誇張）
+  function exag() { return (S.config && S.config.exag) || 2.4; }
 
-  // 依真實海拔(公尺)著色
+  // 依真實海拔(公尺)著色；色階可由 SEKI.config.elevStops 覆寫（如低海拔海岸線）
   function colorByElev(e) {
-    const stops = [
+    const stops = (S.config && S.config.elevStops) || [
       [120, 0x586a39], [180, 0x6f7440], [260, 0x7d6e49],
       [360, 0x8a7559], [520, 0x94836b], [900, 0xa99f8c],
     ];
@@ -36,6 +37,7 @@ window.SEKI = window.SEKI || {};
     const mPerDegLng = M_PER_DEG_LAT * Math.cos(o.lat * Math.PI / 180);
     const base = Math.min.apply(null, data);
 
+    const EXAG = exag();
     const sceneY = e => (e - base) * WS * EXAG;
 
     const geo = new THREE.BufferGeometry();
@@ -79,8 +81,11 @@ window.SEKI = window.SEKI || {};
     mesh.receiveShadow = true;
     eng.scene.add(mesh);
 
-    // 貼真實 Sentinel-2 衛星影像（成功後關閉頂點著色，純用衛星紋理）
-    new THREE.TextureLoader().load('assets/terrain/satellite.jpg', tex => {
+    // 貼真實衛星影像（成功後關閉頂點著色，純用衛星紋理）
+    // 貼圖路徑可由 SEKI.config.satelliteTexture 覆寫；設為 null/'' 則純用海拔著色
+    const texPath = (S.config && 'satelliteTexture' in S.config)
+      ? S.config.satelliteTexture : 'assets/terrain/satellite.jpg';
+    if (texPath) new THREE.TextureLoader().load(texPath, tex => {
       tex.encoding = THREE.sRGBEncoding;
       tex.anisotropy = 8;
       mat.map = tex; mat.vertexColors = false; mat.color.set(0xffffff);

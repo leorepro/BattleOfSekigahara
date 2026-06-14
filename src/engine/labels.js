@@ -8,7 +8,7 @@ window.SEKI = window.SEKI || {};
 
 (function (S) {
   // 類型 → 圖示
-  const ICON = { mountain:'▲', hill:'▲', castle:'🏯', shrine:'⛩', battlefield:'⚔',
+  const ICON = { mountain:'▲', hill:'▲', castle:'🏯', fort:'▣', shrine:'⛩', battlefield:'⚔',
                  town:'◉', river:'〜', road:'—', camp:'◆' };
   const MAJOR = { mountain:1, castle:1, battlefield:1 };
   const SKIP  = { camp:1, road:1 };       // 陣跡由軍旗呈現、街道用折線呈現

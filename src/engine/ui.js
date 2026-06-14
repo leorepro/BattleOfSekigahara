@@ -9,15 +9,19 @@ window.SEKI = window.SEKI || {};
   let el = {}, scrubbing = false, raycaster, mouse;
   let eastMax = 1, westMax = 1;
 
-  // 時刻 T（距 10/21 00:00 的小時數）→「九月十四日 戌刻 20:00」
+  // 時刻 T（距基準日 00:00 的小時數）→「九月十四日 戌刻 20:00」
+  // 可由 SEKI.config.fmtTime(t, JIKOKU) 覆寫（如桶狹間用五月十九日）
   const JIKOKU = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
-  S.fmtTime = function (t) {
+  function defaultFmtTime(t) {
     const day = 15 + Math.floor(t / 24);
     const h = ((Math.floor(t) % 24) + 24) % 24;
     const mm = Math.floor(((t % 1) + 1) % 1 * 60);
     const jk = JIKOKU[Math.floor(((h + 1) % 24) / 2)];
     const dayZh = day === 14 ? '十四日' : day === 15 ? '十五日' : `${day}日`;
     return `九月${dayZh} ${jk}刻 ${String(h).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
+  }
+  S.fmtTime = function (t) {
+    return (S.config && S.config.fmtTime) ? S.config.fmtTime(t, JIKOKU) : defaultFmtTime(t);
   };
   function timeStr(t) { return S.fmtTime(t); }
   // 由 storyboard 推進時呼叫，更新底部事件卡
@@ -190,15 +194,19 @@ window.SEKI = window.SEKI || {};
     if (!hits.length) return;
     const u = hits[0].object.userData.unit; if (!u) return;
     const a = u.data, s = u.cur || { s: a.troops, st: 'hold' };
-    const sideZh = a.side === 'east' ? '東軍（德川）' : '西軍（石田）';
-    const arms = KIND_ARMS[a.kind] || KIND_ARMS.infantry;
+    const SN = (S.config && S.config.sideName) || { east:'東軍（德川）', west:'西軍（石田）' };
+    const sideZh = a.side === 'east' ? SN.east : SN.west;
+    const KA = (S.config && S.config.kindArms) || KIND_ARMS;
+    const arms = KA[a.kind] || KA.infantry;
+    const crestNm = (S.config && S.config.crestNames && S.config.crestNames[a.crest])
+      || CREST_NAME[a.crest] || a.crest;
     el.cardBody.innerHTML =
       `<div class="card-name side-${a.side}">${a.name_zh}<span class="ja"> ${a.name_ja}</span></div>` +
       `<div class="card-row">${sideZh} · ${a.title}</div>` +
       `<div class="card-row">兵力　<b>${Math.round(Math.max(s.s,0)).toLocaleString('en-US')}</b> / ${a.troops.toLocaleString('en-US')}　<span style="opacity:.7">${ST_ZH[s.st]||''}</span></div>` +
       `<div class="card-row">兵種　<b>${arms[0]}</b></div>` +
       `<div class="card-row" style="opacity:.78;font-size:12px">${arms[1]}</div>` +
-      `<div class="card-row">家紋　${CREST_NAME[a.crest] || a.crest}</div>`;
+      `<div class="card-row">家紋　${crestNm}</div>`;
     el.card.classList.add('show');
   }
 
@@ -218,7 +226,8 @@ window.SEKI = window.SEKI || {};
     let eE = 0, eW = 0;
     eng.forEach(id => { const u = S.unitById(id); const s = Math.max(u.cur ? u.cur.s : u.data.troops, 0);
       if (sideOf(u) === 'e') eE += s; else eW += s; });
-    let h = `<div class="rs-tot"><span class="e">東軍 ${nf(ss.east)}</span> · <span class="w">西軍 ${nf(ss.west)}</span></div>`;
+    const SS = (S.config && S.config.sideShort) || { east:'東軍', west:'西軍' };
+    let h = `<div class="rs-tot"><span class="e">${SS.east} ${nf(ss.east)}</span> · <span class="w">${SS.west} ${nf(ss.west)}</span></div>`;
     h += `<div class="rs-row" style="opacity:.85"><span>交戰投入</span><span class="s"><span class="e">${nf(eE)}</span> · <span class="w">${nf(eW)}</span></span></div>`;
     if (pairs.length) {
       h += `<div class="rs-sec">⚔ 交戰中（誰打誰）</div>`;
@@ -249,7 +258,8 @@ window.SEKI = window.SEKI || {};
       el.valWest.textContent = nf(ss.west);
       if (el.balLabel) {
         const d = (ss.east - ss.west) / tot;
-        el.balLabel.textContent = Math.abs(d) < 0.08 ? '抗衡' : (d > 0 ? '東軍優勢' : '西軍優勢');
+        const SS = (S.config && S.config.sideShort) || { east:'東軍', west:'西軍' };
+        el.balLabel.textContent = Math.abs(d) < 0.08 ? '抗衡' : (d > 0 ? `${SS.east}優勢` : `${SS.west}優勢`);
       }
     }
   };

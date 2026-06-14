@@ -285,6 +285,29 @@ window.SEKI = window.SEKI || {};
         ctx.restore();
       });
     },
+    /* 織田 — 五瓜に唐花（木瓜紋）：橫長圓角外框 + 內四瓣唐花 */
+    mokkou(ctx, cx, cy, R) {
+      ctx.lineWidth = R * 0.16;
+      const w = R * 1.9, h = R * 1.7, rr = R * 0.55, x0 = cx - w / 2, y0 = cy - h / 2;
+      ctx.beginPath();
+      ctx.moveTo(x0 + rr, y0);
+      ctx.arcTo(x0 + w, y0, x0 + w, y0 + h, rr);
+      ctx.arcTo(x0 + w, y0 + h, x0, y0 + h, rr);
+      ctx.arcTo(x0, y0 + h, x0, y0, rr);
+      ctx.arcTo(x0, y0, x0 + w, y0, rr);
+      ctx.closePath(); ctx.stroke();
+      for (let i = 0; i < 4; i++) {
+        ctx.save(); ctx.translate(cx, cy); ctx.rotate(i * Math.PI / 2);
+        ctx.beginPath(); ctx.ellipse(0, -R * 0.34, R * 0.18, R * 0.3, 0, 0, 7); ctx.fill();
+        ctx.restore();
+      }
+      disc(ctx, cx, cy, R * 0.13);
+    },
+    /* 今川 — 足利二つ引両（兩條粗橫帶） */
+    futatsuhikiryo(ctx, cx, cy, R) {
+      bar(ctx, cx, cy - R * 0.36, R * 1.7, R * 0.3);
+      bar(ctx, cx, cy + R * 0.36, R * 1.7, R * 0.3);
+    },
   };
 
   /* ---- 幟旗材質：陣營色底 + 白色家紋 ------------------------------ */
