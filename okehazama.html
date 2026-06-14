@@ -94,18 +94,15 @@
   /* 事件卡（旁白） */
   #caption{ position:fixed; left:50%; transform:translateX(-50%); bottom:104px; width:min(820px,86vw);
             text-align:center; pointer-events:none; transition:opacity .5s; z-index:2; }
-  /* 螢幕底緣柔和暗角（lower-third）：只壓暗最底邊襯托字，不擋中央戰場 */
-  #lowerfade{ position:fixed; left:0; right:0; bottom:0; height:240px; pointer-events:none; z-index:1;
-            background:linear-gradient(to top, rgba(5,7,11,.80) 0%, rgba(5,7,11,.54) 26%,
-                       rgba(5,7,11,.24) 55%, rgba(5,7,11,0) 100%); }
+  /* 旁白文字：黑色描邊（outline）+ 柔光，無底板，亮底圖上仍清楚 */
   #evDate{ font-size:13px; letter-spacing:4px; color:#e8c87a;
-           text-shadow:0 0 4px #000,0 1px 4px #000,0 0 9px rgba(0,0,0,.92); }
+           text-shadow:-1px -1px 1px #000,1px -1px 1px #000,-1px 1px 1px #000,1px 1px 1px #000,0 0 6px rgba(0,0,0,.9); }
   #evTitle{ font-size:27px; font-weight:700; letter-spacing:3px; margin-top:4px;
-            text-shadow:0 0 5px #000,0 2px 4px #000,0 0 11px rgba(0,0,0,.95),0 0 20px rgba(0,0,0,.8); }
-  #evTitleEn{ font-size:13px; font-style:italic; opacity:.78; letter-spacing:2px; margin-top:2px;
-              text-shadow:0 0 4px #000,0 1px 4px #000,0 0 9px rgba(0,0,0,.92); }
-  #evNarr{ font-size:14px; line-height:1.7; margin-top:10px; opacity:.95; letter-spacing:.5px;
-           text-shadow:0 0 4px #000,0 0 7px #000,0 1px 3px #000,0 0 2px #000; }
+            text-shadow:-1px -1px 1px #000,1px -1px 1px #000,-1px 1px 1px #000,1px 1px 1px #000,0 0 7px #000,0 0 15px rgba(0,0,0,.85); }
+  #evTitleEn{ font-size:13px; font-style:italic; opacity:.8; letter-spacing:2px; margin-top:2px;
+              text-shadow:-1px -1px 1px #000,1px -1px 1px #000,-1px 1px 1px #000,1px 1px 1px #000,0 0 6px rgba(0,0,0,.9); }
+  #evNarr{ font-size:14px; line-height:1.7; margin-top:10px; opacity:1; letter-spacing:.5px;
+           text-shadow:-1px -1px 1px #000,1px -1px 1px #000,-1px 1px 1px #000,1px 1px 1px #000,0 0 5px #000,0 0 8px rgba(0,0,0,.92); }
   #evCmd{ margin-top:10px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
   #evCmd .chip{ font-size:12px; padding:3px 11px; border-radius:13px; background:rgba(26,20,13,.7);
                 border:1px solid rgba(201,168,106,.42); letter-spacing:1px; }
@@ -129,7 +126,7 @@
   #legend .kbadge{ margin:0; flex:0 0 auto; }
 
   /* 軍隊清單面板（可收合，置於左側） */
-  #roster{ position:fixed; left:14px; top:64px; width:236px; max-height:76vh; overflow-y:auto;
+  #roster{ position:fixed; left:14px; top:110px; width:236px; max-height:70vh; overflow-y:auto;
            background:rgba(16,12,8,.84); border:1px solid rgba(201,168,106,.34); border-radius:9px;
            padding:9px 11px; font-size:11.5px; letter-spacing:.4px; line-height:1.45;
            display:none; z-index:6; }
@@ -246,7 +243,6 @@
 </head>
 <body>
   <div id="app"></div>
-  <div id="lowerfade"></div>
   <div id="labels"></div>
 
   <div id="titlecard">
