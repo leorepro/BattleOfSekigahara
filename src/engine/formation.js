@@ -1,29 +1,25 @@
 /* =========================================================================
- * src/engine/formation.js — 兵團陣型（Total War 風：成群士兵組成方陣）
- *   每支部隊以 InstancedMesh 渲染數十~上百名士兵排成方陣，朝敵方向。
- *   兵力下降時士兵數隨之減少（mesh.count）；陣型隨部隊移動、轉向。
- *   軍旗（家紋）縮小為陣型上方的識別旗。
+ * src/engine/formation.js — 兵團陣型（Total War / 幕府將軍 風）
+ *   每支部隊以 InstancedMesh 渲染數十~上百名士兵排成方陣，
+ *   每名士兵背插 sashimono（背旗，亮色陣營旗）——整個方陣成「一片色旗」。
+ *   陣型朝敵/前進方向、隨部隊移動；兵力下降士兵數隨之減少（mesh.count）。
  * ======================================================================= */
 window.SEKI = window.SEKI || {};
 
 (function (S) {
-  const EAST = 0x33457e, WEST = 0x7e3333;       // 兵團暗色(藍/紅軍裝)
-  const SP = 0.92, BODY_H = 1.6;                 // 士兵間距 / 身高
+  const ARMOR_E = 0x2e3a5e, ARMOR_W = 0x5e2e2e;   // 軍裝暗色
+  const FLAG_E = 0x3a78ff,  FLAG_W = 0xff3b3b;     // 背旗亮色（陣營）
+  const SP = 0.9, BODY_H = 1.5;
   const _m = new THREE.Matrix4(), _q = new THREE.Quaternion(),
         _p = new THREE.Vector3(), _s = new THREE.Vector3(1, 1, 1), _up = new THREE.Vector3(0, 1, 0);
   let _forms = [];
 
-  // 單兵幾何：身體 + 頭（合併成一個 BufferGeometry）
-  function soldierGeo() {
-    const body = new THREE.BoxGeometry(0.5, BODY_H, 0.42); body.translate(0, BODY_H/2, 0);
-    const head = new THREE.BoxGeometry(0.34, 0.34, 0.34); head.translate(0, BODY_H + 0.17, 0);
-    // 手動合併兩個 box 的 position/normal/index
-    const geos = [body, head];
-    let vc = 0, ic = 0;
-    geos.forEach(g => { vc += g.attributes.position.count; ic += g.index.count; });
+  // 合併多個 box geometry 成一個 BufferGeometry
+  function mergeBoxes(boxes) {
+    let vc = 0; boxes.forEach(g => vc += g.attributes.position.count);
     const pos = new Float32Array(vc*3), nor = new Float32Array(vc*3), idx = [];
     let vo = 0;
-    geos.forEach(g => {
+    boxes.forEach(g => {
       pos.set(g.attributes.position.array, vo*3);
       nor.set(g.attributes.normal.array, vo*3);
       const gi = g.index.array; for (let i=0;i<gi.length;i++) idx.push(gi[i]+vo);
@@ -32,39 +28,46 @@ window.SEKI = window.SEKI || {};
     const out = new THREE.BufferGeometry();
     out.setAttribute('position', new THREE.BufferAttribute(pos, 3));
     out.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
-    out.setIndex(idx);
-    return out;
+    out.setIndex(idx); return out;
+  }
+  function soldierGeo() {
+    const body = new THREE.BoxGeometry(0.42, BODY_H, 0.36); body.translate(0, BODY_H/2, 0);
+    const head = new THREE.BoxGeometry(0.3, 0.3, 0.3); head.translate(0, BODY_H + 0.15, 0);
+    return mergeBoxes([body, head]);
+  }
+  function sashimonoGeo() {
+    const pole = new THREE.BoxGeometry(0.05, 1.1, 0.05); pole.translate(0, BODY_H + 0.2, -0.22);
+    const flag = new THREE.BoxGeometry(0.44, 0.56, 0.04); flag.translate(0, BODY_H + 0.55, -0.22);
+    return mergeBoxes([pole, flag]);
   }
 
-  function maxSoldiersFor(troops) { return Math.max(16, Math.min(160, Math.round(troops/120))); }
+  function maxSoldiersFor(troops) { return Math.max(20, Math.min(200, Math.round(troops/90))); }
 
   S.buildFormations = function () {
     const eng = S.engine;
     _forms = [];
-    const geo = soldierGeo();
+    const sGeo = soldierGeo(), fGeo = sashimonoGeo();
     for (const a of S.armies) {
+      const east = a.side === 'east';
       const max = maxSoldiersFor(a.troops);
-      const cols = Math.max(4, Math.round(Math.sqrt(max * 1.7)));
+      const cols = Math.max(5, Math.round(Math.sqrt(max * 1.8)));
       const rows = Math.ceil(max / cols);
-      const mat = new THREE.MeshStandardMaterial({
-        color: a.side === 'east' ? EAST : WEST, roughness: 0.85, metalness: 0 });
-      const inst = new THREE.InstancedMesh(geo, mat, max);
-      inst.castShadow = true; inst.frustumCulled = false;
-      // 預先寫入每名士兵的「方陣內」局部位置（含些微抖動，較自然）
-      const offs = [];
+      const body = new THREE.InstancedMesh(sGeo,
+        new THREE.MeshStandardMaterial({ color: east?ARMOR_E:ARMOR_W, roughness: 0.85 }), max);
+      const sashi = new THREE.InstancedMesh(fGeo,
+        new THREE.MeshStandardMaterial({ color: east?FLAG_E:FLAG_W, roughness: 0.6,
+          emissive: east?FLAG_E:FLAG_W, emissiveIntensity: 0.22 }), max);
+      body.castShadow = true; body.frustumCulled = false; sashi.frustumCulled = false;
       for (let i = 0; i < max; i++) {
         const c = i % cols, r = Math.floor(i / cols);
-        const x = (c - (cols-1)/2) * SP + (Math.sin(i*12.9)*0.18);
-        const z = (r - (rows-1)/2) * SP + (Math.cos(i*7.7)*0.18);
-        const ry = Math.sin(i*4.1) * 0.25;
-        offs.push({ x, z, ry });
-        _m.compose(_p.set(x, 0, z), _q.setFromAxisAngle(_up, ry), _s);
-        inst.setMatrixAt(i, _m);
+        const x = (c - (cols-1)/2) * SP + Math.sin(i*12.9)*0.16;
+        const z = (r - (rows-1)/2) * SP + Math.cos(i*7.7)*0.16;
+        _m.compose(_p.set(x, 0, z), _q.setFromAxisAngle(_up, Math.sin(i*4.1)*0.22), _s);
+        body.setMatrixAt(i, _m); sashi.setMatrixAt(i, _m);
       }
-      inst.instanceMatrix.needsUpdate = true;
-      eng.scene.add(inst);
-      _forms.push({ data: a, inst, max, offs, facing: 0,
-        strengthPer: a.troops / max });
+      body.instanceMatrix.needsUpdate = true; sashi.instanceMatrix.needsUpdate = true;
+      eng.scene.add(body); eng.scene.add(sashi);
+      _forms.push({ data: a, body, sashi, max, facing: 0, strengthPer: a.troops / max });
     }
     return _forms;
   };
@@ -73,18 +76,19 @@ window.SEKI = window.SEKI || {};
     for (const f of _forms) {
       const u = S.unitById(f.data.id); if (!u) continue;
       const gp = u.group.position;
-      f.inst.position.set(gp.x, gp.y, gp.z);
-      // 朝向：移動時面向前進方向，否則面向戰場中央
       let dx = u.moveDir ? u.moveDir.dx : 0, dz = u.moveDir ? u.moveDir.dz : 0;
       if (Math.hypot(dx, dz) < 1e-4) { dx = -gp.x; dz = -gp.z; }
       const want = Math.atan2(dx, dz);
-      f.facing += ((want - f.facing + Math.PI*3) % (Math.PI*2) - Math.PI) * 0.1; // 平滑轉向
-      f.inst.rotation.y = f.facing;
-      // 兵力 → 士兵數
+      f.facing += ((want - f.facing + Math.PI*3) % (Math.PI*2) - Math.PI) * 0.1;
       const s = u.cur ? u.cur.s : f.data.troops;
-      f.inst.count = Math.max(0, Math.min(f.max, Math.round(s / f.strengthPer)));
+      const n = Math.max(0, Math.min(f.max, Math.round(s / f.strengthPer)));
+      for (const mesh of [f.body, f.sashi]) {
+        mesh.position.set(gp.x, gp.y, gp.z);
+        mesh.rotation.y = f.facing;
+        mesh.count = n;
+      }
     }
   };
 
-  S.setFormationsVisible = function (v) { for (const f of _forms) f.inst.visible = v; };
+  S.setFormationsVisible = function (v) { for (const f of _forms) { f.body.visible = v; f.sashi.visible = v; } };
 })(window.SEKI);
