@@ -8,6 +8,7 @@ window.SEKI = window.SEKI || {};
 (function (S) {
   let el = {}, scrubbing = false, raycaster, mouse;
   let eastMax = 1, westMax = 1;
+  let _freeShotIdx = -1;   // 自由運鏡：目前對應的 storyboard 鏡頭索引
 
   // 時刻 T（距基準日 00:00 的小時數）→「九月十四日 戌刻 20:00」
   // 可由 SEKI.config.fmtTime(t, JIKOKU) 覆寫（如桶狹間用五月十九日）
@@ -246,6 +247,18 @@ window.SEKI = window.SEKI || {};
   }
 
   S.updateUI = function (t) {
+    // 自由運鏡：旁白事件卡隨時間軸對應到「當前時刻所屬的鏡頭」
+    //（節目模式由 storyboard 引擎主導事件卡，此處不介入）
+    if (S.player.program) {
+      _freeShotIdx = -1;
+    } else if (S.storyboard && S.storyboard.length) {
+      let i = 0;
+      for (let k = 0; k < S.storyboard.length; k++) {
+        if (S.storyboard[k].t <= t + 1e-6) i = k; else break;
+      }
+      if (i !== _freeShotIdx) { _freeShotIdx = i; S.setEventCard(S.storyboard[i]); }
+    }
+
     if (!scrubbing && el.scrub) el.scrub.value = timeToPos(t) * 1000;
     if (el.tlabel) el.tlabel.textContent = timeStr(t);
     if (el.roster && el.roster.classList.contains('show') && (++_rframe % 12) === 0) updateRoster(t);
