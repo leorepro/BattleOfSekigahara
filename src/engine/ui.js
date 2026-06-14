@@ -40,7 +40,12 @@ window.SEKI = window.SEKI || {};
     // 時間軸
     el.scrub.min = S.player.T_START; el.scrub.max = S.player.T_END; el.scrub.step = 0.01;
     el.scrub.addEventListener('input', () => {
-      scrubbing = true; S.player.time = parseFloat(el.scrub.value); S.player.playing = false; syncPlay();
+      scrubbing = true;
+      if (S.player.program) {                 // 拖時間軸 → 切換到自由模式，時刻才不會被 storyboard 覆寫
+        S.setProgramMode(false);
+        el.btnMode.textContent = '🕹 自由運鏡'; el.btnMode.classList.remove('on');
+      }
+      S.player.time = parseFloat(el.scrub.value); S.player.playing = false; syncPlay();
     });
     el.scrub.addEventListener('change', () => { scrubbing = false; });
     // 倍速

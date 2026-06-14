@@ -98,7 +98,7 @@ SEKI.armies = [
       { t:13, lng:136.4630, lat:35.3760, s:5000, st:'attack' },
       { t:14, lng:136.4610, lat:35.3780, s:5000, st:'attack' },
     ]},
-  { name_zh:"細川忠興", name_ja:"細川忠興", side:'east', crest:'kuyo',
+  { name_zh:"細川忠興", name_ja:"細川忠興", side:'east', crest:'kuyo', kind:'infantry',
     title:"東軍 · 北翼", troops:5000,
     track:[
       { t:8,  lng:136.4700, lat:35.3705, s:5000, st:'hold' },

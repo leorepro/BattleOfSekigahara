@@ -67,7 +67,7 @@ window.SEKI = window.SEKI || {};
       el.className = `lbl lbl-unit side-${a.side}`;
       el.innerHTML = `<div>${a.name_zh}<span class="ja"> ${a.name_ja}</span></div><div class="troops"></div>`;
       const tag = new THREE.CSS2DObject(el);
-      tag.position.set(0, POLE_H + 2.5, 0); group.add(tag);
+      tag.position.set(0, POLE_H + 2.5 + (_units.length % 4) * 3.6, 0); group.add(tag); // 錯開避免重疊
 
       eng.scene.add(group);
 
@@ -99,8 +99,8 @@ window.SEKI = window.SEKI || {};
       u.moveDir = { dx: s2.lng - s.lng, dz: -(s2.lat - s.lat) };
     }
     // 2) 防重疊（XZ 平面分離，數次迭代）
-    const MIN = 5.5;
-    for (let it = 0; it < 3; it++) {
+    const MIN = 8.5;
+    for (let it = 0; it < 5; it++) {
       for (let i = 0; i < _units.length; i++) for (let j = i + 1; j < _units.length; j++) {
         const A = _units[i].p, B = _units[j].p;
         let dx = B.x - A.x, dz = B.z - A.z;
@@ -153,7 +153,8 @@ window.SEKI = window.SEKI || {};
     for (const u of _units) {
       const st = u.cur && u.cur.st;
       if (st === 'attack' || st === 'breakthrough')
-        out.push({ x:u.group.position.x, y:u.group.position.y, z:u.group.position.z, side:u.data.side });
+        out.push({ x:u.group.position.x, y:u.group.position.y, z:u.group.position.z,
+                   side:u.data.side, kind:u.data.kind || 'infantry', moveDir:u.moveDir });
     }
     return out;
   };

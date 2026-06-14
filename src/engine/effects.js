@@ -102,38 +102,72 @@ window.SEKI = window.SEKI || {};
     S.engine.scene.add(flash.points);
   };
 
-  // 一次齊射：一團閃光 + 數縷硝煙
-  function volley(x, y, z) {
-    // 砲口閃光（加色、極短命、亮黃白）
-    for (let i = 0; i < 3; i++) {
-      flash.emit(x + rnd(0.6), y + 1.4 + rnd(0.3), z + rnd(0.6), {
-        vx: rnd(1), vy: rnd(1), vz: rnd(1), life: 0.12 + Math.random()*0.06,
-        size0: 6 + Math.random()*4, size1: 1, r: 1.0, g: 0.92, b: 0.55,
-      });
-    }
-    // 硝煙（灰白、上浮、漸大漸淡）
-    for (let i = 0; i < 4; i++) {
-      smoke.emit(x + rnd(0.8), y + 1.2 + rnd(0.4), z + rnd(0.8), {
-        vx: rnd(0.8), vy: 0.6 + Math.random()*0.8, vz: rnd(0.8),
-        life: 1.2 + Math.random()*0.9, size0: 1.5, size1: 7 + Math.random()*3,
-        r: 0.82, g: 0.82, b: 0.80,
-      });
-    }
-  }
   function rnd(a) { return (Math.random()*2 - 1) * a; }
+  function muzzle(x, y, z, n, r, g, b, sz) {
+    for (let i = 0; i < n; i++) flash.emit(x + rnd(0.6), y + 1.4 + rnd(0.3), z + rnd(0.6), {
+      vx: rnd(1), vy: rnd(1), vz: rnd(1), life: 0.1 + Math.random()*0.06,
+      size0: sz + Math.random()*4, size1: 1, r, g, b });
+  }
+  function gunSmoke(x, y, z, n, big) {
+    for (let i = 0; i < n; i++) smoke.emit(x + rnd(0.8), y + 1.2 + rnd(0.4), z + rnd(0.8), {
+      vx: rnd(0.8), vy: 0.6 + Math.random()*0.8, vz: rnd(0.8),
+      life: 1.2 + Math.random()*0.9, size0: 1.5, size1: (big?10:6) + Math.random()*3,
+      r: 0.82, g: 0.82, b: 0.80 });
+  }
+  // 鉄砲齊射
+  function teppoVolley(x, y, z, dense) {
+    muzzle(x, y, z, dense ? 4 : 2, 1.0, 0.92, 0.55, 6);
+    gunSmoke(x, y, z, dense ? 4 : 3, false);
+  }
+  // 騎馬揚塵（沿前進方向）
+  function cavalryDust(x, y, z, fx, fz) {
+    for (let i = 0; i < 4; i++) smoke.emit(x + rnd(1.5) - fx*2, y + 0.4, z + rnd(1.5) - fz*2, {
+      vx: rnd(1.2), vy: 0.4 + Math.random()*0.5, vz: rnd(1.2),
+      life: 0.9 + Math.random()*0.6, size0: 2, size1: 8 + Math.random()*3,
+      r: 0.66, g: 0.58, b: 0.46 });
+    if (Math.random() < 0.4) muzzle(x, y, z, 1, 1.0, 0.9, 0.5, 4);
+  }
+  // 大筒砲擊：砲口巨閃 + 曳光彈道 + 著彈爆煙
+  function artilleryFire(x, y, z, fx, fz) {
+    muzzle(x, y + 1.5, z, 3, 1.0, 0.82, 0.42, 11);             // 砲口巨閃（橙）
+    gunSmoke(x, y, z, 3, true);
+    const reach = 30 + Math.random()*14;
+    for (let s = 1; s <= 5; s++) {                              // 曳光彈道
+      const k = s / 5;
+      flash.emit(x + fx*reach*k, y + 2 + Math.sin(k*Math.PI)*7, z + fz*reach*k, {
+        vx: fx*4, vy: 0, vz: fz*4, life: 0.3, size0: 4.5, size1: 1.5, r: 1.0, g: 0.78, b: 0.4 });
+    }
+    const tx = x + fx*reach, tz = z + fz*reach;                 // 著彈點
+    for (let i = 0; i < 6; i++) flash.emit(tx + rnd(2), y + 1.5 + rnd(1.5), tz + rnd(2), {
+      vx: rnd(8), vy: Math.random()*8, vz: rnd(8), life: 0.22 + Math.random()*0.1,
+      size0: 7 + Math.random()*5, size1: 1, r: 1.0, g: 0.7, b: 0.32 });
+    for (let i = 0; i < 5; i++) smoke.emit(tx + rnd(2.5), y + 1.5, tz + rnd(2.5), {
+      vx: rnd(1.5), vy: 1.2 + Math.random(), vz: rnd(1.5),
+      life: 1.8 + Math.random(), size0: 2, size1: 12 + Math.random()*5, r: 0.3, g: 0.29, b: 0.27 });
+  }
 
   S.updateEffects = function (t, dt) {
     if (!smoke) return;
-    // 噴發節流：約每 0.06s 對交戰部隊各擲一次骰
     _acc += dt;
-    if (_acc >= 0.06) {
+    const tick = _acc >= 0.06;
+    if (tick) {
       _acc = 0;
       const pts = S.firePoints ? S.firePoints() : [];
       for (const p of pts) {
-        if (Math.random() < 0.5) volley(p.x, p.y, p.z);
+        // 前進方向；若靜止則朝戰場中央
+        let fx = p.moveDir ? p.moveDir.dx : 0, fz = p.moveDir ? p.moveDir.dz : 0;
+        let m = Math.hypot(fx, fz);
+        if (m < 1e-4) { fx = -p.x; fz = -p.z; m = Math.hypot(fx, fz) || 1; }
+        fx /= m; fz /= m;
+        switch (p.kind) {
+          case 'artillery': if (Math.random() < 0.18) artilleryFire(p.x, p.y, p.z, fx, fz); break;
+          case 'matchlock': if (Math.random() < 0.8)  teppoVolley(p.x, p.y, p.z, true); break;
+          case 'cavalry':   cavalryDust(p.x, p.y, p.z, fx, fz); break;
+          case 'command':   if (Math.random() < 0.15) gunSmoke(p.x, p.y, p.z, 1, false); break;
+          default:          if (Math.random() < 0.5) teppoVolley(p.x, p.y, p.z, false);
+        }
       }
     }
-    // 硝煙上浮、閃光不受重力
     o_gravity = 0.5;  smoke.update(dt);
     o_gravity = 0.0;  flash.update(dt);
   };
