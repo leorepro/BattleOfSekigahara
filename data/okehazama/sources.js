@@ -41,5 +41,6 @@ SEKI.sources = {
     "名古屋市綠區 桶狹間古戰場公園 · 豐明市 桶狹間古戰場傳說地（welcome-toyoake.jp）",
     "OpenStreetMap / 國土地理院（各砦・城・古戰場座標）",
     "地形高程：SRTM 30m（opentopodata）",
+    "衛星影像：EOX Sentinel-2 cloudless（含經修改之 Copernicus Sentinel 資料, CC BY 4.0）— 為現代地貌，1560 古海岸線（年魚市潟）僅作示意",
   ],
 };

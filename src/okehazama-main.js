@@ -36,7 +36,8 @@
       [0, 0x21405e], [1.5, 0x355f78], [4, 0x5d7048], [18, 0x6f7440],
       [40, 0x7d6e49], [62, 0x8a7559], [82, 0x9a8a72],
     ],
-    satelliteTexture: null,   // 無對應衛星影像 → 純用海拔著色
+    // 真實衛星影像（EOX Sentinel-2 cloudless，bbox 對齊 DEM 範圍）
+    satelliteTexture: 'assets/terrain/okehazama-sat.jpg',
   };
 
   S.player = { time: -8, playing: true, speed: 0.35, program: true, T_START: -8, T_END: 14 };
