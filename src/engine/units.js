@@ -70,7 +70,10 @@ window.SEKI = window.SEKI || {};
 
       const el = document.createElement('div');
       el.className = `lbl lbl-unit side-${a.side}`;
-      el.innerHTML = `<div>${a.name_zh}<span class="ja"> ${a.name_ja}</span></div>` +
+      const KICON = { command:'本', artillery:'砲', matchlock:'銃', cavalry:'騎', infantry:'槍' };
+      el.innerHTML =
+        `<div><span class="kbadge k-${a.kind}" title="${a.kind}">${KICON[a.kind] || '槍'}</span>` +
+        `${a.name_zh}<span class="ja"> ${a.name_ja}</span></div>` +
         `<div class="hp"><i></i></div><div class="troops"></div>`;
       const tag = new THREE.CSS2DObject(el);
       tag.position.set(0, POLE_H + 2.5 + (_units.length % 4) * 3.6, 0); group.add(tag); // 錯開避免重疊

@@ -35,7 +35,7 @@ window.SEKI = window.SEKI || {};
   S.initUI = function () {
     const ids = ['caption','evDate','evTitle','evTitleEn','evNarr','evCmd','btnPlay','scrub','spd','btnMode',
       'tlabel','barEast','barWest','valEast','valWest','card','cardBody','cardClose','btnAudio','bgm',
-      'btnNotes','notes','notesBody','notesClose','roster'];
+      'btnNotes','notes','notesBody','notesClose','roster','btnRoster'];
     ids.forEach(id => el[id] = document.getElementById(id));
 
     const init = S.sideStrength();
@@ -69,6 +69,11 @@ window.SEKI = window.SEKI || {};
           el.btnAudio.textContent = '🔊 配樂'; }).catch(() => {
           el.btnAudio.textContent = '🔇 無音檔'; });
       } else { el.bgm.pause(); el.btnAudio.textContent = '🔈 配樂'; }
+    };
+
+    // 軍隊面板開關
+    if (el.btnRoster) el.btnRoster.onclick = () => {
+      el.roster.classList.toggle('show'); el.btnRoster.classList.toggle('on');
     };
 
     // 史料面板
@@ -169,7 +174,7 @@ window.SEKI = window.SEKI || {};
   S.updateUI = function (t) {
     if (!scrubbing && el.scrub) el.scrub.value = t;
     if (el.tlabel) el.tlabel.textContent = timeStr(t);
-    if ((++_rframe % 12) === 0) updateRoster(t);
+    if (el.roster && el.roster.classList.contains('show') && (++_rframe % 12) === 0) updateRoster(t);
 
     const ss = S.sideStrength();
     if (el.barEast) {
