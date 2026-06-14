@@ -10,7 +10,7 @@ window.SEKI = window.SEKI || {};
 
 (function (S) {
   const EAST = 0x3a78ff, WEST = 0xff3b3b;
-  const FW = 4, FH = 6, POLE_H = 10;
+  const FW = 2, FH = 3.2, POLE_H = 8.5;          // 軍旗縮小為陣型上方識別旗
   let _units = [];
   let _focus = null;                       // Set of 聚焦 unit id；null = 全部正常
 

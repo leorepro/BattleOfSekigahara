@@ -23,6 +23,7 @@
     S.buildTerrain();
     S.buildGeoLabels();
     S.buildUnits();
+    S.buildFormations();
     S.buildRoutes();
     S.initEffects();
     S.buildEngagements();
@@ -52,6 +53,7 @@
       const t = S.player.time;
 
       S.updateUnits(t);
+      S.updateFormations(t);
       S.updateRoutes(t);
       S.waveFlags(elapsed);
       S.updateWeather(t, elapsed);
