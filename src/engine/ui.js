@@ -9,12 +9,17 @@ window.SEKI = window.SEKI || {};
   let el = {}, scrubbing = false, raycaster, mouse;
   let eastMax = 1, westMax = 1;
 
-  function timeStr(t) {
-    const names = [[8,'辰刻'],[10,'巳刻'],[12,'午刻'],[13,'未刻']];
-    let n = '辰刻'; for (const [h, nm] of names) if (t >= h) n = nm;
-    const hh = Math.floor(t), mm = Math.floor((t - hh) * 60);
-    return `${n} ${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
-  }
+  // 時刻 T（距 10/21 00:00 的小時數）→「九月十四日 戌刻 20:00」
+  const JIKOKU = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+  S.fmtTime = function (t) {
+    const day = 15 + Math.floor(t / 24);
+    const h = ((Math.floor(t) % 24) + 24) % 24;
+    const mm = Math.floor(((t % 1) + 1) % 1 * 60);
+    const jk = JIKOKU[Math.floor(((h + 1) % 24) / 2)];
+    const dayZh = day === 14 ? '十四日' : day === 15 ? '十五日' : `${day}日`;
+    return `九月${dayZh} ${jk}刻 ${String(h).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
+  };
+  function timeStr(t) { return S.fmtTime(t); }
   // 由 storyboard 推進時呼叫，更新底部事件卡
   S.setEventCard = function (shot) {
     if (!el.caption || !shot) return;

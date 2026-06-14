@@ -4,16 +4,13 @@
  *   主迴圈推進戰場時刻並驅動：部隊內插、幟旗、天氣、特效、自動運鏡、UI。
  * ======================================================================= */
 (function (S) {
-  S.player = { time: 8, playing: true, speed: 0.35, program: true, T_START: 8, T_END: 14 };
+  S.player = { time: -16, playing: true, speed: 0.35, program: true, T_START: -16, T_END: 14 };
 
-  function clockJP(t) {
-    const tbl = [[8,'辰刻'],[10,'巳刻'],[12,'午刻'],[13,'未刻']];
-    let n = '辰刻'; for (const [h, nm] of tbl) if (t >= h) n = nm;
-    const hh = Math.floor(t), mm = Math.floor((t - hh) * 60);
-    return `${n} ${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
-  }
   function phase(t) {
-    if (t < 9)    return '兩軍對峙，晨霧未散';
+    if (t < -10)  return '大垣對峙 · 兩軍集結';
+    if (t < -4)   return '杭瀬川之戰 · 西軍前哨小勝';
+    if (t < 4)    return '雨夜強行軍 · 西軍直奔關原';
+    if (t < 8)    return '拂曉布陣，晨霧未散';
     if (t < 11)   return '井伊抜け駆け，福島・宇喜多激戰';
     if (t < 12)   return '戰線膠著，西軍佔優';
     if (t < 12.9) return '★ 小早川秀秋倒戈，殺向大谷隊';
@@ -60,7 +57,7 @@
       S.updateEffects(t, dt);
       S.updateUI(t);
 
-      clockEl.textContent = clockJP(t);
+      clockEl.textContent = S.fmtTime ? S.fmtTime(t) : '';
       phaseEl.textContent = phase(t);
 
       eng.render();

@@ -11,6 +11,28 @@
 window.SEKI = window.SEKI || {};
 
 SEKI.storyboard = [
+  /* ---------------- 戰略階段（戰前一週） ---------------- */
+  { t:-16, hold:13, cam:{lng:136.610, lat:35.366, dist:300, az:35, el:36, orbit:0.5},
+    dateLabel:"慶長五年九月 · 美濃", title_zh:"大垣對峙 · 兩軍集結",
+    title_en:"The Standoff at Ōgaki",
+    narration_zh:"石田三成以大垣城為前線據點，集結西軍；德川家康率東軍主力進駐西方的赤坂、岡山，兩軍隔濃尾平原對峙。八月底岐阜城已先陷落，西軍戰略陷於被動。",
+    commanders:[{zh:"石田三成",en:"Ishida Mitsunari"},{zh:"德川家康",en:"Tokugawa Ieyasu"}],
+    focus:["ishida","tokugawa"], side:"both" },
+
+  { t:-6, hold:12, cam:{lng:136.600, lat:35.352, dist:170, az:70, el:40, orbit:0.7},
+    dateLabel:"九月十四日 · 夕", title_zh:"杭瀬川之戰 · 西軍前哨小勝",
+    title_en:"Skirmish at Kuisegawa",
+    narration_zh:"家康抵赤坂當日，石田家臣島左近與宇喜多家臣明石全登誘出東軍中村一榮、有馬豐氏隊，以伏兵與鐵炮反擊使其受挫。西軍局地獲勝、士氣一振。",
+    commanders:[{zh:"島左近",en:"Shima Sakon"},{zh:"明石全登",en:"Akashi Takenori"}],
+    focus:["ishida"], side:"west" },
+
+  { t:-3, hold:13, cam:{lng:136.545, lat:35.360, dist:400, az:20, el:30, orbit:0.4},
+    dateLabel:"九月十四日 · 夜 · 雨", title_zh:"雨夜強行軍 · 直奔關原",
+    title_en:"The Rainy Night March to Sekigahara",
+    narration_zh:"是夜西軍冒雨自大垣城出發，沿中山道強行軍十餘里，搶占關原盆地的笹尾山、天滿山一線，封鎖中山道與北國街道咽喉；東軍隨後跟進。決戰之勢就此成形。",
+    commanders:[{zh:"石田三成",en:"Ishida Mitsunari"}], focus:["ishida","ukita","shimazu"], side:"west" },
+
+  /* ---------------- 決戰階段（九月十五日） ---------------- */
   { t:7.6, hold:11, cam:{lng:136.466, lat:35.362, dist:230, az:18, el:34, orbit:0.6},
     dateLabel:"慶長五年九月十五日 · 拂曉", title_zh:"關原布陣 · 晨霧瀰漫",
     title_en:"Dawn Deployment at Sekigahara",
