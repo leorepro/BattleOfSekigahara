@@ -80,12 +80,11 @@ window.SEKI = window.SEKI || {};
     fire = makeParticleSystem(2000, THREE.AdditiveBlending);   // 亮色火光/火花
     dust = makeParticleSystem(1200, THREE.NormalBlending);     // 淡煙/塵
     S.engine.scene.add(fire.points); S.engine.scene.add(dust.points);
-    // 大筒砲彈池（發光小球，沿拋物線飛行）
+    // 大筒砲彈池（小而暗的砲丸，沿拋物線飛行 + 煙霧尾跡）
     shells = [];
-    const sgeo = new THREE.SphereGeometry(0.9, 8, 8);
+    const sgeo = new THREE.SphereGeometry(0.35, 8, 8);
     for (let i = 0; i < 18; i++) {
-      const m = new THREE.Mesh(sgeo, new THREE.MeshBasicMaterial({
-        color: 0xffc046, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+      const m = new THREE.Mesh(sgeo, new THREE.MeshStandardMaterial({ color: 0x232323, roughness: 0.5 }));
       m.visible = false; S.engine.scene.add(m);
       shells.push({ mesh: m, active: false, age: 0, dur: 1, peak: 10,
         p0: new THREE.Vector3(), p1: new THREE.Vector3() });
@@ -126,13 +125,15 @@ window.SEKI = window.SEKI || {};
         life: 0.8 + Math.random()*0.5, size0: 2, size1: 9 + Math.random()*3, r: 0.72, g: 0.63, b: 0.5 });
   }
 
-  // 著彈爆炸（亮）
+  // 著彈爆炸：大片橙紅火球 + 四濺火花 + 翻騰濃煙
   function impactBurst(x, y, z) {
-    sparks(x, y, z, 10, 2.2, 9);
-    for (let i = 0; i < 4; i++) fire.emit(x + rnd(1.5), y + 1.5, z + rnd(1.5), {
-      vx: rnd(2), vy: 3 + Math.random()*3, vz: rnd(2), life: 0.3, size0: 9 + Math.random()*5, size1: 1,
-      r: 1.0, g: 0.7, b: 0.3 });
-    lightSmoke(x, y, z, 3);
+    for (let i = 0; i < 7; i++) fire.emit(x + rnd(1.8), y + 1.5 + rnd(1), z + rnd(1.8), {  // 火球
+      vx: rnd(2.5), vy: 2 + Math.random()*4, vz: rnd(2.5), life: 0.38 + Math.random()*0.22,
+      size0: 13 + Math.random()*9, size1: 2, r: 1.0, g: 0.42 + Math.random()*0.3, b: 0.12 });
+    sparks(x, y, z, 16, 3.2, 13);                                                          // 火花四濺
+    for (let i = 0; i < 5; i++) dust.emit(x + rnd(2), y + 2.5 + rnd(1), z + rnd(2), {       // 翻騰煙
+      vx: rnd(1.6), vy: 2 + Math.random()*1.6, vz: rnd(1.6), g: 0.5,
+      life: 1.3 + Math.random()*0.8, size0: 3, size1: 13 + Math.random()*5, r: 0.4, g: 0.37, b: 0.34 });
   }
 
   // 發射一發大筒砲彈（拋物線）
@@ -143,8 +144,20 @@ window.SEKI = window.SEKI || {};
     s.dur = 0.9 + dist * 0.012; s.peak = Math.min(8 + dist * 0.35, 36);
     s.p0.set(x0, y0 + 2, z0); s.p1.set(x1, y1, z1);
     s.mesh.visible = true; s.mesh.position.copy(s.p0);
-    sparks(x0, y0 + 2, z0, 4, 1, 4);        // 砲口火光
-    lightSmoke(x0, y0, z0, 2);
+    // 砲口：巨爆閃 + 濃煙
+    sparks(x0, y0 + 2, z0, 7, 1.4, 7);
+    for (let i = 0; i < 4; i++) dust.emit(x0 + rnd(1), y0 + 1.5 + rnd(0.5), z0 + rnd(1), {
+      vx: rnd(1.2), vy: 1.2 + Math.random(), vz: rnd(1.2), g: 0.4,
+      life: 1.1 + Math.random()*0.6, size0: 2, size1: 9 + Math.random()*3, r: 0.72, g: 0.7, b: 0.66 });
+    // 拋物線軌跡：沿弧線撒一排亮點（像瞄準軌跡）
+    const N = 16;
+    for (let i = 1; i < N; i++) {
+      const k = i / N;
+      const px = x0 + (x1 - x0) * k, pz = z0 + (z1 - z0) * k;
+      const py = (y0 + 2) + (y1 - (y0 + 2)) * k + s.peak * 4 * k * (1 - k);
+      fire.emit(px, py, pz, { vx: 0, vy: 0, vz: 0, life: s.dur * 0.95,
+        size0: 3.4, size1: 2.4, r: 1.0, g: 0.78, b: 0.32 });
+    }
   }
   function updateShells(dt) {
     for (const s of shells) {
@@ -154,7 +167,8 @@ window.SEKI = window.SEKI || {};
       const x = s.p0.x + (s.p1.x - s.p0.x) * k, z = s.p0.z + (s.p1.z - s.p0.z) * k;
       const y = s.p0.y + (s.p1.y - s.p0.y) * k + s.peak * 4 * k * (1 - k);   // 拋物線
       s.mesh.position.set(x, y, z);
-      fire.emit(x, y, z, { vx:0, vy:0, vz:0, life:0.25, size0:3, size1:0.5, r:1.0, g:0.7, b:0.3 }); // 曳光尾
+      // 煙霧尾跡：沿拋物線畫出軌跡
+      dust.emit(x, y, z, { vx:0, vy:0.4, vz:0, g:0, life:0.55, size0:1.4, size1:4.5, r:0.82, g:0.8, b:0.76 });
     }
   }
 
