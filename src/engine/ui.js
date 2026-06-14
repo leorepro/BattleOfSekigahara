@@ -117,24 +117,25 @@ window.SEKI = window.SEKI || {};
   }
 
   function buildMarkers() {
-    if (!el.markers || !S.storyboard) return;
-    el.markers.innerHTML = S.storyboard.map((s, i) => {
-      const pct = timeToPos(s.t) * 100;       // 非線性:決戰節點自然散開
+    if (!el.markers || !S.events) return;
+    // 時間軸節點 = 全部關鍵事件;懸停看說明、點擊跳到該時刻(節目模式運鏡帶過去)
+    el.markers.innerHTML = S.events.map((e) => {
+      const pct = timeToPos(e.t) * 100;       // 非線性:決戰節點自然散開
       if (pct < -0.5 || pct > 100.5) return '';
-      const hot = /★/.test(s.title_zh) ? ' hot' : '';
-      const title = s.title_zh.replace('★', '').trim();
+      const hot = /★/.test(e.zh) ? ' hot' : '';
+      const title = e.zh.replace('★', '').trim();
       const left = Math.max(0, Math.min(100, pct));
-      return `<div class="mk${hot}" data-i="${i}" style="left:${left}%">` +
+      return `<div class="mk${hot}" data-t="${e.t}" style="left:${left}%">` +
              `<span class="mk-dot"></span><span class="mk-lbl">${title}</span></div>`;
     }).filter(Boolean).join('');
     el.markers.querySelectorAll('.mk').forEach(m => {
       m.onclick = () => {
-        const i = +m.dataset.i;
-        if (!S.player.program) {
-          S.setProgramMode(true);
-          el.btnMode.textContent = '🎬 節目模式'; el.btnMode.classList.add('on');
+        const t = +m.dataset.t;
+        if (S.player.program) {
+          S.gotoShot(nearestShotIndex(t)); S.player.playing = true; syncPlay();
+        } else {
+          S.player.time = t; S.player.playing = false; syncPlay();
         }
-        S.gotoShot(i); S.player.playing = true; syncPlay();
       };
     });
   }
