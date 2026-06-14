@@ -188,9 +188,9 @@ window.SEKI = window.SEKI || {};
         if (m < 1e-4) { fx = -p.x; fz = -p.z; m = Math.hypot(fx, fz) || 1; }
         fx /= m; fz /= m;
         switch (p.kind) {
-          case 'artillery':                       // 石田大筒：拋物線砲彈射向敵陣
+          case 'artillery':                       // 石田大筒：拋物線砲彈射向鄰近敵陣
             if (Math.random() < 0.14) {
-              const reach = 45 + Math.random()*30;
+              const reach = 6 + Math.random()*8;    // 約 360~840m(1 場景單位≈60m),不跨整個戰場
               const tx = p.x + fx*reach, tz = p.z + fz*reach;
               const ty = S.terrain ? S.terrain.heightAt(tx, tz) : p.y;
               launchShell(p.x, p.y, p.z, tx, ty, tz);
