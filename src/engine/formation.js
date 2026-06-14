@@ -87,6 +87,14 @@ window.SEKI = window.SEKI || {};
         mesh.rotation.y = f.facing;
         mesh.count = n;
       }
+      // 倒戈後改投東軍 → 兵團與背旗轉藍
+      const eastNow = (f.data.side === 'east') || (f.data.defectAt != null && t >= f.data.defectAt);
+      if (eastNow !== f.eastNow) {
+        f.eastNow = eastNow;
+        f.body.material.color.setHex(eastNow ? ARMOR_E : ARMOR_W);
+        f.sashi.material.color.setHex(eastNow ? FLAG_E : FLAG_W);
+        f.sashi.material.emissive.setHex(eastNow ? FLAG_E : FLAG_W);
+      }
     }
   };
 

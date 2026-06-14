@@ -132,7 +132,13 @@ window.SEKI = window.SEKI || {};
       u.pole.material.transparent = true; u.pole.material.opacity = op * emph;
       // 倒戈視覺：金色旗環 + 「⚡裏切」標示
       const defected = u.data.defectAt != null && t >= u.data.defectAt;
+      u.defected = defected;
+      u.el.classList.toggle('defected', defected);
       u.ring.material.color.setHex(defected ? 0xffc23a : (u.data.side === 'east' ? EAST : WEST));
+      if (defected && !u._flagFlipped) {                 // 倒戈後軍旗底色翻藍
+        u._flagFlipped = true;
+        u.fmat.map = S.flagTexture(u.data.crest, 'east'); u.fmat.needsUpdate = true;
+      }
       u.ring.material.opacity = (dead ? 0 : (s.st === 'attack' ? 0.8 : 0.5)) * emph;
       u.troopsEl.innerHTML = (dead ? `<span style="opacity:.7">潰滅</span>`
         : `${fmt(s.s)} <span style="opacity:.65">${ST_LABEL[s.st] || ''}</span>`)
@@ -191,8 +197,9 @@ window.SEKI = window.SEKI || {};
   S.sideStrength = function () {
     let east = 0, west = 0;
     for (const u of _units) {
-      const s = u.cur ? u.cur.s : u.data.troops;
-      if (u.data.side === 'east') east += Math.max(s, 0); else west += Math.max(s, 0);
+      const s = Math.max(u.cur ? u.cur.s : u.data.troops, 0);
+      const isEast = (u.data.side === 'east') || u.defected;   // 倒戈後計入東軍
+      if (isEast) east += s; else west += s;
     }
     return { east, west };
   };
