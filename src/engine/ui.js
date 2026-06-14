@@ -47,11 +47,12 @@ window.SEKI = window.SEKI || {};
     el.scrub.min = S.player.T_START; el.scrub.max = S.player.T_END; el.scrub.step = 0.01;
     el.scrub.addEventListener('input', () => {
       scrubbing = true;
-      if (S.player.program) {                 // 拖時間軸 → 切換到自由模式，時刻才不會被 storyboard 覆寫
-        S.setProgramMode(false);
-        el.btnMode.textContent = '🕹 自由運鏡'; el.btnMode.classList.remove('on');
+      const v = parseFloat(el.scrub.value);
+      if (S.player.program) {
+        S.gotoShot(nearestShotIndex(v));      // 節目模式：跳到最近的鏡頭，運鏡帶過去，維持節目模式
+      } else {
+        S.player.time = v; S.player.playing = false; syncPlay();   // 自由模式：直接設定時刻
       }
-      S.player.time = parseFloat(el.scrub.value); S.player.playing = false; syncPlay();
     });
     el.scrub.addEventListener('change', () => { scrubbing = false; });
     // 倍速
@@ -94,6 +95,12 @@ window.SEKI = window.SEKI || {};
 
   function syncPlay() {
     if (el.btnPlay) el.btnPlay.textContent = S.player.playing ? '⏸' : '▶';
+  }
+
+  function nearestShotIndex(v) {
+    const sb = S.storyboard; let best = 0, bd = Infinity;
+    for (let i = 0; i < sb.length; i++) { const d = Math.abs(sb[i].t - v); if (d < bd) { bd = d; best = i; } }
+    return best;
   }
 
   function buildMarkers() {
