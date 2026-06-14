@@ -190,4 +190,26 @@ SEKI.armies = [
       { t:12.5,lng:136.4600, lat:35.3548, s:3000, st:'attack' },
       { t:14,  lng:136.4575, lat:35.3542, s:3000, st:'attack' },
     ]},
+  { name_zh:"加藤嘉明", name_ja:"加藤嘉明", side:'east', crest:'janome', kind:'matchlock',
+    title:"東軍 · 石田・小西正面", troops:3000,
+    track:[
+      { t:-16, lng:136.584, lat:35.388, s:3000, st:'hold' },
+      { t:0,   lng:136.584, lat:35.388, s:3000, st:'hold' },
+      { t:6,   lng:136.4660,lat:35.3700,s:3000, st:'march' },
+      { t:8,   lng:136.4660, lat:35.3700, s:3000, st:'hold' },
+      { t:10,  lng:136.4600, lat:35.3710, s:3000, st:'attack' },  // 攻小西・石田
+      { t:13,  lng:136.4570, lat:35.3730, s:2800, st:'attack' },
+      { t:14,  lng:136.4560, lat:35.3760, s:2800, st:'attack' },
+    ]},
+  { name_zh:"田中吉政", name_ja:"田中吉政", side:'east', crest:'mitsudomoe', kind:'infantry',
+    title:"東軍 · 北翼（戰後擒石田三成）", troops:3000,
+    track:[
+      { t:-16, lng:136.585, lat:35.392, s:3000, st:'hold' },
+      { t:0,   lng:136.585, lat:35.392, s:3000, st:'hold' },
+      { t:6,   lng:136.4690,lat:35.3720,s:3000, st:'march' },
+      { t:8,   lng:136.4690, lat:35.3720, s:3000, st:'hold' },
+      { t:10,  lng:136.4640, lat:35.3735, s:3000, st:'attack' },  // 攻石田笹尾山
+      { t:13,  lng:136.4600, lat:35.3770, s:3000, st:'attack' },
+      { t:14,  lng:136.4575, lat:35.3795, s:3000, st:'attack' },
+    ]},
 ];

@@ -60,6 +60,13 @@ SEKI.storyboard = [
     commanders:[{zh:"宇喜多秀家",en:"Ukita Hideie"},{zh:"福島正則",en:"Fukushima Masanori"}],
     focus:["ukita","fukushima","kuroda","hosokawa"], side:"both" },
 
+  { t:10.3, hold:12, cam:{lng:136.459, lat:35.377, dist:100, az:-55, el:44, orbit:0.7},
+    dateLabel:"巳刻", title_zh:"笹尾山攻防 · 石田隊力守",
+    title_en:"The Struggle for Sasaoyama",
+    narration_zh:"黑田長政、細川忠興、加藤嘉明、田中吉政四面猛攻笹尾山。石田三成以二重柵與鐵炮居高死守，前衛猛將島左近奮戰，卻被黑田隊的鐵炮狙擊而重傷。西軍北翼苦撐不退。",
+    commanders:[{zh:"石田三成",en:"Ishida Mitsunari"},{zh:"黑田長政",en:"Kuroda Nagamasa"}],
+    focus:["ishida","kuroda","hosokawa","kato","tanaka"], side:"both" },
+
   { t:10.7, hold:12, cam:{lng:136.503, lat:35.346, dist:165, az:235, el:38, orbit:0.5},
     dateLabel:"巳刻", title_zh:"南宮山の空弁当 · 毛利按兵不動",
     title_en:"The Empty Lunchboxes of Nangūsan",

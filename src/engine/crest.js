@@ -184,6 +184,26 @@ window.SEKI = window.SEKI || {};
       disc(ctx, cx, cy - R * 0.62, R * 0.12);
       disc(ctx, cx, cy + R * 0.62, R * 0.12);
     },
+    /* 加藤 — 蛇の目（粗圓環） */
+    janome(ctx, cx, cy, R) {
+      disc(ctx, cx, cy, R);
+      ctx.save(); ctx.globalCompositeOperation = 'destination-out';
+      disc(ctx, cx, cy, R * 0.52);
+      ctx.restore();
+    },
+    /* 田中 — 左三つ巴（三勾玉） */
+    mitsudomoe(ctx, cx, cy, R) {
+      for (let i = 0; i < 3; i++) {
+        ctx.save(); ctx.translate(cx, cy); ctx.rotate(i * 2 * Math.PI / 3);
+        ctx.beginPath();
+        ctx.moveTo(0, -R * 0.12);
+        ctx.bezierCurveTo(R * 0.82, -R * 0.2, R * 0.62, R * 0.62, 0, R * 0.62);
+        ctx.bezierCurveTo(R * 0.34, R * 0.34, R * 0.36, -R * 0.02, 0, -R * 0.12);
+        ctx.fill();
+        disc(ctx, R * 0.2, R * 0.38, R * 0.17);
+        ctx.restore();
+      }
+    },
     /* 藤堂 — 蔦（藤蔓葉） */
     tsuta(ctx, cx, cy, R) {
       ctx.save(); ctx.translate(cx, cy + R * 0.1);
