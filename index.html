@@ -6,8 +6,8 @@
 <title>3D 關原之戰 — 電視級歷史節目</title>
 <style>
   :root{
-    --east:#3a78ff;   /* 東軍 德川 藍 */
-    --west:#ff3b3b;   /* 西軍 石田 紅 */
+    --east:#1c46d2;   /* 東軍 德川 藍（加深 + 高彩度） */
+    --west:#d11418;   /* 西軍 石田 紅（加深 + 高彩度） */
     --ink:#e9e4d4;
   }
   *{ box-sizing:border-box; margin:0; padding:0; }
@@ -36,12 +36,12 @@
   .lbl-unit .hp{ width:60px; height:4px; margin:2px auto 1px; background:rgba(0,0,0,.5);
                  border-radius:2px; overflow:hidden; box-shadow:0 0 2px #000; }
   .lbl-unit .hp i{ display:block; height:100%; width:100%; border-radius:2px; transition:width .3s linear; }
-  .side-east .hp i{ background:#5b93ff; } .side-west .hp i{ background:#ff5b5b; }
+  .side-east .hp i{ background:#2a54d6; } .side-west .hp i{ background:#d12a2a; }
   .lbl-unit .hp i.low{ background:#d8a838; }
   .lbl-unit.dim .hp{ display:none; }
   /* 倒戈後改投東軍：名字與血條轉藍 */
   .lbl-unit.defected{ color:#9cc0ff; }
-  .lbl-unit.defected .hp i{ background:#5b93ff; }
+  .lbl-unit.defected .hp i{ background:#2a54d6; }
   .side-east{ color:#9cc0ff; } .side-west{ color:#ff9c9c; }
 
   /* 交戰標記 A ⚔ B */
@@ -90,7 +90,10 @@
 
   /* 事件卡（旁白） */
   #caption{ position:fixed; left:50%; transform:translateX(-50%); bottom:104px; width:min(820px,86vw);
-            text-align:center; pointer-events:none; transition:opacity .5s; }
+            text-align:center; pointer-events:none; transition:opacity .5s;
+            padding:16px 48px 18px;
+            background:radial-gradient(135% 165% at 50% 52%, rgba(6,8,12,.80) 0%,
+                       rgba(6,8,12,.58) 42%, rgba(6,8,12,.28) 64%, rgba(6,8,12,0) 80%); }
   #evDate{ font-size:13px; letter-spacing:4px; color:#e8c87a; text-shadow:0 1px 6px #000; }
   #evTitle{ font-size:27px; font-weight:700; letter-spacing:3px; margin-top:4px;
             text-shadow:0 2px 12px #000,0 0 5px #000; }
@@ -162,8 +165,8 @@
   #bars .bal-track{ display:flex; height:14px; border-radius:4px; overflow:hidden;
          background:rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.18);
          box-shadow:0 1px 4px rgba(0,0,0,.5); }
-  #barEast{ background:linear-gradient(90deg,#1f4fd6,#6ba0ff); transition:width .4s; }
-  #barWest{ background:linear-gradient(270deg,#cc1f1f,#ff6a5b); transition:width .4s; }
+  #barEast{ background:linear-gradient(90deg,#13309e,#3f72e0); transition:width .4s; }
+  #barWest{ background:linear-gradient(270deg,#8f0c0c,#e0382c); transition:width .4s; }
 
   /* 控制列 */
   #controls{ position:fixed; left:0; right:0; bottom:0; height:84px; display:flex; align-items:center;
