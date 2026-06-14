@@ -1,46 +1,51 @@
 # 3D 關原之戰 — 電視級歷史節目
 
 以 Three.js 製作的單頁互動式 3D 歷史戰役節目，靈感來自「3D 香港保衛戰」。
-純前端、免 build、可自由運鏡，依時間軸演示關原之戰（1600 年）雙方陣型、移動、家紋軍旗與戰場特效。
+純前端、免 build、可自由運鏡，從**戰前一週的戰略調動**到**決戰六小時**再到**戰後結局**，
+完整、細節地演示關原之戰（慶長五年九月十五日／1600）雙方 22 名大名的陣型、行軍、交戰與戰略。
 
-## 設計決策
-- **配色**：東軍（德川）= 藍 🔵 ／ 西軍（石田）= 紅 🔴
-- **地形**：真實 DEM 高程 + 地形著色（M2 接入；M1 先用程序化山頭佔位）
-- **語言**：繁體中文為主，日文僅用於專有名詞（武將、家紋、地名原文）
+**線上版**：https://leorepro.github.io/BattleOfSekigahara/ （建議橫向／桌面觀看，手機亦可）
+
+## 主要功能
+- **真實地形**：關原～大垣 SRTM 30m DEM + EOX Sentinel-2 衛星影像貼圖（森林/平原/市街）
+- **22 名大名**：Canvas 程序化家紋幟旗（飄動）、兵種（鉄砲/騎馬/足軽/大筒）、即時兵力與狀態
+- **完整時間軸**：九月十四日朝（大垣對峙）→ 雨夜強行軍 → 決戰 → 戰後，17 個運鏡鏡頭
+- **交戰標記「A ⚔ B」**：在兩軍接觸點標出誰打誰，與旁白聚焦連動，砲火集中於接觸點
+- **倒戈視覺化**：小早川・脇坂倒戈時旗環轉金 +「⚔裏切」標記
+- **漸進行軍路線**：緞帶隨部隊推進顯示、走遠淡出（戰前不提早出現、決戰不擋畫面）
+- **聚焦突顯**：每一鏡突顯相關武將、淡化其他，密集戰場仍清楚
+- **兵種砲擊特效**：鉄砲齊射、大筒砲火（曳光+著彈）、騎馬揚塵；朝霧→放晴動態天氣
+- **電視節目感**：逐鏡停留式自動運鏡 + 事件卡（日期/中英標題/旁白/武將）+ 雙方兵力儀表
+- **史料面板**：考據註記（布陣/兵力為二次史料、大筒屬演繹）與參考書目
+- **符號圖例 · 點選部隊卡片 · 手機/桌面響應式**
 
 ## 技術架構
-沿用「引擎 / 資料分離」：`src/engine/*` 是通用引擎，`data/*` 是關原戰役內容。
-全域 `THREE`（r128 UMD）+ 全域 `SEKI` 命名空間，無打包工具。
+「引擎 / 資料分離」：`src/engine/*` 通用引擎，`data/*` 關原戰役內容。
+全域 `THREE`（r128 UMD）+ 全域 `SEKI` 命名空間，無打包工具，純靜態。
 
 ```
-index.html              載入函式庫 + 資料 + 引擎（依序 script）
-lib/three/              three.min.js / OrbitControls.js / CSS2DRenderer.js
+index.html
+lib/three/         three.min.js / OrbitControls.js / CSS2DRenderer.js
 data/
-  geography.js          關原地理（經緯度+海拔）：笹尾山/松尾山/南宮山/桃配山/天滿山…
-src/
-  engine/
-    scene.js            renderer/camera/OrbitControls/燈光/ACES 色調 + 經緯度投影
-    terrain.js          地形網格（M1 程序化高度場 → M2 真實 DEM）
-    labels.js           CSS2D 地名標籤
-  main.js               啟動點：組裝場景 + M1 占位部隊 + 渲染迴圈
-assets/terrain/         DEM 高程 / 底圖（M2）
-assets/audio/           配樂（M5）
+  geography.js     35 個地點(山/城/陣跡/古戰場/街道,查證座標)
+  heightmap.js     SRTM 30m DEM(fetch_dem.py 產生)
+  armies.js        22 大名(side/kind/crest/track/defectAt)
+  storyboard.js    17 運鏡鏡頭(HK demo 結構:hold/cam/narration/focus)
+  weather.js · engagements.js · sources.js
+src/engine/
+  scene · terrain(衛星貼圖) · labels(地標圖示) · crest(家紋) · units(部隊/聚焦/倒戈)
+  routes(漸進緞帶) · effects(兵種粒子) · engage(交戰標記) · weather · storyboard · ui
+src/main.js
+assets/terrain/satellite.jpg · assets/audio/bgm.mp3(自備)
 ```
 
-## 里程碑
-- [x] **M1 引擎骨架**：場景 + OrbitControls 自由運鏡 + 程序化地形 + 地名標籤 + 占位本陣旗（紅藍）
-- [x] **M3 部隊 + 家紋**：12 名武將、Canvas 程序化家紋幟旗（飄動）、track 時間軸內插（8:00→14:00 自動播放）、兵力/戰況標籤、潰滅淡出。家紋預覽見 `crest-preview.html`
-- [x] **M4 特效 + 天氣**：鐵炮齊射砲口閃光（加色粒子）+ 硝煙（ShaderMaterial 粒子系統，於交戰部隊位置噴發）、朝霧→放晴動態 fog/天色/光照/曝光 + 貼地飄移霧層
-- [x] **M2 真實地形**：關原 SRTM 30m 真實 DEM（41×41，由 `fetch_dem.py` 抓取存於 `data/heightmap.js`）建地形網格 + 依真實海拔著色 + 雙線性貼地高度
-- [x] **M5 運鏡 + UI + 配樂**：節目模式自動運鏡（9 個 storyboard 鏡位）、時間軸 scrubber、播放/暫停/倍速、節目↔自由切換、字幕（重大事件高亮）、雙方兵力儀表、點選部隊看卡片、配樂開關
-- [x] **收尾**：移動方向箭頭、部隊防重疊 decollide、點選 hitbox
+## 配色與語言
+- 東軍（德川）= 藍 🔵 ／ 西軍（石田）= 紅 🔴
+- 繁體中文為主，日文用於專有名詞（武將、家紋、地名原文）
 
-### 尚未完成
-- [ ] **⚠️ 瀏覽器視覺驗證**：全程未經人眼確認（claude-in-chrome 擴充連不上）——家紋線條、粒子亮度、相機鏡位、地形誇張係數都可能需微調
-- [ ] **配樂檔**：把 Suno 生成的 mp3 放到 `assets/audio/bgm.mp3`（已接好播放鈕，缺檔時按鈕顯示「無音檔」不會壞）
-- [ ] 戰線 `fronts`、行動裝置觸控/效能調校、全程繁中校對
-- [ ] **M4 特效 + 天氣**：鐵炮/砲火粒子、砲口閃光、朝霧→放晴
-- [ ] **M5 運鏡 + UI + 配樂**：storyboard 自動播放、時間軸 scrubber、字幕旁白、Suno 配樂
+## 待補（可選）
+- **配樂檔**：把 Suno 生成的 mp3 放到 `assets/audio/bgm.mp3`（已接好播放鈕，缺檔顯示「無音檔」不會壞）
+- 效能調校、全程繁中校對
 
 ## 本機預覽
 ```bash
