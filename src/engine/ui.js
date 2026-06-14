@@ -68,8 +68,8 @@ window.SEKI = window.SEKI || {};
       el.btnMode.textContent = S.player.program ? '🎬 節目模式' : '🕹 自由運鏡';
       el.btnMode.classList.toggle('on', S.player.program);
     };
-    // 配樂
-    el.btnAudio.onclick = () => {
+    // 配樂（按鈕已移除；保留綁定但加防護，無按鈕則略過）
+    if (el.btnAudio) el.btnAudio.onclick = () => {
       if (!el.bgm) return;
       if (el.bgm.paused) { el.bgm.volume = 0.6; el.bgm.play().then(() => {
           el.btnAudio.textContent = '🔊 配樂'; }).catch(() => {
@@ -87,8 +87,13 @@ window.SEKI = window.SEKI || {};
 
     // 史料面板
     buildNotes();
-    el.btnNotes.onclick = () => el.notes.classList.toggle('show');
-    el.notesClose.onclick = () => el.notes.classList.remove('show');
+    el.btnNotes.onclick = () => {
+      const open = el.notes.classList.toggle('show');
+      el.btnNotes.classList.toggle('on', open);            // 切換 active 外觀
+    };
+    el.notesClose.onclick = () => {
+      el.notes.classList.remove('show'); el.btnNotes.classList.remove('on');
+    };
 
     // 點選部隊 → 卡片
     raycaster = new THREE.Raycaster(); mouse = new THREE.Vector2();
