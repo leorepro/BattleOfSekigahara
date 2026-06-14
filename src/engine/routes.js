@@ -9,7 +9,7 @@ window.SEKI = window.SEKI || {};
 
 (function (S) {
   const EAST = 0x3a78ff, WEST = 0xff3b3b;
-  const LIFT = 1.0, HALF = 1.6, WINDOW = 8.0;   // 緞帶離地/半寬/淡出時窗(小時)
+  const LIFT = 1.0, HALF = 1.6, WINDOW = 3.5;   // 緞帶離地/半寬/淡出時窗(小時,走遠即淡出)
   let _routes = [];
 
   const VERT = `

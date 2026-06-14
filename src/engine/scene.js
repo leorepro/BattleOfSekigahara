@@ -75,8 +75,8 @@ window.SEKI = window.SEKI || {};
       controls.enableDamping = true;
       controls.dampingFactor = 0.06;
       controls.maxPolarAngle = Math.PI * 0.49;   // 不穿到地底
-      controls.minDistance = 20;
-      controls.maxDistance = 500;
+      controls.minDistance = 5;                   // 可貼近看細節
+      controls.maxDistance = 600;
       controls.target.set(0, 0, 0);
 
       this.scene = scene; this.camera = camera; this.renderer = renderer;
