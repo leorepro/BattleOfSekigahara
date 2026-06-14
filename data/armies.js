@@ -149,6 +149,17 @@ SEKI.armies = [
       { t:13,  lng:136.4650, lat:35.3650, s:3600, st:'attack' },
       { t:14,  lng:136.4620, lat:35.3660, s:3500, st:'attack' },
     ]},
+  { id:"matsudaira", name_zh:"松平忠吉", name_ja:"松平忠吉", side:'east', crest:'mitsubaAoi', kind:'cavalry',
+    title:"東軍 · 家康四子 · 與井伊共打第一槍", troops:3000,
+    track:[
+      { t:-16, lng:136.5855, lat:35.3895, s:3000, st:'hold' },
+      { t:0,   lng:136.5855, lat:35.3895, s:3000, st:'hold' },
+      { t:6,   lng:136.4770,lat:35.3628,s:3000, st:'march' },
+      { t:8,   lng:136.4770, lat:35.3628, s:3000, st:'march' },
+      { t:9,   lng:136.4710, lat:35.3645, s:3000, st:'attack' }, // 與井伊抜け駆け,打響第一槍
+      { t:13,  lng:136.4655, lat:35.3655, s:3000, st:'attack' },
+      { t:14,  lng:136.4625, lat:35.3665, s:2900, st:'attack' },
+    ]},
   { id:"honda", name_zh:"本多忠勝", name_ja:"本多忠勝", side:'east', crest:'tachiAoi', kind:'cavalry',
     title:"東軍 · 軍監", troops:500,
     track:[

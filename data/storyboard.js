@@ -56,9 +56,9 @@ SEKI.storyboard = [
   { t:8.6, hold:12, cam:{lng:136.470, lat:35.364, dist:115, az:64, el:40, orbit:0.7},
     dateLabel:"辰刻過半", title_zh:"井伊直政抜け駆け · 戰端開啟",
     title_en:"Ii Naomasa Opens the Battle",
-    narration_zh:"霧稍散，本應由福島正則先鋒開戰，井伊「赤備え」騎馬隊卻搶先突進宇喜多陣，鐵炮齊鳴，全線交火。",
-    commanders:[{zh:"井伊直政",en:"Ii Naomasa"},{zh:"福島正則",en:"Fukushima Masanori"}],
-    focus:["ii","fukushima","ukita"], side:"both" },
+    narration_zh:"霧稍散，本應由福島正則先鋒開戰，井伊直政卻引家康四子松平忠吉以「赤備え」騎馬隊搶先突進宇喜多陣——這一聲鐵炮便是關原的第一槍，全線隨即交火。",
+    commanders:[{zh:"井伊直政",en:"Ii Naomasa"},{zh:"松平忠吉",en:"Matsudaira Tadayoshi"},{zh:"福島正則",en:"Fukushima Masanori"}],
+    focus:["ii","matsudaira","fukushima","ukita"], side:"both" },
 
   { t:10.0, hold:13, cam:{lng:136.463, lat:35.366, dist:120, az:-8, el:38, orbit:0.7},
     dateLabel:"巳刻 · 10:00", title_zh:"天滿山前血戰",

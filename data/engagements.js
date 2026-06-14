@@ -9,6 +9,7 @@ window.SEKI = window.SEKI || {};
 SEKI.engagements = [
   { a:'fukushima',  b:'ukita',     from:9,    to:13.5 },  // 福島 ⚔ 宇喜多（正面主戰）
   { a:'ii',         b:'ukita',     from:9,    to:12   },  // 井伊 抜け駆け 攻宇喜多
+  { a:'matsudaira', b:'ukita',     from:9,    to:12   },  // 松平忠吉 與井伊共打第一槍
   { a:'kuroda',     b:'ishida',    from:10,   to:14   },  // 黑田 ⚔ 石田（笹尾山·狙擊島左近）
   { a:'hosokawa',   b:'ishida',    from:10,   to:14   },  // 細川 ⚔ 石田
   { a:'tanaka',     b:'ishida',    from:10,   to:14   },  // 田中 ⚔ 石田
