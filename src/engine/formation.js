@@ -139,7 +139,7 @@ window.SEKI = window.SEKI || {};
             const fi = k % cw, ri = Math.floor(k / cw);
             const lx = cx + (fi - (cw - 1) / 2) * sp + (Math.sin(idx * 12.9) + 0.6 * Math.sin(idx * 3.7)) * 0.13 * tight;
             const lz = cz + ((cd - 1) / 2 - ri) * sp + (Math.cos(idx * 7.7) + 0.6 * Math.cos(idx * 2.3)) * 0.13 * tight;  // ri=0 前(+Z)
-            const yaw = (Math.sin(idx * 4.1) + 0.5 * Math.sin(idx * 1.7)) * (east ? 0.13 : 0.07);  // 朝向只微抖，矛尖整齊指敵
+            const yaw = (Math.sin(idx * 4.1) + 0.5 * Math.sin(idx * 1.7)) * (east ? 0.06 : 0.05);  // 朝向幾乎一致，矛尖整齊指敵
             base.push({ x: lx, z: lz, yaw });
             _m.compose(_p.set(lx, 0, lz), _q.setFromAxisAngle(_up, yaw), _s);
             pbody.setMatrixAt(idx, _m);
@@ -215,18 +215,21 @@ window.SEKI = window.SEKI || {};
           || Math.abs(f.facing - f.lastFacing) > 0.008;
         if (dirty) {
           // 隘道壓縮：波斯攻擊方接近中門 → 正面壓窄成「長直線」(地形所迫，只少數並肩→斯巴達能久守)
-          let sq = 1;
+          let sq = 1, zst = 1;
           const cz = (f.east && S.config) ? S.config.chokeZone : null;
           if (cz && S.engine) {
             const p = S.engine.project(cz.lng, cz.lat, 0);
             const d = Math.hypot(gp.x - p.x, gp.z - p.z), r = cz.radius || 55;
-            if (d < r) sq = 1 - 0.7 * (1 - d / r);     // 越近中門正面壓越窄
+            if (d < r) {                                // 窄門：正面壓窄 + 縱深拉長 → 細長縱列
+              const e = 1 - d / r, s2 = e * e * (3 - 2 * e);
+              sq = 1 - 0.86 * s2; zst = 1 + 1.6 * s2;
+            }
           }
           const cos = Math.cos(f.facing), sin = Math.sin(f.facing), B = f.base;
           const maxD = 2.2;   // 士兵與單位中心最大高度差：超過視為上山/落海 → 沿陣面拉回平地
           for (let i = 0; i < n; i++) {
             const b = B[i];
-            let bx = b.x * sq, bz = b.z;
+            let bx = b.x * sq, bz = b.z * zst;
             let wx = gp.x + bx * cos + bz * sin, wz = gp.z - bx * sin + bz * cos;
             let ty = S.terrain.heightAt(wx, wz);
             if (Math.abs(ty - gp.y) > maxD) {          // 不上山、不落海：把該兵拉回直到地勢平緩
