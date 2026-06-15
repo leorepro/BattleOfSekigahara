@@ -158,8 +158,12 @@
   #roster .rs-cbar i.w{ background:linear-gradient(90deg,#d12a2a,#f2615f); }
 
   /* 兵種徽章 */
-  .kbadge{ display:inline-block; min-width:14px; padding:0 3px; margin-right:4px; border-radius:3px;
+  .kbadge{ display:inline-flex; align-items:center; justify-content:center; vertical-align:middle;
+           min-width:14px; padding:0 3px; margin-right:4px; border-radius:3px;
            font-size:10px; font-weight:700; text-align:center; color:#16181c; }
+  /* 內嵌 SVG icon：小而高對比，在深藍/天藍/綠底上以近白填色，解決「灰灰的」 */
+  .kbadge svg{ display:block; width:13px; height:13px; fill:#fff; }
+  .k-aircraft svg{ fill:#0d1b26; }   /* 天藍底較亮，用深色 icon 對比更清楚 */
   .k-cavalry{ background:#e6b84e; } .k-matchlock{ background:#bcc8d4; }
   .k-artillery{ background:#e8884a; } .k-command{ background:#dcd28e; } .k-infantry{ background:#a6c29c; }
   /* 現代軍種徽章（諾曼第）：依「軍種」上色——海軍=深藍、空軍=天藍、陸軍=橄欖綠；圖示再分細部兵種 */
@@ -319,10 +323,10 @@
     <div class="lg-row"><span class="ic">▣</span>據點碉堡<span class="ic">▲</span>崖<span class="ic">◉</span>村鎮</div>
 
     <div class="lg-sec">軍　種<span style="opacity:.6;font-size:10px;font-weight:400;letter-spacing:1px;">（徽章底色：<span style="color:#6db0ec">海</span>·<span style="color:#7cc0f0">空</span>·<span style="color:#9fc27e">陸</span>）</span></div>
-    <div class="lg-row"><span class="kbadge k-warship">艦</span>海軍艦砲<span class="kbadge k-landingcraft">登</span>登陸艇</div>
-    <div class="lg-row"><span class="kbadge k-aircraft">機</span>航空兵<span class="kbadge k-armor">戰</span>DD戰車</div>
-    <div class="lg-row"><span class="kbadge k-bunker">堡</span>岸防工事<span class="kbadge k-flak">砲</span>高射砲</div>
-    <div class="lg-row"><span class="kbadge k-infantry">步</span>搶灘步兵・遊騎兵</div>
+    <div class="lg-row"><span class="kbadge k-warship"><svg viewBox="0 0 24 24"><path d="M2 14h20l-2.5 5H4.5L2 14zm4-2V8h3v4H6zm5 0V5h2v7h-2zm4 0V8h3v4h-3z"/></svg></span>海軍艦砲<span class="kbadge k-landingcraft"><svg viewBox="0 0 24 24"><path d="M3 8h13v8H3V8zm13 1h5l-5 6V9zM2 17h20v2H2v-2z"/></svg></span>登陸艇</div>
+    <div class="lg-row"><span class="kbadge k-aircraft"><svg viewBox="0 0 24 24"><path d="M11 2c.6 0 1 .8 1 2v5l9 5v2l-9-2v4l3 2v1l-4-1-4 1v-1l3-2v-4l-9 2v-2l9-5V4c0-1.2.4-2 1-2z"/></svg></span>航空兵<span class="kbadge k-armor"><svg viewBox="0 0 24 24"><path d="M3 13h16v4H3v-4zm2-3h7v3H5v-3zm6 1h11v1.5H12V11zM4 18h14v1.5H4V18z"/></svg></span>DD戰車</div>
+    <div class="lg-row"><span class="kbadge k-bunker"><svg viewBox="0 0 24 24"><path d="M4 18l3-9h10l3 9H4zm6.5-5h3v2.5h-3V13z"/></svg></span>岸防工事<span class="kbadge k-flak"><svg viewBox="0 0 24 24"><path d="M5 19h8v2H5v-2zm1-3h6l1 2H7l-1-2zm3-1l8-12 1.8 1.2-8 12L9 15z"/></svg></span>高射砲</div>
+    <div class="lg-row"><span class="kbadge k-infantry"><svg viewBox="0 0 24 24"><path d="M12 5c5 0 8 3.5 8 8H2c0-1 .5-2 1.5-2H4c0-3.6 3.4-6 8-6zm-10 8h20v2H2v-2z"/></svg></span>搶灘步兵・遊騎兵</div>
   </div>
 
   <!-- 軍隊清單面板（右側） -->

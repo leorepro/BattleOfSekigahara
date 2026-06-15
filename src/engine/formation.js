@@ -31,10 +31,23 @@ window.SEKI = window.SEKI || {};
     out.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
     out.setIndex(idx); return out;
   }
+  // 戰國足軽：軀幹 + 方頭（原樣）
   function soldierGeo() {
     const body = new THREE.BoxGeometry(0.42, BODY_H, 0.36); body.translate(0, BODY_H/2, 0);
     const head = new THREE.BoxGeometry(0.3, 0.3, 0.3); head.translate(0, BODY_H + 0.15, 0);
     return mergeBoxes([body, head]);
+  }
+  // 現代步兵：軀幹 + 壓扁鋼盔頭 + 斜持步槍（low-poly，全併入單一 geometry 供 InstancedMesh）
+  function modernSoldierGeo() {
+    const body = new THREE.BoxGeometry(0.44, BODY_H, 0.34); body.translate(0, BODY_H/2, 0);
+    // 鋼盔：略寬扁的盔形（壓扁 box），戴在頭頂
+    const helmet = new THREE.BoxGeometry(0.36, 0.2, 0.34); helmet.translate(0, BODY_H + 0.1, 0);
+    // 盔簷：前緣略突出
+    const brim = new THREE.BoxGeometry(0.4, 0.06, 0.12); brim.translate(0, BODY_H + 0.04, 0.16);
+    // 步槍：細長 box 斜持於身前（沿身體右前方傾斜）
+    const rifle = new THREE.BoxGeometry(0.06, 0.06, 1.0);
+    rifle.rotateX(-0.5); rifle.translate(0.18, BODY_H * 0.55, 0.18);
+    return mergeBoxes([body, helmet, brim, rifle]);
   }
   function sashimonoGeo() {
     const pole = new THREE.BoxGeometry(0.05, 1.1, 0.05); pole.translate(0, BODY_H + 0.2, -0.22);
@@ -47,11 +60,13 @@ window.SEKI = window.SEKI || {};
   S.buildFormations = function () {
     const eng = S.engine;
     _forms = [];
-    const sGeo = soldierGeo(), fGeo = sashimonoGeo();
     // 現代戰役（諾曼第 config.modern）：只有步兵在陸上才以士兵方陣呈現；
     // 海上/空中/載具（warship/landingcraft/aircraft/flak/bunker/armor）只顯示自身 3D 模型，
     // 不再額外渲染漂浮的士兵 box / sashimono 背旗（即「空中白色小方塊」之來源）。
     const modern = !!(S.config && S.config.modern);
+    // 依時代決定士兵幾何：現代＝鋼盔步兵（無背旗）；戰國＝足軽＋sashimono 背旗。
+    const sGeo = modern ? modernSoldierGeo() : soldierGeo();
+    const fGeo = modern ? null : sashimonoGeo();
     for (const a of S.armies) {
       const east = a.side === 'east';
       const showSoldiers = !modern || a.kind === 'infantry';
@@ -60,21 +75,23 @@ window.SEKI = window.SEKI || {};
       const rows = Math.ceil(max / cols);
       const body = new THREE.InstancedMesh(sGeo,
         new THREE.MeshStandardMaterial({ color: east?ARMOR_E:ARMOR_W, roughness: 0.85 }), max);
-      const sashi = new THREE.InstancedMesh(fGeo,
+      // 現代戰役不建立 sashimono 背旗（傘兵不會背戰國背旗），sashi 設為 null
+      const sashi = modern ? null : new THREE.InstancedMesh(fGeo,
         new THREE.MeshStandardMaterial({ color: east?FLAG_E:FLAG_W, roughness: 0.6,
           emissive: east?FLAG_E:FLAG_W, emissiveIntensity: 0.22 }), max);
-      body.castShadow = true; body.frustumCulled = false; sashi.frustumCulled = false;
+      body.castShadow = true; body.frustumCulled = false;
+      if (sashi) sashi.frustumCulled = false;
       for (let i = 0; i < max; i++) {
         const c = i % cols, r = Math.floor(i / cols);
         const x = (c - (cols-1)/2) * SP + Math.sin(i*12.9)*0.16;
         const z = (r - (rows-1)/2) * SP + Math.cos(i*7.7)*0.16;
         _m.compose(_p.set(x, 0, z), _q.setFromAxisAngle(_up, Math.sin(i*4.1)*0.22), _s);
-        body.setMatrixAt(i, _m); sashi.setMatrixAt(i, _m);
+        body.setMatrixAt(i, _m); if (sashi) sashi.setMatrixAt(i, _m);
       }
-      body.instanceMatrix.needsUpdate = true; sashi.instanceMatrix.needsUpdate = true;
+      body.instanceMatrix.needsUpdate = true; if (sashi) sashi.instanceMatrix.needsUpdate = true;
       // 非步兵的現代單位：隱藏方陣並把實例數歸零（避免空中/海上漂浮方塊）
-      if (!showSoldiers) { body.visible = false; sashi.visible = false; body.count = 0; sashi.count = 0; }
-      eng.scene.add(body); eng.scene.add(sashi);
+      if (!showSoldiers) { body.visible = false; body.count = 0; if (sashi) { sashi.visible = false; sashi.count = 0; } }
+      eng.scene.add(body); if (sashi) eng.scene.add(sashi);
       _forms.push({ data: a, body, sashi, max, facing: 0, strengthPer: a.troops / max, showSoldiers });
     }
     return _forms;
@@ -99,18 +116,22 @@ window.SEKI = window.SEKI || {};
         const onLand = !S.terrain || S.terrain.heightAt(gp.x, gp.z) > SEA_Y;
         if (!onLand) n = 0;
       }
-      for (const mesh of [f.body, f.sashi]) {
+      // 現代戰役無 sashi（f.sashi 為 null），僅更新 body
+      const meshes = f.sashi ? [f.body, f.sashi] : [f.body];
+      for (const mesh of meshes) {
         mesh.position.set(gp.x, gp.y, gp.z);
         mesh.rotation.y = f.facing;
         mesh.count = n;
       }
-      // 倒戈後改投東軍 → 兵團與背旗轉藍
+      // 倒戈後改投東軍 → 兵團（與背旗，若有）轉藍
       const eastNow = (f.data.side === 'east') || (f.data.defectAt != null && t >= f.data.defectAt);
       if (eastNow !== f.eastNow) {
         f.eastNow = eastNow;
         f.body.material.color.setHex(eastNow ? ARMOR_E : ARMOR_W);
-        f.sashi.material.color.setHex(eastNow ? FLAG_E : FLAG_W);
-        f.sashi.material.emissive.setHex(eastNow ? FLAG_E : FLAG_W);
+        if (f.sashi) {
+          f.sashi.material.color.setHex(eastNow ? FLAG_E : FLAG_W);
+          f.sashi.material.emissive.setHex(eastNow ? FLAG_E : FLAG_W);
+        }
       }
     }
   };
@@ -118,7 +139,7 @@ window.SEKI = window.SEKI || {};
   S.setFormationsVisible = function (v) {
     for (const f of _forms) {
       const vis = v && f.showSoldiers;   // 非步兵的現代單位永遠不顯示士兵方陣
-      f.body.visible = vis; f.sashi.visible = vis;
+      f.body.visible = vis; if (f.sashi) f.sashi.visible = vis;
     }
   };
 })(window.SEKI);

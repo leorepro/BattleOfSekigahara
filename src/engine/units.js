@@ -20,6 +20,28 @@ window.SEKI = window.SEKI || {};
 
   function fmt(n) { return Math.round(n).toLocaleString('en-US'); }
 
+  /* ---- 現代軍種徽章 SVG icon（viewBox 0 0 24 24，單色近白 #fff）----
+     辨識度高、節點少；只對有對照的 kind 生效，其餘 kind（戰國 command/cavalry/matchlock…）
+     會在下方 fallback 回原本文字，故戰國頁面行為不變。 */
+  const KSVG = {
+    // 軍艦：船身梯形剪影 + 上層艦橋
+    warship: '<svg viewBox="0 0 24 24"><path d="M2 14h20l-2.5 5H4.5L2 14zm4-2V8h3v4H6zm5 0V5h2v7h-2zm4 0V8h3v4h-3z"/></svg>',
+    // 登陸艇：方頭船身 + 放下的跳板
+    landingcraft: '<svg viewBox="0 0 24 24"><path d="M3 8h13v8H3V8zm13 1h5l-5 6V9zM2 17h20v2H2v-2z"/></svg>',
+    // 飛機：上視機身 + 後掠機翼
+    aircraft: '<svg viewBox="0 0 24 24"><path d="M11 2c.6 0 1 .8 1 2v5l9 5v2l-9-2v4l3 2v1l-4-1-4 1v-1l3-2v-4l-9 2v-2l9-5V4c0-1.2.4-2 1-2z"/></svg>',
+    // 戰車：履帶車身 + 砲塔 + 前伸砲管
+    armor: '<svg viewBox="0 0 24 24"><path d="M3 13h16v4H3v-4zm2-3h7v3H5v-3zm6 1h11v1.5H12V11zM4 18h14v1.5H4V18z"/></svg>',
+    // 碉堡：梯形掩體 + 中央射口
+    bunker: '<svg viewBox="0 0 24 24"><path d="M4 18l3-9h10l3 9H4zm6.5-5h3v2.5h-3V13z"/></svg>',
+    // 高射砲：朝天斜指的砲管 + 底座
+    flak: '<svg viewBox="0 0 24 24"><path d="M5 19h8v2H5v-2zm1-3h6l1 2H7l-1-2zm3-1l8-12 1.8 1.2-8 12L9 15z"/></svg>',
+    // 步兵：鋼盔剪影
+    infantry: '<svg viewBox="0 0 24 24"><path d="M12 5c5 0 8 3.5 8 8H2c0-1 .5-2 1.5-2H4c0-3.6 3.4-6 8-6zm-10 8h20v2H2v-2z"/></svg>',
+    // 野砲：大車輪 + 後拉的長砲管
+    artillery: '<svg viewBox="0 0 24 24"><path d="M7 17a4 4 0 110-8 4 4 0 010 8zm0-2.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM10 11l11-3 .6 2-11 3L10 11zm-3 6h12v2H7v-2z"/></svg>'
+  };
+
   // 關鍵影格間取樣；ctrls[i] 存在則該段沿二次貝茲曲線(繞地形)行進，否則直線。
   S.sampleTrack = function (track, t, ctrls) {
     if (t <= track[0].t) return { ...track[0] };
@@ -136,8 +158,12 @@ window.SEKI = window.SEKI || {};
       const el = document.createElement('div');
       el.className = `lbl lbl-unit side-${a.side}`;
       const KICON = (S.config && S.config.kindIcons) || { command:'本', artillery:'砲', matchlock:'銃', cavalry:'騎', infantry:'槍' };
+      // SVG 圖形 icon 僅用於現代戰役（諾曼第）——其 .kbadge svg CSS 只定義於 normandy.html；
+      // 戰國（關原/桶狹間）維持文字 fallback，避免無 CSS 的 SVG 破圖。
+      const useSvg = !!(S.config && S.config.modern);
+      const kmark = (useSvg && KSVG[a.kind]) || (KICON[a.kind] || '槍');
       el.innerHTML =
-        `<div><span class="kbadge k-${a.kind}" title="${a.kind}">${KICON[a.kind] || '槍'}</span>` +
+        `<div><span class="kbadge k-${a.kind}" title="${a.kind}">${kmark}</span>` +
         `${a.name_zh}<span class="ja"> ${a.name_ja}</span></div>` +
         `<div class="hp"><i></i></div><div class="troops"></div>`;
       const tag = new THREE.CSS2DObject(el);
