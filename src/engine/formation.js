@@ -117,28 +117,37 @@ window.SEKI = window.SEKI || {};
         count = Math.max(24, count);
         const cloak = (a.factionColor != null) ? a.factionColor : undefined;
         const pgeo = S.buildHopliteGeo(variant, { cloak, crest: cloak });
-        // 陣型：希臘=深列盾牆(7~10深、密)；波斯=寬深人海塊(近正方)
-        const depth = east ? Math.max(6, Math.round(Math.sqrt(count * 0.7)))
-                           : Math.min(10, Math.max(7, Math.round(count / 30)));
-        const files = Math.ceil(count / depth);
-        const fsp = east ? 0.72 : 0.56, rsp = east ? 0.82 : 0.7;
         const pbody = new THREE.InstancedMesh(pgeo,
           new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.62, metalness: mass ? 0.05 : 0.16 }), count);
         pbody.castShadow = true; pbody.frustumCulled = false;
         const base = [];   // 每兵本地座標（供逐兵貼地形高度，見 updateFormations）
-        // 雜亂度：波斯人海最雜亂(像人群)、希臘方陣較整齊但非機械網格；前排密、後排散
-        const jit = east ? (mass ? 0.36 : 0.22) : 0.13;
-        const yawJit = east ? 0.55 : 0.14;
-        for (let i = 0; i < count; i++) {
-          const fi = i % files, ri = Math.floor(i / files);          // 檔 fi、列 ri（0=前排）
-          const j = jit * (1 + ri * 0.06);                            // 後排較散
-          // 雙頻雜訊打散規則網格 → 不再方方正正
-          const lx = (fi - (files - 1) / 2) * fsp + (Math.sin(i * 12.9) + 0.6 * Math.sin(i * 3.7)) * j;
-          const lz = ((depth - 1) / 2 - ri) * rsp + (Math.cos(i * 7.7) + 0.6 * Math.cos(i * 2.3)) * j;  // ri=0 → 前(+Z)
-          const yaw = (Math.sin(i * 4.1) + 0.5 * Math.sin(i * 1.7)) * yawJit;
-          base.push({ x: lx, z: lz, yaw });
-          _m.compose(_p.set(lx, 0, lz), _q.setFromAxisAngle(_up, yaw), _s);
-          pbody.setMatrixAt(i, _m);
+        // 由多個小部隊(cluster)組成：散布陣面、疏密不一、有聚有散——不再單一方塊。
+        // 希臘=多個盾牆小隊較密整齊；波斯=小隊更多、間距更鬆、像人群。
+        const clSize = east ? (mass ? 64 : 46) : 38;
+        const nCl = Math.max(1, Math.ceil(count / clSize));
+        const cCols = Math.max(1, Math.round(Math.sqrt(nCl * (east ? 1.1 : 2.4))));  // 希臘較寬扁(沿陣面)
+        const cRows = Math.ceil(nCl / cCols);
+        const gapX = east ? 4.6 : 3.4, gapZ = east ? 3.9 : 2.6;
+        let idx = 0;
+        for (let c = 0; c < nCl && idx < count; c++) {
+          const ccx = c % cCols, ccz = Math.floor(c / cCols);
+          // 小隊中心：規則格 + 隨機偏移(聚散不一)
+          const cx = (ccx - (cCols - 1) / 2) * gapX + Math.sin(c * 5.1) * (east ? 2.0 : 0.7);
+          const cz = ((cRows - 1) / 2 - ccz) * gapZ + Math.cos(c * 3.3) * (east ? 1.6 : 0.5);
+          const tight = 0.8 + 0.55 * Math.abs(Math.sin(c * 2.7));     // 有的密(~0.8)有的散(~1.35)
+          const cn = Math.min(clSize, count - idx);
+          const cw = Math.max(3, Math.round(Math.sqrt(cn * (east ? 1.2 : 2.0))));   // 小隊寬
+          const cd = Math.ceil(cn / cw);
+          const sp = (east ? 0.7 : 0.56) * tight;
+          for (let k = 0; k < cn; k++, idx++) {
+            const fi = k % cw, ri = Math.floor(k / cw);
+            const lx = cx + (fi - (cw - 1) / 2) * sp + (Math.sin(idx * 12.9) + 0.6 * Math.sin(idx * 3.7)) * 0.13 * tight;
+            const lz = cz + ((cd - 1) / 2 - ri) * sp + (Math.cos(idx * 7.7) + 0.6 * Math.cos(idx * 2.3)) * 0.13 * tight;  // ri=0 前(+Z)
+            const yaw = (Math.sin(idx * 4.1) + 0.5 * Math.sin(idx * 1.7)) * (east ? 0.5 : 0.14);
+            base.push({ x: lx, z: lz, yaw });
+            _m.compose(_p.set(lx, 0, lz), _q.setFromAxisAngle(_up, yaw), _s);
+            pbody.setMatrixAt(idx, _m);
+          }
         }
         pbody.instanceMatrix.needsUpdate = true;
         eng.scene.add(pbody);
