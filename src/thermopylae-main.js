@@ -46,8 +46,7 @@
       [15, 0xc9b483], [60, 0xb0a85c], [160, 0x7e8a48], [400, 0x97844e],
       [800, 0x8f8470], [1300, 0x9c9384], [1900, 0xc8c4bc],
     ],
-    // 純海拔著色（無衛星圖：今日地貌含現代公路/農田，與古戰場不符）
-    satelliteTexture: null,
+    satelliteTexture: 'assets/terrain/thermopylae-sat.jpg',
     // 大地圖：霧拉遠避免遠山被吃成灰白 + 鏡頭可拉遠看全景 + 通透愛琴海夏日天色
     fogNear: 320, fogFar: 2400, maxDistance: 2400,
     skyColor: 0xaecadb, fogColor: 0xbcd4df,
