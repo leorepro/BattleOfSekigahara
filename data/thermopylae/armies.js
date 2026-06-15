@@ -19,9 +19,9 @@ SEKI.armies = [
       { t:-8,  lng:22.5650,lat:38.7985,s:298, st:'march' },
       { t:-7,  lng:22.5395,lat:38.7960,s:298, st:'hold' },
       { t:2,   lng:22.5388,lat:38.7960,s:298, st:'attack' },
-      { t:8,   lng:22.5390,lat:38.7958,s:296, st:'hold' },
+      { t:8,   lng:22.5390,lat:38.7958,s:290, st:'hold' },
       { t:11,  lng:22.5388,lat:38.7960,s:294, st:'attack' },
-      { t:16,  lng:22.5390,lat:38.7958,s:290, st:'hold' },
+      { t:16,  lng:22.5390,lat:38.7958,s:276, st:'hold' },
       { t:19,  lng:22.5378,lat:38.7962,s:290, st:'march' },
       { t:20,  lng:22.5392,lat:38.7964,s:280, st:'attack' },
       { t:22,  lng:22.5398,lat:38.7966,s:120, st:'attack' },
@@ -34,7 +34,7 @@ SEKI.armies = [
       { t:-10, lng:22.6300,lat:38.8030,s:700, st:'march' },
       { t:-7,  lng:22.5430,lat:38.7948,s:700, st:'hold' },
       { t:2,   lng:22.5410,lat:38.7952,s:700, st:'attack' },
-      { t:16,  lng:22.5418,lat:38.7950,s:680, st:'hold' },
+      { t:16,  lng:22.5418,lat:38.7950,s:600, st:'hold' },
       { t:19,  lng:22.5402,lat:38.7958,s:680, st:'attack' },
       { t:22,  lng:22.5396,lat:38.7964,s:300, st:'attack' },
       { t:23,  lng:22.5400,lat:38.7967,s:0,   st:'rout' },
@@ -119,9 +119,9 @@ SEKI.armies = [
       { t:-6,  lng:22.4900,lat:38.8120,s:20000, st:'march' },
       { t:-2,  lng:22.5150,lat:38.8030,s:20000, st:'march' }, // 西門前集結
       { t:1,   lng:22.5320,lat:38.7972,s:20000, st:'attack' },// 強攻窄門
-      { t:4,   lng:22.5335,lat:38.7970,s:17000, st:'attack' },
-      { t:7,   lng:22.5180,lat:38.8000,s:15000, st:'march' }, // 敗退
-      { t:26,  lng:22.5050,lat:38.8060,s:15000, st:'hold' },
+      { t:4,   lng:22.5335,lat:38.7970,s:12000, st:'attack' },
+      { t:7,   lng:22.5180,lat:38.8000,s:8000, st:'march' }, // 敗退
+      { t:26,  lng:22.5050,lat:38.8060,s:8000, st:'hold' },
     ]},
   { id:"immortals", name_zh:"不死軍", name_ja:"Ἀθάνατοι", side:'east', faction:'immortals', factionColor:0x2a4a8a, kind:'infantry',
     title:"波斯萬人精銳 · 第一日受挫→第三日循山徑迂迴包抄", troops:10000,
@@ -129,12 +129,12 @@ SEKI.armies = [
       { t:-16, lng:22.3650,lat:38.8740,s:10000, st:'march' },
       { t:-7,  lng:22.4850,lat:38.8160,s:10000, st:'hold' },
       { t:5,   lng:22.5325,lat:38.7972,s:10000, st:'attack' },
-      { t:8,   lng:22.5180,lat:38.8010,s:9000,  st:'march' },
-      { t:15,  lng:22.5500,lat:38.7850,s:9000,  st:'march' }, // 夜入山徑(向南上山)
-      { t:16.5,lng:22.5900,lat:38.7790,s:9000,  st:'march' }, // 越卡利德羅莫
-      { t:18,  lng:22.5820,lat:38.7930,s:9000,  st:'attack' },// 東門下山·背後包抄
-      { t:21,  lng:22.5410,lat:38.7965,s:8500,  st:'attack' },
-      { t:26,  lng:22.5400,lat:38.7967,s:8500,  st:'hold' },
+      { t:8,   lng:22.5180,lat:38.8010,s:7000,  st:'march' },
+      { t:15,  lng:22.5500,lat:38.7850,s:6800,  st:'march' }, // 夜入山徑(向南上山)
+      { t:16.5,lng:22.5900,lat:38.7790,s:6600,  st:'march' }, // 越卡利德羅莫
+      { t:18,  lng:22.5820,lat:38.7930,s:6400,  st:'attack' },// 東門下山·背後包抄
+      { t:21,  lng:22.5410,lat:38.7965,s:6000,  st:'attack' },
+      { t:26,  lng:22.5400,lat:38.7967,s:6000,  st:'hold' },
     ]},
   { id:"persian_main", name_zh:"波斯本軍", name_ja:"Πέρσαι", side:'east', faction:'persia', factionColor:0x3a3a8a, kind:'infantry',
     title:"波斯主力步兵 · 第二日輪番猛攻", troops:40000,
@@ -142,11 +142,11 @@ SEKI.armies = [
       { t:-16, lng:22.3550,lat:38.8680,s:40000, st:'march' },
       { t:-6,  lng:22.4750,lat:38.8170,s:40000, st:'hold' }, // 屯駐 approach 平原(深厚人海)
       { t:6,   lng:22.5300,lat:38.7975,s:40000, st:'attack' },
-      { t:13,  lng:22.5318,lat:38.7972,s:36000, st:'attack' },
-      { t:16,  lng:22.5180,lat:38.8000,s:35000, st:'hold' },
-      { t:20,  lng:22.5350,lat:38.7968,s:35000, st:'attack' },
-      { t:23,  lng:22.5396,lat:38.7964,s:33000, st:'attack' },
-      { t:26,  lng:22.5380,lat:38.7965,s:33000, st:'hold' },
+      { t:13,  lng:22.5318,lat:38.7972,s:30000, st:'attack' },
+      { t:16,  lng:22.5180,lat:38.8000,s:30000, st:'hold' },
+      { t:20,  lng:22.5350,lat:38.7968,s:29000, st:'attack' },
+      { t:23,  lng:22.5396,lat:38.7964,s:24000, st:'attack' },
+      { t:26,  lng:22.5380,lat:38.7965,s:24000, st:'hold' },
     ]},
   { id:"persian_archers", name_zh:"波斯弓兵", name_ja:"Τοξόται", side:'east', faction:'persia_archer', factionColor:0x2f6a72, kind:'archer',
     title:"波斯弓兵 · 箭雨遮天（結局覆蓋科洛諾斯小丘）", troops:8000,
