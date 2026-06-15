@@ -26,4 +26,13 @@ SEKI.engagements = [
   { a:'usstexas', b:'wn72',    from:12,  to:13.5 },  // 德州號主砲轟擊 D-1 隘口 WN72
   { a:'engineers', b:'wn68',   from:11,  to:12   },  // 工兵肅清 E-1·WN68 失守
   { a:'inf_16th', b:'inf_352', from:11,  to:14   },  // 16團突破崖頂·遭352師局部反擊
+
+  /* ---- D-Day 夜 ~ D+1（6/7）：擴大登陸場·擊退德軍反擊（t18~36） ---- */
+  { a:'us_82',  b:'reinf_352',     from:18, to:30 },  // D+1 82空降師肅清潰散之352增援殘部
+  { a:'uk_6',   b:'reinf_panzer',  from:18, to:34 },  // D+1 英6空降師持續遲滯德軍殘存裝甲
+  { a:'inf_16th', b:'inf_352',     from:18, to:24 },  // D-Day 夜 16團擊退352師夜間反撲
+  { a:'ger_d1_counter', b:'inf_16th',   from:26, to:30 }, // D+1 德軍反擊縱隊撞上 Colleville 一線的16團
+  { a:'ger_d1_counter', b:'us_2nd_div', from:28, to:36 }, // D+1 反擊遭新登陸的第2步兵師擊退
+  { a:'ger_d1_counter', b:'destroyers', from:26, to:30 }, // D+1 驅逐艦抵近以艦砲擊退德軍反擊縱隊
+  { a:'us_2nd_div', b:'inf_352',   from:36, to:44 },  // D+1 第2步兵師向 Trévières 推進·逼退352師殘部
 ];

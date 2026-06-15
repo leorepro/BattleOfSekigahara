@@ -7,6 +7,13 @@
 window.SEKI = window.SEKI || {};
 
 SEKI.storyboard = [
+  /* ---- 開場：運輸機跨海·漫天傘花夜降（t≈0.5~1.3；真實空降區在本圖之外） ---- */
+  { t:0.5, hold:14, cam:{lng:-0.9250, lat:49.3200, dist:560, az:0, el:36, orbit:0.28},
+    dateLabel:"1944/6/6 · 00:30 · 跨越英吉利海峽", title_zh:"★ 跨海空投 · 漫天傘花",
+    title_en:"Crossing the Channel — The Drop Begins",
+    narration_zh:"搶灘前的數小時，反攻已在夜空中悄然展開。上千架運輸機自英格蘭機場群起飛，編隊低空掠過英吉利海峽。機腹紅燈轉綠、跳傘鈴聲響起，美軍 82、101 與英軍第6空降師的傘兵一躍而出——漫天傘花在黑暗中綻放，夜降諾曼第。散落落地的官兵以金屬『蟋蟀器』的蛙鳴聲彼此相認，集結建立臨時陣地。（畫面為示意：真實空降區在本奧馬哈地圖範圍之外。）",
+    commanders:[{zh:"李奇威/泰勒",en:"Gen. Ridgway / Gen. Taylor"}], focus:["us_82","us_101","uk_6"], side:"east" },
+
   /* ---- 凌晨空降序幕（t≈1.3~4.0；內陸地名為示意，真實空降區在本圖之外） ---- */
   { t:1.3, hold:14, cam:{lng:-0.9300, lat:49.3100, dist:420, az:0, el:34, orbit:0.35},
     dateLabel:"1944/6/6 · 01:18 · 諾曼第內陸", title_zh:"★ 夜降諾曼第 · 空降序幕",
@@ -79,4 +86,29 @@ SEKI.storyboard = [
     title_en:"Aftermath — Securing Bloody Omaha",
     narration_zh:"傍晚，灘頭縱深僅約一兩公里、淺薄而脆弱，但奧馬哈守住了。WN 據點逐個失守，352 師反擊被艦砲與滲透打退而後撤。代價極其慘重——當日奧馬哈傷亡的確切數字至今仍有爭議（約二千至四千餘）。這片血染的灘頭，成為通往內陸的橋頭堡。",
     commanders:[{zh:"第一步兵師",en:"1st & 29th Divisions"}], focus:["inf_16th","inf_352"], side:"east" },
+
+  /* ---- D+1（6/7）：橋頭堡鞏固·反擊被退·後續梯隊上陸·向內陸推進 ---- */
+  { t:20, hold:13, cam:{lng:-0.8650, lat:49.3800, dist:300, az:160, el:24, orbit:0.35},
+    dateLabel:"6/7 · 灘頭補給場 · 工兵築道", title_zh:"工兵築道 · 灘頭補給場",
+    title_en:"Engineers Open the Beach",
+    narration_zh:"夜幕下，工兵與海軍灘勤隊連夜作業：清除灘障與地雷、爆破海堤缺口、拓寬出灘道路，並在堤後開設補給堆置場。DUKW 兩棲車與希金斯艇川流於船岸之間搶卸彈藥糧秣，傷患則經臨時包紮所後送。那片白晝染血的灘頭，正一寸寸被改造成一座運轉中的補給港。",
+    commanders:[{zh:"海軍灘勤隊/工兵",en:"Naval Beach Bn / Engineers"}], focus:["beach_works","engineers"], side:"east" },
+
+  { t:26, hold:13, cam:{lng:-0.8550, lat:49.3900, dist:240, az:180, el:28, orbit:0.55},
+    dateLabel:"6/7 · 拂曉 · 橋頭堡前緣", title_zh:"★ 德軍反擊被擊退",
+    title_en:"Repelling the D+1 Counterattack",
+    narration_zh:"D+1 拂曉前，德軍 352 師殘部對淺薄的橋頭堡發動局部反擊，試圖在盟軍站穩之前將其逼回海中。然而灘頭已非昨日之灘——艦砲、上陸的灘頭砲兵與步兵火力交織成網，迎頭將德軍攻勢打散。反擊瓦解後撤，橋頭堡的前緣穩住了。",
+    commanders:[{zh:"德軍352師殘部",en:"Remnants of 352nd Div"}], focus:["ger_d1_counter","inf_16th"], side:"both" },
+
+  { t:32, hold:13, cam:{lng:-0.8700, lat:49.3700, dist:340, az:170, el:26, orbit:0.40},
+    dateLabel:"6/7 · 後續梯隊 · 向內陸推進", title_zh:"後續梯隊上陸 · 內陸推進",
+    title_en:"Follow-on Waves Push Inland",
+    narration_zh:"反擊既退，後續梯隊源源上陸——美軍第2步兵師通過已肅清的 E-1 隘道內開，車輛火砲沿工兵新築的出灘公路湧向內陸。第1師向 Colleville 以南擴大縱深，並朝 Trévières 方向推進，逐村肅清 352 師的據守點。血腥奧馬哈，終於開始向縱深生長。",
+    commanders:[{zh:"美軍第2步兵師",en:"US 2nd Infantry Division"}], focus:["us_2nd_div","inf_16th"], side:"east" },
+
+  { t:44, hold:14, cam:{lng:-0.8650, lat:49.3850, dist:520, az:180, el:32, orbit:0.28},
+    dateLabel:"6/7 傍晚 · 橋頭堡鞏固 · Aftermath", title_zh:"★ 五灘連線 · 穩固橋頭堡",
+    title_en:"Linking the Beaches — A Secured Bridgehead",
+    narration_zh:"傍晚，奧馬哈東翼與英軍 Gold 灘接觸、西翼向 Isigny 打通與 Utah 的走廊，五處登陸場大致連成完整陣線；奧克角的遊騎兵也在孤守兩日後獲增援解圍。D+1 累計上陸逾兩萬五千人，縱深推進至五至八公里。代價最重的血腥奧馬哈，已轉為一座不可逆轉的穩固橋頭堡——反攻歐陸，由此展開。",
+    commanders:[{zh:"第一軍",en:"US V Corps"}], focus:["us_2nd_div","beach_works","inf_16th"], side:"east" },
 ];
