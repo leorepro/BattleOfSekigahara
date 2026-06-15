@@ -37,17 +37,45 @@ window.SEKI = window.SEKI || {};
     const head = new THREE.BoxGeometry(0.3, 0.3, 0.3); head.translate(0, BODY_H + 0.15, 0);
     return mergeBoxes([body, head]);
   }
-  // 現代步兵：軀幹 + 壓扁鋼盔頭 + 斜持步槍（low-poly，全併入單一 geometry 供 InstancedMesh）
+  // 現代步兵：較精細的合併幾何（雙腿/雙臂/軀幹+背包+裝具/鋼盔+盔簷/含槍托步槍），
+  // 全部用 box 併入單一 BufferGeometry 供 InstancedMesh 共享（約 100 面 low-poly）。
+  // 比例約定：原 BODY_H(1.5) 拆成「下半身雙腿」+「上半身軀幹」，總身高仍接近 BODY_H+頭盔。
   function modernSoldierGeo() {
-    const body = new THREE.BoxGeometry(0.44, BODY_H, 0.34); body.translate(0, BODY_H/2, 0);
-    // 鋼盔：略寬扁的盔形（壓扁 box），戴在頭頂
-    const helmet = new THREE.BoxGeometry(0.36, 0.2, 0.34); helmet.translate(0, BODY_H + 0.1, 0);
+    const LEG_H = 0.62, TORSO_H = 0.66;        // 腿高、軀幹高（合計約 1.28，再加頭盔）
+    const HIP = LEG_H;                          // 軀幹底部（髖部）高度
+    const SHO = HIP + TORSO_H;                  // 肩部高度
+    // 雙腿：分開兩條，略前傾呈站姿（左腿稍後、右腿稍前，營造步行感）
+    const legL = new THREE.BoxGeometry(0.15, LEG_H, 0.18);
+    legL.translate(-0.11, LEG_H/2, -0.04);
+    const legR = new THREE.BoxGeometry(0.15, LEG_H, 0.18);
+    legR.rotateX(-0.12); legR.translate(0.11, LEG_H/2, 0.05);
+    // 軀幹：上窄下寬的胸甲感（單一 box）
+    const torso = new THREE.BoxGeometry(0.4, TORSO_H, 0.26);
+    torso.translate(0, HIP + TORSO_H/2, 0);
+    // 背包／裝具：背後一塊方塊（負 z 方向），呈現行軍負重與彈帶裝具
+    const pack = new THREE.BoxGeometry(0.34, 0.46, 0.16);
+    pack.translate(0, HIP + TORSO_H*0.52, -0.2);
+    // 頭：盔下露出的頭部（小方塊，下巴/臉）
+    const head = new THREE.BoxGeometry(0.2, 0.18, 0.2);
+    head.translate(0, SHO + 0.13, 0.01);
+    // 鋼盔：略寬扁的盔形（壓扁 box），罩住頭頂
+    const helmet = new THREE.BoxGeometry(0.3, 0.18, 0.3);
+    helmet.translate(0, SHO + 0.27, 0);
     // 盔簷：前緣略突出
-    const brim = new THREE.BoxGeometry(0.4, 0.06, 0.12); brim.translate(0, BODY_H + 0.04, 0.16);
-    // 步槍：細長 box 斜持於身前（沿身體右前方傾斜）
-    const rifle = new THREE.BoxGeometry(0.06, 0.06, 1.0);
-    rifle.rotateX(-0.5); rifle.translate(0.18, BODY_H * 0.55, 0.18);
-    return mergeBoxes([body, helmet, brim, rifle]);
+    const brim = new THREE.BoxGeometry(0.34, 0.05, 0.1);
+    brim.translate(0, SHO + 0.2, 0.16);
+    // 雙臂：兩條垂落略前擺的手臂，夾持步槍
+    const armL = new THREE.BoxGeometry(0.11, 0.5, 0.12);
+    armL.rotateX(-0.35); armL.translate(-0.26, HIP + TORSO_H*0.6, 0.06);
+    const armR = new THREE.BoxGeometry(0.11, 0.5, 0.12);
+    armR.rotateX(-0.55); armR.translate(0.24, HIP + TORSO_H*0.55, 0.12);
+    // 步槍：細長槍管 box 斜持於身前
+    const rifle = new THREE.BoxGeometry(0.05, 0.06, 0.86);
+    rifle.rotateX(-0.5); rifle.translate(0.16, SHO - 0.18, 0.2);
+    // 槍托：槍身後段略寬一塊（貼肩端）
+    const stock = new THREE.BoxGeometry(0.07, 0.11, 0.2);
+    stock.rotateX(-0.5); stock.translate(0.16, SHO + 0.02, 0.02);
+    return mergeBoxes([legL, legR, torso, pack, head, helmet, brim, armL, armR, rifle, stock]);
   }
   function sashimonoGeo() {
     const pole = new THREE.BoxGeometry(0.05, 1.1, 0.05); pole.translate(0, BODY_H + 0.2, -0.22);

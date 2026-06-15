@@ -47,9 +47,17 @@ window.SEKI = window.SEKI || {};
   const FLY_ALT = 95;             // 飛行高度（場景單位；機群巡航高度）
   const EXIT_CLIMB = 40;          // 飛離時額外爬升量
 
-  const FORMATION_N = 4;          // 編隊機數（3~5）
-  const FORMATION_DX = -7;        // 編隊縱深間距（沿 -X 後方排開，場景單位）
-  const FORMATION_DZ = 5;         // 編隊橫向錯開（V 形展開）
+  const FORMATION_N = 4;          // 機數（3~5）。注意：已非剛性編隊，各機自飛。
+  const FORMATION_DX = -7;        // （保留）粗略縱深參考
+  const FORMATION_DZ = 5;         // （保留）粗略橫向參考
+
+  // 各自航跡散佈：每架運輸機的進場/飛離點在這些幅度內依 index 錯開（穩定，非亂數）。
+  const LANE_SPREAD_Z = 34;       // 進場橫向(±Z)錯開總幅（場景單位，分散成運輸機流）
+  const LANE_SPREAD_X = 26;       // 進場縱向(±X)錯開總幅（前後拉開出發位置）
+  const LANE_DZ_JITTER = 10;      // 各機空降區上方點的橫向微調
+  const PHASE_SPREAD = 0.22;      // 各機進場相位差（campaign 小時），形成先後抵達
+  const SPEED_SPREAD = 0.16;      // 各機速度快慢差（比例）
+  const HEADING_JITTER = 0.10;    // 各機航向微調（弧度級，避免鎖死同朝向）
 
   const PARA_POOL = 64;           // 傘兵物件池大小
   const PARA_PER_PLANE = 16;      // 每機投放傘兵數（FORMATION_N*PARA_PER_PLANE≤POOL）
@@ -158,84 +166,150 @@ window.SEKI = window.SEKI || {};
     const plane = new THREE.Group();
     const bodyMat = new THREE.MeshStandardMaterial({ color: COL_FUSELAGE, roughness: 0.85 });
     const darkMat = new THREE.MeshStandardMaterial({ color: COL_DARK, roughness: 0.85 });
+    const metalMat = new THREE.MeshStandardMaterial({ color: 0x868a72, roughness: 0.6, metalness: 0.2 });
 
-    // --- 機身（圓柱，沿 X） ---
+    // --- 機身（分段：主段較粗 + 後段微縮，沿 X） ---
     const FUS_R = 1.3, FUS_L = 14;
     const fus = new THREE.Mesh(
-      new THREE.CylinderGeometry(FUS_R, FUS_R, FUS_L, 14), bodyMat);
+      new THREE.CylinderGeometry(FUS_R, FUS_R, FUS_L * 0.62, 16), bodyMat);
     fus.rotation.z = Math.PI / 2;
+    fus.position.x = FUS_L * 0.12;   // 主段偏前
     plane.add(fus);
+    // 後段（略縮，與機尾收束銜接，形成分段感）
+    const fusAft = new THREE.Mesh(
+      new THREE.CylinderGeometry(FUS_R, FUS_R * 0.82, FUS_L * 0.42, 16), bodyMat);
+    fusAft.rotation.z = Math.PI / 2;
+    fusAft.position.x = -FUS_L * 0.30;
+    plane.add(fusAft);
 
-    // --- 機鼻（圓錐，朝 +X） ---
+    // --- 圓機鼻（半球，朝 +X，DC-3/C-47 鈍圓鼻） ---
     const nose = new THREE.Mesh(
-      new THREE.ConeGeometry(FUS_R, 3, 14), bodyMat);
-    nose.rotation.z = -Math.PI / 2;
-    nose.position.x = FUS_L / 2 + 1.5;
+      new THREE.SphereGeometry(FUS_R, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2), bodyMat);
+    nose.rotation.z = -Math.PI / 2;   // 半球開口朝 -X，圓頂朝 +X
+    nose.position.x = FUS_L * 0.12 + FUS_L * 0.31;
     plane.add(nose);
 
     // --- 機尾收束（朝 -X 縮錐） ---
     const tailCone = new THREE.Mesh(
-      new THREE.ConeGeometry(FUS_R, 4, 14), bodyMat);
+      new THREE.ConeGeometry(FUS_R * 0.82, 4.2, 16), bodyMat);
     tailCone.rotation.z = Math.PI / 2;
     tailCone.position.x = -FUS_L / 2 - 1.0;
     plane.add(tailCone);
 
-    // --- 座艙玻璃（機鼻上方） ---
-    const canopy = new THREE.Mesh(
-      new THREE.BoxGeometry(2.2, 0.9, 1.6),
-      new THREE.MeshStandardMaterial({ color: COL_GLASS, roughness: 0.3, metalness: 0.1 }));
-    canopy.position.set(FUS_L / 2 - 0.6, 0.95, 0);
-    plane.add(canopy);
+    // --- 駕駛艙窗（機鼻上方，前風擋斜面 + 兩側窗框） ---
+    const glassMat = new THREE.MeshStandardMaterial({ color: COL_GLASS, roughness: 0.25, metalness: 0.15 });
+    const windshield = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.7, 1.7), glassMat);
+    windshield.position.set(FUS_L / 2 - 0.2, 0.85, 0);
+    windshield.rotation.z = -0.32;   // 前傾斜面
+    plane.add(windshield);
+    // 機背駕駛艙罩（流線小凸起）
+    const cockpitHump = new THREE.Mesh(
+      new THREE.SphereGeometry(0.9, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2), bodyMat);
+    cockpitHump.position.set(FUS_L / 2 - 1.6, 0.7, 0);
+    cockpitHump.scale.set(2.0, 0.8, 1.0);
+    plane.add(cockpitHump);
+    // 客艙側窗（兩側各一排小窗，穩定排列）
+    for (let side = -1; side <= 1; side += 2) {
+      for (let w = 0; w < 4; w++) {
+        const win = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.4, 0.06), glassMat);
+        win.position.set(FUS_L * 0.18 - w * 1.5, 0.5, side * FUS_R * 0.98);
+        plane.add(win);
+      }
+    }
 
-    // --- 機腹貨艙門（暗色片，機身左後下方） ---
+    // --- 機腹貨艙門（暗色雙片，機身左後側） ---
     const door = new THREE.Mesh(
-      new THREE.BoxGeometry(3.2, 1.8, 0.1), darkMat);
-    door.position.set(-3.4, -0.2, FUS_R * 0.98);
+      new THREE.BoxGeometry(3.4, 1.9, 0.1), darkMat);
+    door.position.set(-3.4, -0.15, FUS_R * 0.99);
     plane.add(door);
+    const doorFrame = new THREE.Mesh(
+      new THREE.BoxGeometry(3.6, 0.12, 0.14), metalMat);
+    doorFrame.position.set(-3.4, -1.1, FUS_R * 1.0);
+    plane.add(doorFrame);
 
-    // --- 主翼（單片貫穿，沿 Z 翼展；前緣略前置） ---
-    const WING_SPAN = 24, WING_CHORD = 3.6;
+    // --- 上單翼（架在機背上方，沿 Z 翼展；上反角略抬） ---
+    const WING_SPAN = 26, WING_CHORD = 3.8;
     const wing = new THREE.Mesh(
-      new THREE.BoxGeometry(WING_CHORD, 0.35, WING_SPAN), bodyMat);
-    wing.position.set(0.6, 0.2, 0);
+      new THREE.BoxGeometry(WING_CHORD, 0.32, WING_SPAN), bodyMat);
+    wing.position.set(0.4, FUS_R * 0.55, 0);   // 上單翼：抬到機背
     plane.add(wing);
+    // 翼尖收窄片（兩側錐化，看得出梯形翼）
+    for (let side = -1; side <= 1; side += 2) {
+      const tip = new THREE.Mesh(new THREE.BoxGeometry(WING_CHORD * 0.6, 0.28, 3.0), bodyMat);
+      tip.position.set(0.4, FUS_R * 0.55, side * (WING_SPAN / 2 - 1.2));
+      plane.add(tip);
+    }
 
-    // --- 水平尾翼 ---
+    // --- 水平尾翼（含左右安定面） ---
     const htail = new THREE.Mesh(
-      new THREE.BoxGeometry(2.0, 0.25, 9), bodyMat);
-    htail.position.set(-FUS_L / 2 - 1.5, 0.2, 0);
+      new THREE.BoxGeometry(2.2, 0.24, 10), bodyMat);
+    htail.position.set(-FUS_L / 2 - 1.8, 0.25, 0);
     plane.add(htail);
 
-    // --- 單垂尾 ---
+    // --- 單垂尾（梯形，前緣略後掠） ---
     const vtail = new THREE.Mesh(
-      new THREE.BoxGeometry(2.4, 3.4, 0.3), bodyMat);
-    vtail.position.set(-FUS_L / 2 - 1.6, 1.7, 0);
+      new THREE.BoxGeometry(2.6, 3.6, 0.3), bodyMat);
+    vtail.position.set(-FUS_L / 2 - 2.0, 1.9, 0);
     plane.add(vtail);
+    const vtailTop = new THREE.Mesh(
+      new THREE.BoxGeometry(1.6, 1.2, 0.28), bodyMat);
+    vtailTop.position.set(-FUS_L / 2 - 1.4, 3.4, 0);
+    plane.add(vtailTop);
 
-    // --- 雙發動機（掛主翼下，含螺旋槳） ---
+    // --- 雙發動機（整流罩掛上單翼下，含旋轉螺旋槳） ---
     const props = [];
-    const engZ = [WING_SPAN * 0.28, -WING_SPAN * 0.28];
+    const engZ = [WING_SPAN * 0.26, -WING_SPAN * 0.26];
     for (let s = 0; s < 2; s++) {
-      const nac = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.8, 0.7, 3.2, 10), darkMat);
-      nac.rotation.z = Math.PI / 2;
-      nac.position.set(1.6, -0.1, engZ[s]);
-      plane.add(nac);
+      // 整流罩（前粗後縮的短圓筒 + 前緣環）
+      const cowl = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.95, 0.75, 3.0, 12), metalMat);
+      cowl.rotation.z = Math.PI / 2;
+      cowl.position.set(2.0, FUS_R * 0.35, engZ[s]);
+      plane.add(cowl);
+      const cowlRing = new THREE.Mesh(
+        new THREE.TorusGeometry(0.95, 0.16, 8, 14), darkMat);
+      cowlRing.rotation.y = Math.PI / 2;
+      cowlRing.position.set(3.5, FUS_R * 0.35, engZ[s]);
+      plane.add(cowlRing);
       const prop = makeProp();
-      prop.position.set(3.3, -0.1, engZ[s]);   // 發動機前緣
+      prop.position.set(3.7, FUS_R * 0.35, engZ[s]);   // 整流罩前緣
       plane.add(prop);
       props.push(prop);
     }
 
+    // --- 固定式起落架（主輪 + 尾輪，示意支柱+輪胎） ---
+    const tyreMat = new THREE.MeshStandardMaterial({ color: 0x191919, roughness: 0.95 });
+    for (let s = 0; s < 2; s++) {
+      const strut = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.12, 0.12, 1.6, 6), darkMat);
+      strut.position.set(2.0, -1.1, engZ[s] * 0.7);
+      plane.add(strut);
+      const wheel = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.6, 0.6, 0.35, 12), tyreMat);
+      wheel.rotation.x = Math.PI / 2;
+      wheel.position.set(2.0, -1.9, engZ[s] * 0.7);
+      plane.add(wheel);
+    }
+    // 尾輪
+    const tailStrut = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.08, 0.08, 0.8, 6), darkMat);
+    tailStrut.position.set(-FUS_L / 2 - 0.6, -0.8, 0);
+    plane.add(tailStrut);
+    const tailWheel = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.3, 0.3, 0.22, 10), tyreMat);
+    tailWheel.rotation.x = Math.PI / 2;
+    tailWheel.position.set(-FUS_L / 2 - 0.6, -1.2, 0);
+    plane.add(tailWheel);
+
     // --- 入侵條紋：機身後段繞一圈 + 兩翼各一段（黑白相間） ---
     addInvasionStripes(plane, {
-      axis: 'fuselage', r: FUS_R, x0: -6.2, span: 3.0, count: 5,
+      axis: 'fuselage', r: FUS_R, x0: -6.4, span: 3.0, count: 5,
     });
     addInvasionStripes(plane, {
-      axis: 'wing', chord: WING_CHORD, x: 0.6, y: 0.06, z0: WING_SPAN * 0.30, span: 3.0, count: 5,
+      axis: 'wing', chord: WING_CHORD, x: 0.4, y: FUS_R * 0.55 - 0.18, z0: WING_SPAN * 0.30, span: 3.0, count: 5,
     });
     addInvasionStripes(plane, {
-      axis: 'wing', chord: WING_CHORD, x: 0.6, y: 0.06, z0: -WING_SPAN * 0.30 - 3.0, span: 3.0, count: 5,
+      axis: 'wing', chord: WING_CHORD, x: 0.4, y: FUS_R * 0.55 - 0.18, z0: -WING_SPAN * 0.30 - 3.0, span: 3.0, count: 5,
     });
 
     plane.traverse((o) => { if (o.isMesh) o.castShadow = true; });
@@ -273,40 +347,88 @@ window.SEKI = window.SEKI || {};
     const g = new THREE.Group();
     const useAlt = (index % 3 === 0);
 
-    // --- 傘蓋（半球 dome，低面數） ---
+    // --- 傘蓋（半球 dome + 分瓣感：用多片徑向窄瓣拼出傘骨稜線） ---
+    const CANOPY_Y = 5.2, CANOPY_R = 2.4;
+    const canopyGrp = new THREE.Group();
+    canopyGrp.position.y = CANOPY_Y;
     const canopyMat = new THREE.MeshStandardMaterial({
       color: useAlt ? COL_CANOPY2 : COL_CANOPY,
       roughness: 0.95, transparent: true, opacity: 1, side: THREE.DoubleSide });
-    const canopy = new THREE.Mesh(
-      new THREE.SphereGeometry(2.4, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2), canopyMat);
-    canopy.position.y = 5.2;
-    g.add(canopy);
+    const dome = new THREE.Mesh(
+      new THREE.SphereGeometry(CANOPY_R, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2), canopyMat);
+    canopyGrp.add(dome);
+    // 分瓣稜線：沿傘面 8 條經向細條（深色傘骨縫線），製造分瓣外觀
+    const seamMat = new THREE.MeshStandardMaterial({
+      color: useAlt ? 0x8a7a4e : 0x355a2a, roughness: 1,
+      transparent: true, opacity: 1, side: THREE.DoubleSide });
+    for (let i = 0; i < 8; i++) {
+      const seam = new THREE.Mesh(
+        new THREE.SphereGeometry(CANOPY_R * 1.01, 6, 6,
+          (i / 8) * Math.PI * 2, 0.06, 0, Math.PI / 2), seamMat);
+      canopyGrp.add(seam);
+    }
+    g.add(canopyGrp);
+    // 給 update 用的引用陣列（傘蓋整組一起開傘/淡出）
+    const canopyMats = [canopyMat, seamMat];
 
-    // --- 傘繩（4 條細線，從傘緣到吊掛點） ---
+    // --- 傘繩（8 條細線，從傘緣匯聚到胸前吊掛點） ---
     const cordMat = new THREE.LineBasicMaterial({ color: 0xdddccb, transparent: true, opacity: 0.8 });
-    for (let i = 0; i < 4; i++) {
-      const a = (i / 4) * Math.PI * 2;
-      const top = new THREE.Vector3(Math.cos(a) * 2.0, 5.0, Math.sin(a) * 2.0);
-      const bot = new THREE.Vector3(0, 1.4, 0);
+    for (let i = 0; i < 8; i++) {
+      const a = (i / 8) * Math.PI * 2;
+      const top = new THREE.Vector3(Math.cos(a) * CANOPY_R * 0.92, CANOPY_Y - 0.2, Math.sin(a) * CANOPY_R * 0.92);
+      const bot = new THREE.Vector3(0, 1.7, 0);   // 匯聚到吊帶頂
       const lg = new THREE.BufferGeometry().setFromPoints([top, bot]);
       g.add(new THREE.Line(lg, cordMat));
     }
 
-    // --- 小人形（軀幹 + 頭 + 鋼盔） ---
+    // --- 吊帶（胸前 Y 形帶 + 連到傘繩匯聚點的主吊帶） ---
+    const harnessMat = new THREE.MeshStandardMaterial({ color: 0x2c2c24, roughness: 0.9 });
+    const riser = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 1.3, 5), harnessMat);
+    riser.position.y = 1.45;
+    g.add(riser);
+    const chestStrap = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.55, 0.7), harnessMat);
+    chestStrap.position.y = 0.85;
+    g.add(chestStrap);
+
+    // --- 人形（鋼盔 + 軀幹 + 雙腿垂掛） ---
     const bodyMat = new THREE.MeshStandardMaterial({ color: COL_SOLDIER, roughness: 0.9 });
     // 注意：此 three.js 版本沒有 CapsuleGeometry，軀幹改用圓柱（避免 not-a-constructor 崩潰）
-    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.42, 1.5, 8), bodyMat);
-    body.position.y = 0.6;
+    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.44, 1.2, 8), bodyMat);
+    body.position.y = 0.7;
     g.add(body);
+    // 雙腿垂掛（略張開、自然下垂）
+    for (let side = -1; side <= 1; side += 2) {
+      const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.13, 1.0, 6), bodyMat);
+      leg.position.set(side * 0.18, -0.25, 0);
+      leg.rotation.x = 0.12;
+      g.add(leg);
+      const boot = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.2, 0.4), COL_HELMET ? new THREE.MeshStandardMaterial({ color: 0x23231b, roughness: 0.9 }) : bodyMat);
+      boot.position.set(side * 0.18, -0.78, 0.08);
+      g.add(boot);
+    }
+    // 頭 + 鋼盔
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.26, 8, 6),
+      new THREE.MeshStandardMaterial({ color: 0xb59a7a, roughness: 0.9 }));
+    head.position.y = 1.45;
+    g.add(head);
     const helmet = new THREE.Mesh(
-      new THREE.SphereGeometry(0.42, 8, 6, 0, Math.PI * 2, 0, Math.PI / 2),
+      new THREE.SphereGeometry(0.34, 10, 6, 0, Math.PI * 2, 0, Math.PI / 1.7),
       new THREE.MeshStandardMaterial({ color: COL_HELMET, roughness: 0.85 }));
-    helmet.position.y = 1.55;
+    helmet.position.y = 1.52;
     g.add(helmet);
+
+    // --- 腿側裝備袋（kit bag，掛在右腿外側） ---
+    const kitMat = new THREE.MeshStandardMaterial({ color: 0x4a4634, roughness: 0.95 });
+    const kit = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.7, 0.28), kitMat);
+    kit.position.set(0.42, 0.05, 0.06);
+    g.add(kit);
+    const kitStrap = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.9, 5), harnessMat);
+    kitStrap.position.set(0.42, 0.5, 0.06);
+    g.add(kitStrap);
 
     g.traverse((o) => { if (o.isMesh) o.castShadow = true; });
     g.visible = false;
-    return { group: g, canopy, canopyMat, cordMat };
+    return { group: g, canopy: canopyGrp, canopyMat, canopyMats, cordMat };
   }
 
   /* 建立一處臨時陣地標記（散兵坑環 + 沙包堆 + 集結人形小簇） */
@@ -339,15 +461,27 @@ window.SEKI = window.SEKI || {};
     const figMat = new THREE.MeshStandardMaterial({
       color: COL_SOLDIER, roughness: 0.9, transparent: true, opacity: 0 });
     mats.push(figMat);
+    // 鋼盔材質也納入 mats（隨陣地淡入淡出）
+    const helmMat = new THREE.MeshStandardMaterial({
+      color: COL_HELMET, roughness: 0.85, transparent: true, opacity: 0 });
+    mats.push(helmMat);
     const nFig = 2 + (index % 2);
     for (let i = 0; i < nFig; i++) {
-      const fig = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.4, 1.5, 6), figMat);
       const a = i * 2.1 + index * 0.7;
-      fig.position.set(Math.cos(a) * 1.2, 0.75, Math.sin(a) * 1.2 - 0.6);
+      const fx = Math.cos(a) * 1.2, fz = Math.sin(a) * 1.2 - 0.6;
+      // 軀幹（蹲伏感：略矮）
+      const fig = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.42, 1.2, 6), figMat);
+      fig.position.set(fx, 0.6, fz);
       g.add(fig);
-      const head = new THREE.Mesh(new THREE.SphereGeometry(0.3, 6, 5), figMat);
-      head.position.set(fig.position.x, 1.65, fig.position.z);
+      // 頭
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.24, 6, 5), figMat);
+      head.position.set(fx, 1.35, fz);
       g.add(head);
+      // 鋼盔（蓋在頭上）
+      const helm = new THREE.Mesh(
+        new THREE.SphereGeometry(0.3, 8, 5, 0, Math.PI * 2, 0, Math.PI / 1.7), helmMat);
+      helm.position.set(fx, 1.42, fz);
+      g.add(helm);
     }
 
     g.traverse((o) => { if (o.isMesh) o.castShadow = true; });
@@ -399,24 +533,46 @@ window.SEKI = window.SEKI || {};
     _group = new THREE.Group();
     _group.visible = false;
 
-    // --- 飛行路徑世界座標關鍵點（進場→空降→飛離） ---
+    // --- 共用飛行路徑世界座標關鍵點（進場→空降→飛離） ---
+    // 仍保留 _path 作為「空降區整體」參考（pathAt 用於落點概念與相容性）。
     const p0 = eng.project(APPROACH.lng, APPROACH.lat, FLY_ALT);
     const p1 = eng.project(OVER_DZ.lng, OVER_DZ.lat, FLY_ALT);
     const p2 = eng.project(EXIT.lng, EXIT.lat, FLY_ALT + EXIT_CLIMB);
     _path = { p0, p1, p2 };
 
-    // --- 編隊機群（V 形錯開） ---
+    // --- 運輸機群：每架有自己的進場/空降/飛離路線與相位（非剛性編隊） ---
+    // 用 index + 三角函數產生穩定的橫向(±Z)、縱向(±X)錯開與航向/相位/速度微調，
+    // 看起來像分散的運輸機流，而非一個方塊。
     _planes = [];
     for (let i = 0; i < FORMATION_N; i++) {
       const built = makeC47();
-      // 編隊位移：沿 -X(後方)拉開縱深，左右交錯成 V
-      const side = (i % 2 === 0) ? 1 : -1;
-      const rank = Math.ceil(i / 2);
-      const offset = new THREE.Vector3(
-        FORMATION_DX * rank,
-        rank * 1.5,                          // 後排略高，避免完全重疊
-        FORMATION_DZ * rank * side);
-      built.offset = offset;
+
+      // 以 [-1,1] 區間穩定散佈（不同係數讓各維彼此不相關）
+      const u = (FORMATION_N > 1) ? (i / (FORMATION_N - 1)) * 2 - 1 : 0;  // -1..1 線性
+      const sz = Math.sin(i * 1.7 + 0.3);    // 橫向係數
+      const sx = Math.cos(i * 1.1 + 0.9);    // 縱向係數
+      const dzJit = Math.sin(i * 2.3 + 1.4); // 空降點橫向微調
+
+      // 進場點：沿共用進場點橫向(±Z)、縱向(±X)各自錯開
+      const a0 = p0.clone();
+      a0.z += u * (LANE_SPREAD_Z * 0.5) + sz * 4;
+      a0.x += sx * (LANE_SPREAD_X * 0.5);
+      a0.y += (i % 2) * 6 - 3;                // 高度也略錯，避免完全共面
+
+      // 空降區上方點：各機在 DZ 上方略不同位置投放自己的 stick
+      const a1 = p1.clone();
+      a1.z += dzJit * LANE_DZ_JITTER;
+      a1.x += sx * 6;
+
+      // 飛離點：各機往北飛離方向略散開
+      const a2 = p2.clone();
+      a2.z += u * (LANE_SPREAD_Z * 0.35) - sz * 5;
+      a2.x += sx * 8;
+
+      built.path = { p0: a0, p1: a1, p2: a2 };
+      built.phase = u * PHASE_SPREAD + sz * 0.04;     // 進場先後（相位差）
+      built.speed = 1 + u * SPEED_SPREAD + sx * 0.05; // 速度快慢
+      built.heading = sz * HEADING_JITTER;            // 航向微調
       built.shotdown = false;     // 預設正常機
       _group.add(built.mesh);
       _planes.push(built);
@@ -430,12 +586,11 @@ window.SEKI = window.SEKI || {};
       pl.shotdown = true;
       pl.tHit = T_HIT[k];
       pl.tCrash = T_CRASH[k];
-      // 中彈瞬間的機群基準位置（用 tHit 反推 flyProg），作為墜落起點 X/Z；
-      // 落點 X/Z 沿前段飛行方向略往前帶一點，Y 取地形高度。
+      // 中彈瞬間「該機自己的位置」（用 tHit 反推 flyProg，再走該機自飛路徑），
+      // 作為墜落起點 X/Z；落點 X/Z 沿其前進方向略往前帶一點，Y 取地形高度。
       const hitProg = c01((pl.tHit - T_START) / (T_EXIT - T_START));
-      const hb = pathAt(hitProg);
-      pl.fallStart = hb.pos.clone().add(pl.offset.clone()
-        .applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.atan2(-hb.dir.z, hb.dir.x)));
+      const hb = planePathAt(pl, hitProg);
+      pl.fallStart = hb.pos.clone();
       // 墜地點：自起點沿水平前進方向再帶 30 單位（穩定，非亂數）
       const flat = new THREE.Vector3(hb.dir.x, 0, hb.dir.z);
       if (flat.lengthSq() < 1e-6) flat.set(1, 0, 0);
@@ -496,25 +651,38 @@ window.SEKI = window.SEKI || {};
   // 緩入緩出
   function smooth(x) { x = c01(x); return x * x * (3 - 2 * x); }
 
-  /* 沿路徑取機群基準位置與朝向：
-   *   prog 0~0.5 → 進場 p0→p1（進場段）
-   *   prog 0.5~1 → 空降→飛離 p1→p2
+  /* 沿任意三點路徑取位置與朝向（通用版，供各機自飛使用）：
+   *   prog 0~0.5 → 進場 pa→pb（進場段）
+   *   prog 0.5~1 → 空降→飛離 pb→pc
    * 回傳 { pos, dir }（dir 為單位前進向量，用於機首對齊 +X）。 */
-  function pathAt(prog) {
-    const p0 = _path.p0, p1 = _path.p1, p2 = _path.p2;
+  function segAt(pa, pb, pc, prog) {
     let pos, dir;
     if (prog <= 0.5) {
       const k = smooth(prog / 0.5);
-      pos = p0.clone().lerp(p1, k);
-      dir = p1.clone().sub(p0);
+      pos = pa.clone().lerp(pb, k);
+      dir = pb.clone().sub(pa);
     } else {
       const k = smooth((prog - 0.5) / 0.5);
-      pos = p1.clone().lerp(p2, k);
-      dir = p2.clone().sub(p1);
+      pos = pb.clone().lerp(pc, k);
+      dir = pc.clone().sub(pb);
     }
     if (dir.lengthSq() < 1e-6) dir.set(1, 0, 0);
     dir.normalize();
     return { pos, dir };
+  }
+
+  /* 共用路徑（_path）取點，相容舊呼叫點。 */
+  function pathAt(prog) {
+    return segAt(_path.p0, _path.p1, _path.p2, prog);
+  }
+
+  /* 某架運輸機自己的路徑取點（含其相位/速度），回傳 { pos, dir }。
+   * 把 campaign 飛行進度 flyProg 依該機 phase/speed 重映射成自己的 prog。 */
+  function planePathAt(pl, flyProg) {
+    const pp = pl.path || _path;
+    // 相位：先後抵達；速度：快慢。重映射到 [0,1]。
+    const local = c01((flyProg - pl.phase) * (pl.speed || 1));
+    return segAt(pp.p0, pp.p1, pp.p2, local);
   }
 
   /* ===================================================================
@@ -623,21 +791,15 @@ window.SEKI = window.SEKI || {};
 
     const elapsed = (S.engine && S.engine.clock) ? S.engine.clock.getElapsedTime() : 0;
 
-    /* ---------- 1. 機群飛行 ---------- */
-    // 機群飛行進度：T_START→T_EXIT 映射到 0→1
+    /* ---------- 1. 運輸機各自飛行（非剛性編隊，各有路線/相位/速度） ---------- */
+    // 共用飛行進度：T_START→T_EXIT 映射到 0→1，再由各機 phase/speed 重映射。
     const flyProg = c01((t - T_START) / (T_EXIT - T_START));
     const planesVisible = (t >= T_START && t <= T_EXIT + 0.05);
-    const base = pathAt(flyProg);
-
-    // 由前進向量算 yaw（繞 Y），讓機首(+X)對齊飛行方向
-    const yaw = Math.atan2(-base.dir.z, base.dir.x);
-    // 投畢轉向的視覺 roll（飛離段做一點傾側）
-    const roll = (flyProg > 0.55) ? -0.18 * smooth((flyProg - 0.55) / 0.45) : 0;
 
     for (let i = 0; i < _planes.length; i++) {
       const pl = _planes[i];
 
-      // === 被擊落機：中彈後走獨立墜落分支，不沿用正常飛行/編隊邏輯 ===
+      // === 被擊落機：中彈後走獨立墜落分支，不沿用正常飛行邏輯 ===
       if (pl.shotdown && t >= pl.tHit) {
         updateShotdown(pl, t, elapsed);
         continue;
@@ -645,14 +807,22 @@ window.SEKI = window.SEKI || {};
 
       pl.mesh.visible = planesVisible;
       if (!planesVisible) continue;
-      // 編隊 offset 需隨機群朝向旋轉，才能維持 V 形相對機首方向
-      const off = pl.offset.clone();
-      off.applyAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
-      pl.mesh.position.copy(base.pos).add(off);
+
+      // 各機沿「自己的」三點路徑前進；位置與朝向完全獨立。
+      const b = planePathAt(pl, flyProg);
+      // 機首(+X)對齊各自前進向量，並疊加各機固定航向微調 heading。
+      const yaw = Math.atan2(-b.dir.z, b.dir.x) + (pl.heading || 0);
+      // 各機自己的飛離段傾側（相位不同 → roll 起點各異）
+      const localProg = c01((flyProg - pl.phase) * (pl.speed || 1));
+      const roll = (localProg > 0.55) ? -0.18 * smooth((localProg - 0.55) / 0.45) : 0;
+      // 緩降風感：各機略不同的微幅起伏（穩定相位，不用亂數）
+      const bob = Math.sin(elapsed * 0.8 + i * 1.3) * 0.6;
+
+      pl.mesh.position.set(b.pos.x, b.pos.y + bob, b.pos.z);
       pl.mesh.rotation.set(0, yaw, roll);
-      // 螺旋槳自轉（繞各自 +X，用 clock 連續旋轉）
+      // 螺旋槳自轉（各機轉速略異，繞各自 +X，用 clock 連續旋轉）
       for (let s = 0; s < pl.props.length; s++) {
-        pl.props[s].rotation.x = elapsed * 22 + s * 1.5;
+        pl.props[s].rotation.x = elapsed * (22 + i * 1.5) + s * 1.5;
       }
     }
 
@@ -689,10 +859,11 @@ window.SEKI = window.SEKI || {};
         continue;
       }
 
-      // 空中緩降：投放點(機腹，飛行高度)→落點(地形表面)，含水平飄移。
-      // 投放當時的機群位置（用 dropT 對應的 flyProg 反推，近似為當時機群基準位置）
+      // 空中緩降：投放點(自己飛機的機腹，飛行高度)→落點(地形表面)，含水平飄移。
+      // 投放當時「該兵所屬飛機」的位置（用 dropT 反推 flyProg，再走該機自飛路徑）。
       const dropFlyProg = c01((dropT - T_START) / (T_EXIT - T_START));
-      const dropBase = pathAt(dropFlyProg).pos;
+      const ownPlane = _planes[p.planeIdx];
+      const dropBase = ownPlane ? planePathAt(ownPlane, dropFlyProg).pos : pathAt(dropFlyProg).pos;
       const startX = dropBase.x, startY = dropBase.y, startZ = dropBase.z;
 
       const k = fall;                      // 0..1

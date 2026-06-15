@@ -96,41 +96,99 @@ SEKI.armies = [
       { t:34,  lng:-0.8550,lat:49.3900,s:9, st:'attack' },   // 上午抵近直射殘餘德軍火力點·支援出灘推進
       { t:44,  lng:-0.8650,lat:49.4000,s:9, st:'hold' },     // 午後火力支援轉為內陸縱深·登陸場已穩固
     ]},
-  { id:"bombers", name_zh:"B-24 轟炸機群", name_ja:"B-24 Liberator", name_en:"Heavy Bombers", side:'east', kind:'aircraft', crest:null,
-    title:"盟軍 第八航空隊 · H時前地毯轟炸後持續滯空·多趟巡航投彈", troops:36,
-    track:[ // 全程移動·沿海岸來回多趟掠灘投彈(yoff 飛行高度由 effects 處理)；lat 偏外海/灘後讓機群在空中掠過
-      // 第1趟 西→東 (H時前地毯轟炸·炸偏內陸)
-      { t:5.8, lng:-0.9500,lat:49.4050,s:36, st:'march' },    // 自海上由西進場
-      { t:6.0, lng:-0.8800,lat:49.3850,s:36, st:'attack' },   // 雲層遮蔽·延遲投彈
-      { t:6.2, lng:-0.8500,lat:49.3950,s:36, st:'attack' },   // 炸彈落入內陸·灘頭工事完好
-      { t:6.4, lng:-0.8000,lat:49.4050,s:36, st:'march' },    // 掠至東端·拉高轉向
-      // 第2趟 東→西 折返
-      { t:6.7, lng:-0.8400,lat:49.3900,s:36, st:'attack' },   // 折返再炸內陸目標
-      { t:6.9, lng:-0.8900,lat:49.3950,s:36, st:'attack' },   // 灘後砲兵陣地
-      { t:7.2, lng:-0.9500,lat:49.4050,s:36, st:'march' },    // 抵西端轉向
-      // 第3趟 西→東
-      { t:7.6, lng:-0.8900,lat:49.3900,s:36, st:'attack' },   // 再次掠灘投彈
-      { t:7.9, lng:-0.8300,lat:49.3950,s:36, st:'attack' },   // 內陸交通線
-      { t:8.2, lng:-0.8000,lat:49.4050,s:36, st:'march' },    // 東端轉向
-      // 第4趟 東→西
-      { t:8.7, lng:-0.8600,lat:49.3900,s:36, st:'attack' },   // 壓制德軍縱深
-      { t:9.0, lng:-0.9200,lat:49.3950,s:36, st:'attack' },   // 西段崖線目標
-      { t:9.4, lng:-0.9500,lat:49.4050,s:36, st:'march' },    // 西端轉向
-      // 第5趟 西→東 (上午支援突破)
-      { t:10.0,lng:-0.8800,lat:49.3900,s:36, st:'attack' },   // 配合步兵突破·炸德軍預備隊
-      { t:10.4,lng:-0.8200,lat:49.3950,s:36, st:'attack' },   // 內陸集結地
-      { t:10.8,lng:-0.8000,lat:49.4050,s:36, st:'march' },    // 東端轉向
-      // 第6趟 東→西
-      { t:11.4,lng:-0.8700,lat:49.3900,s:36, st:'attack' },   // 切斷增援道路
-      { t:11.8,lng:-0.9300,lat:49.3950,s:36, st:'attack' },   // 西翼縱深
-      { t:12.2,lng:-0.9500,lat:49.4050,s:36, st:'march' },    // 西端轉向
-      // 第7趟 西→東 (午後最後一趟)
-      { t:12.6,lng:-0.8800,lat:49.3900,s:36, st:'attack' },   // 午後再炸德軍反擊集結
-      { t:13.0,lng:-0.8200,lat:49.4050,s:36, st:'march' },    // 任務完成·脫離向東返航
-      // D+1 零星出擊
-      { t:30.0,lng:-0.9500,lat:49.4050,s:24, st:'march' },    // D+1 進場
-      { t:30.4,lng:-0.8600,lat:49.3900,s:24, st:'attack' },   // 支援內陸推進·炸德軍據點
-      { t:30.8,lng:-0.8000,lat:49.4050,s:24, st:'march' },    // 脫離返航
+  // ── B-24「解放者」轟炸機：拆成 6 架各自獨立的單機，各有自己的進場方向、航線與時段 ──
+  // 不再是一個剛性編隊整體移動；每架單獨進場、各飛各的折返來回，彼此不平行也不同步。
+  // models.js 的 aircraft() 將改回單機精細模型，故每個 bomber 單位＝一架 B-24。
+  // 1 號機（保留 id:"bombers" 供 storyboard/events 既有 focus）：西→東領隊，H 時前首批進場
+  { id:"bombers", name_zh:"B-24「解放者」01 號（領隊）", name_ja:"B-24 Liberator #01", name_en:"B-24 Liberator #01", side:'east', kind:'aircraft', crest:null,
+    title:"盟軍 第八航空隊 · 領隊機 H 時前首批地毯轟炸·西→東掠灘", troops:36,
+    track:[ // 全程移動·單機西→東進場後多趟折返(yoff 飛行高度由 effects 處理)
+      { t:5.8, lng:-0.9700,lat:49.4080,s:36, st:'march' },    // 自海上最西端進場·領頭
+      { t:6.0, lng:-0.9000,lat:49.3870,s:36, st:'attack' },   // 雲層遮蔽·延遲投彈
+      { t:6.2, lng:-0.8400,lat:49.3960,s:36, st:'attack' },   // 炸彈落入內陸·灘頭工事完好
+      { t:6.5, lng:-0.8050,lat:49.4090,s:36, st:'march' },    // 掠至東端·拉高轉向
+      { t:6.9, lng:-0.8600,lat:49.3900,s:36, st:'attack' },   // 折返再炸內陸目標
+      { t:7.3, lng:-0.9300,lat:49.4070,s:36, st:'march' },    // 抵西端轉向
+      { t:7.9, lng:-0.8500,lat:49.3920,s:36, st:'attack' },   // 上午支援突破·炸德軍預備隊
+      { t:8.6, lng:-0.8050,lat:49.4080,s:36, st:'march' },    // 東端轉向
+      { t:9.6, lng:-0.8800,lat:49.3900,s:36, st:'attack' },   // 配合步兵·壓制縱深
+      { t:10.8,lng:-0.9600,lat:49.4080,s:36, st:'march' },    // 長程西飛轉向
+      { t:12.6,lng:-0.8600,lat:49.3910,s:36, st:'attack' },   // 午後最後一趟掠灘投彈
+      { t:13.0,lng:-0.8000,lat:49.4090,s:36, st:'march' },    // 任務完成·向東返航
+    ]},
+  // 2 號機：東→西反向進場，與 1 號錯開約 0.2h，斜切內陸
+  { id:"bomber_2", name_zh:"B-24「解放者」02 號", name_ja:"B-24 Liberator #02", name_en:"B-24 Liberator #02", side:'east', kind:'aircraft', crest:null,
+    title:"盟軍 第八航空隊 · 02 號機 東→西反向進場·斜切內陸投彈", troops:36,
+    track:[
+      { t:6.0, lng:-0.8000,lat:49.4100,s:36, st:'march' },    // 自東端外海進場(反向)
+      { t:6.3, lng:-0.8500,lat:49.3900,s:36, st:'attack' },   // 斜切下壓·炸灘後砲兵陣地
+      { t:6.6, lng:-0.9100,lat:49.3970,s:36, st:'attack' },   // 續炸西段內陸交通線
+      { t:6.9, lng:-0.9600,lat:49.4090,s:36, st:'march' },    // 西端拉高轉向
+      { t:7.4, lng:-0.8900,lat:49.3890,s:36, st:'attack' },   // 折返東飛·壓制德軍縱深
+      { t:7.9, lng:-0.8200,lat:49.4080,s:36, st:'march' },    // 東端轉向
+      { t:8.8, lng:-0.8700,lat:49.3910,s:36, st:'attack' },   // 上午切斷增援道路
+      { t:9.7, lng:-0.9500,lat:49.4070,s:36, st:'march' },    // 西端轉向
+      { t:11.2,lng:-0.8500,lat:49.3920,s:36, st:'attack' },   // 午前炸反擊集結地
+      { t:12.4,lng:-0.8000,lat:49.4090,s:36, st:'march' },    // 向東脫離返航
+    ]},
+  // 3 號機：西偏內陸進場，較晚(6.3)·航線偏南壓內陸縱深
+  { id:"bomber_3", name_zh:"B-24「解放者」03 號", name_ja:"B-24 Liberator #03", name_en:"B-24 Liberator #03", side:'east', kind:'aircraft', crest:null,
+    title:"盟軍 第八航空隊 · 03 號機 西進場·偏南壓制內陸縱深", troops:36,
+    track:[
+      { t:6.3, lng:-0.9550,lat:49.4000,s:36, st:'march' },    // 自西進場·航高略低
+      { t:6.6, lng:-0.8800,lat:49.3850,s:36, st:'attack' },   // 深入灘後·炸德軍集結
+      { t:6.9, lng:-0.8200,lat:49.3950,s:36, st:'attack' },   // 內陸交通樞紐
+      { t:7.2, lng:-0.8050,lat:49.4070,s:36, st:'march' },    // 東端轉向
+      { t:7.8, lng:-0.8700,lat:49.3870,s:36, st:'attack' },   // 折返·西段崖線目標
+      { t:8.4, lng:-0.9400,lat:49.4060,s:36, st:'march' },    // 西端轉向
+      { t:9.4, lng:-0.8600,lat:49.3880,s:36, st:'attack' },   // 上午壓制預備隊
+      { t:10.6,lng:-0.8100,lat:49.4080,s:36, st:'march' },    // 東端轉向
+      { t:11.8,lng:-0.8800,lat:49.3890,s:36, st:'attack' },   // 午後炸縱深集結
+      { t:12.8,lng:-0.9500,lat:49.4090,s:36, st:'march' },    // 西飛脫離返航
+    ]},
+  // 4 號機：東進場·較晚(6.6)·偏外海高航線·快速來回
+  { id:"bomber_4", name_zh:"B-24「解放者」04 號", name_ja:"B-24 Liberator #04", name_en:"B-24 Liberator #04", side:'east', kind:'aircraft', crest:null,
+    title:"盟軍 第八航空隊 · 04 號機 東進場·偏外海高航線·快速折返", troops:36,
+    track:[
+      { t:6.6, lng:-0.8050,lat:49.4100,s:36, st:'march' },    // 自東端外海進場
+      { t:6.85,lng:-0.8600,lat:49.3920,s:36, st:'attack' },   // 下壓掠灘投彈
+      { t:7.1, lng:-0.9300,lat:49.4000,s:36, st:'attack' },   // 西段灘後目標
+      { t:7.4, lng:-0.9650,lat:49.4090,s:36, st:'march' },    // 西端轉向
+      { t:8.0, lng:-0.8800,lat:49.3910,s:36, st:'attack' },   // 折返·炸內陸砲位
+      { t:8.7, lng:-0.8100,lat:49.4090,s:36, st:'march' },    // 東端轉向
+      { t:9.9, lng:-0.8900,lat:49.3900,s:36, st:'attack' },   // 上午支援突破
+      { t:11.0,lng:-0.9550,lat:49.4080,s:36, st:'march' },    // 西端轉向
+      { t:12.2,lng:-0.8700,lat:49.3920,s:36, st:'attack' },   // 午後最後投彈
+      { t:12.9,lng:-0.8050,lat:49.4100,s:36, st:'march' },    // 向東脫離返航
+    ]},
+  // 5 號機：最西外海進場·最晚首批(6.6)·大弧線長程折返
+  { id:"bomber_5", name_zh:"B-24「解放者」05 號", name_ja:"B-24 Liberator #05", name_en:"B-24 Liberator #05", side:'east', kind:'aircraft', crest:null,
+    title:"盟軍 第八航空隊 · 05 號機 最西外海進場·大弧線長程巡航投彈", troops:36,
+    track:[
+      { t:6.6, lng:-0.9700,lat:49.4100,s:36, st:'march' },    // 自最西外海進場
+      { t:7.0, lng:-0.8900,lat:49.3880,s:36, st:'attack' },   // 大弧線下壓·炸灘後縱深
+      { t:7.4, lng:-0.8200,lat:49.3970,s:36, st:'attack' },   // 內陸補給線
+      { t:7.8, lng:-0.8000,lat:49.4090,s:36, st:'march' },    // 東端轉向
+      { t:8.6, lng:-0.8700,lat:49.3890,s:36, st:'attack' },   // 折返·壓制德軍縱深
+      { t:9.5, lng:-0.9550,lat:49.4080,s:36, st:'march' },    // 西端轉向
+      { t:10.9,lng:-0.8600,lat:49.3900,s:36, st:'attack' },   // 午前切斷增援
+      { t:12.0,lng:-0.8100,lat:49.4090,s:36, st:'march' },    // 東端轉向
+      { t:12.8,lng:-0.8900,lat:49.3910,s:36, st:'attack' },   // 午後再炸反擊集結
+      { t:13.0,lng:-0.9400,lat:49.4100,s:36, st:'march' },    // 西飛脫離返航
+    ]},
+  // 6 號機：D+1 為主的零星出擊·D 日午後晚進場·支援內陸推進
+  { id:"bomber_6", name_zh:"B-24「解放者」06 號", name_ja:"B-24 Liberator #06", name_en:"B-24 Liberator #06", side:'east', kind:'aircraft', crest:null,
+    title:"盟軍 第八航空隊 · 06 號機 D 日午後晚進場+D+1 零星出擊·支援內陸推進", troops:36,
+    track:[
+      { t:11.6,lng:-0.8000,lat:49.4100,s:36, st:'march' },    // D 日午後自東進場(晚到)
+      { t:12.0,lng:-0.8700,lat:49.3910,s:36, st:'attack' },   // 炸德軍反擊集結
+      { t:12.5,lng:-0.9300,lat:49.3980,s:36, st:'attack' },   // 西翼縱深
+      { t:13.0,lng:-0.9600,lat:49.4090,s:36, st:'march' },    // 西端脫離·返航待命
+      // ── D+1（6/7）：零星出擊·支援登陸場向內陸推進 ──
+      { t:30.0,lng:-0.9600,lat:49.4090,s:24, st:'march' },    // D+1 清晨自西進場
+      { t:30.4,lng:-0.8700,lat:49.3900,s:24, st:'attack' },   // 炸德軍據點·支援出灘推進
+      { t:30.8,lng:-0.8100,lat:49.3980,s:24, st:'attack' },   // 內陸縱深目標
+      { t:31.2,lng:-0.8000,lat:49.4090,s:24, st:'march' },    // 東端脫離返航
     ]},
   { id:"lcvp_1", name_zh:"登陸艇 首波（西）", name_ja:"LCVP 1st Wave (West)", name_en:"LCVP Wave 1", side:'east', kind:'landingcraft', crest:null,
     title:"盟軍 希金斯艇 · Dog/Easy 首波", troops:36,
