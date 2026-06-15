@@ -176,6 +176,7 @@
     S.initEffects();
     if (S.initSectors) S.initSectors();     // 灘段不規則閃光框（隨運鏡標出當前焦點灘段）
     if (S.initAirdrop) S.initAirdrop();     // 凌晨空降序列：C-47 運輸機 + 傘兵緩降 + 臨時陣地
+    if (S.initFleet) S.initFleet();         // 外海背景入侵艦隊（運輸船/驅逐艦/登陸艇，營造規模感）
     S.buildEngagements();
     S.initWeather();
     initSmoke();
@@ -213,6 +214,7 @@
       updateCliffAssault(t);
       if (S.updateSectors) S.updateSectors(t);   // 灘段閃光框脈動 + 焦點切換
       if (S.updateAirdrop) S.updateAirdrop(t);   // 空降動畫：機群進場/投放/傘兵緩降/飛離
+      if (S.updateFleet) S.updateFleet(t);       // 背景艦隊：淡入淡出/海浪起伏/登陸艇推進
       S.updateEffects(t, dt);
       S.updateEngagements(t, dt);
       S.updateEvents(t);
