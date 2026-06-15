@@ -215,9 +215,10 @@ window.SEKI = window.SEKI || {};
     }
     // 3) 套用
     for (const u of _units) {
-      // 空降部隊落地前(spawnAt)隱藏單位，由空降動畫呈現其空投過程；落地後才現身
+      // 空降部隊落地前(spawnAt)隱藏整個單位（含 CSS2D 名牌），由空降動畫呈現其空投過程；落地後才現身
       const spawned = u.data.spawnAt == null || t >= u.data.spawnAt;
       u.group.visible = spawned;
+      if (u.el) u.el.style.display = spawned ? '' : 'none';
       if (!spawned) { if (u.arrow) u.arrow.visible = false; continue; }
       const s = u.cur;
       const y = S.terrain ? S.terrain.heightAt(u.p.x, u.p.z) : 0;

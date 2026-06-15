@@ -264,9 +264,8 @@ window.SEKI = window.SEKI || {};
 
     // --- 小人形（軀幹 + 頭 + 鋼盔） ---
     const bodyMat = new THREE.MeshStandardMaterial({ color: COL_SOLDIER, roughness: 0.9 });
-    const body = new THREE.Mesh(new THREE.CapsuleGeometry
-      ? new THREE.CapsuleGeometry(0.45, 1.2, 4, 8)
-      : new THREE.CylinderGeometry(0.45, 0.45, 1.6, 8), bodyMat);
+    // 注意：此 three.js 版本沒有 CapsuleGeometry，軀幹改用圓柱（避免 not-a-constructor 崩潰）
+    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.42, 1.5, 8), bodyMat);
     body.position.y = 0.6;
     g.add(body);
     const helmet = new THREE.Mesh(
