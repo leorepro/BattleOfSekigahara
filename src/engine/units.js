@@ -310,4 +310,20 @@ window.SEKI = window.SEKI || {};
     }
     return { east, west };
   };
+
+  // 雙方累積陣亡（單調增長）：某單位陣亡 = max(0, 初始兵力 - 當前兵力)。
+  //   無 cur（尚未取樣）視為未損失=0；倒戈者依當下陣營歸戶（諾曼第無倒戈）。
+  //   同時回傳各方初始總兵力，供 UI 算填充比例。
+  S.sideCasualties = function () {
+    let east = 0, west = 0, eastInit = 0, westInit = 0;
+    for (const u of _units) {
+      const init = u.data.troops || 0;
+      const cur = u.cur ? u.cur.s : init;                       // 找不到 cur → 未損失
+      const dead = Math.max(0, init - cur);
+      const isEast = (u.data.side === 'east') || u.defected;
+      if (isEast) { east += dead; eastInit += init; }
+      else { west += dead; westInit += init; }
+    }
+    return { east, west, eastInit, westInit };
+  };
 })(window.SEKI);

@@ -195,6 +195,19 @@
          box-shadow:0 1px 4px rgba(0,0,0,.5); }
   #barEast{ background:linear-gradient(90deg,#13309e,#3f72e0); transition:width .4s; }
   #barWest{ background:linear-gradient(270deg,#8f0c0c,#e0382c); transition:width .4s; }
+  /* 累積陣亡條：沉重暗紅/灰調，與上方亮色現存條形成對比，強化毀滅感 */
+  #bars .cas-head{ display:flex; justify-content:space-between; align-items:center;
+         font-size:11.5px; font-weight:700; letter-spacing:1px; margin:5px 0 3px;
+         color:#caa9a9; opacity:.92; }
+  #bars .cas-head b{ font-variant-numeric:tabular-nums; color:#e7c2c2; }
+  #bars .cas-head .bh-mid{ color:#9a8888; font-size:10.5px; letter-spacing:2px; }
+  #bars .cas-track{ display:flex; height:9px; border-radius:3px; overflow:hidden;
+         background:rgba(8,5,5,.62); border:1px solid rgba(120,60,60,.4);
+         box-shadow:inset 0 1px 4px rgba(0,0,0,.7); }
+  /* 兩側皆向中央填充（east 自左、west 自右），陣亡量越大越逼近中線 */
+  #casEast{ background:linear-gradient(90deg,#6e1414,#3a1010 70%,#2a1414); transition:width .5s; }
+  #casWest{ background:linear-gradient(270deg,#6e1414,#3a1010 70%,#2a1414); transition:width .5s;
+         margin-left:auto; }
 
   /* 控制列 */
   #controls{ position:fixed; left:0; right:0; bottom:0; height:84px; display:flex; align-items:center;
@@ -319,6 +332,13 @@
       <span class="side-west"><b id="valWest">0</b> 德軍 ⚔</span>
     </div>
     <div class="bal-track"><i id="barEast"></i><i id="barWest"></i></div>
+    <!-- 累積陣亡條：沉重暗紅/灰調，與上方亮藍/亮紅現存條區隔，彰顯傷亡的毀滅性 -->
+    <div class="cas-head">
+      <span class="side-east">☠ 盟軍陣亡 <b id="casValEast">0</b></span>
+      <span class="bh-mid">傷亡累計</span>
+      <span class="side-west"><b id="casValWest">0</b> 德軍陣亡 ☠</span>
+    </div>
+    <div class="cas-track"><i id="casEast"></i><i id="casWest"></i></div>
   </div>
 
   <!-- 關鍵事件提示橫幅 -->

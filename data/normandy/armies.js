@@ -145,25 +145,25 @@ SEKI.armies = [
   /* ============================ 德軍（紅 · west） ============================ */
   { id:"wn62", name_zh:"WN62 據點", name_ja:"Widerstandsnest 62", name_en:"WN62", side:'west', kind:'bunker', crest:null,
     title:"德軍 352師 · 奧馬哈最致命據點(Colleville 上方)", troops:30,
-    track:[ // lat 校正 49.3760→49.3680（原值落海，改至灘線陸側崖頂）
-      { t:5.5, lng:-0.8460,lat:49.3680,s:30, st:'hold' },    // 砲擊中存活·工事完好
-      { t:6.5, lng:-0.8460,lat:49.3680,s:30, st:'attack' },  // 俯瞰 Easy Red/Fox Green 猛烈掃射
-      { t:9.5, lng:-0.8460,lat:49.3680,s:24, st:'attack' },  // 仍封鎖灘頭·造成最大傷亡
-      { t:11,  lng:-0.8460,lat:49.3680,s:14, st:'hold' },    // 遭驅逐艦直射壓制·彈藥漸竭
-      { t:13,  lng:-0.8460,lat:49.3680,s:0,  st:'rout' },    // 守軍撤離·WN62 失守
+    track:[ // lat 校正(DEM)：49.3680 仍在海面(0m)→49.3604（崖肩 14.2m，俯瞰 Easy Red/Fox Green）
+      { t:5.5, lng:-0.8460,lat:49.3604,s:30, st:'hold' },    // 砲擊中存活·工事完好
+      { t:6.5, lng:-0.8460,lat:49.3604,s:30, st:'attack' },  // 俯瞰 Easy Red/Fox Green 猛烈掃射
+      { t:9.5, lng:-0.8460,lat:49.3604,s:24, st:'attack' },  // 仍封鎖灘頭·造成最大傷亡
+      { t:11,  lng:-0.8460,lat:49.3604,s:14, st:'hold' },    // 遭驅逐艦直射壓制·彈藥漸竭
+      { t:13,  lng:-0.8460,lat:49.3604,s:0,  st:'rout' },    // 守軍撤離·WN62 失守
     ]},
   { id:"wn61", name_zh:"WN61 據點", name_ja:"Widerstandsnest 61", name_en:"WN61", side:'west', kind:'bunker', crest:null,
     title:"德軍 · E-3 東側·88mm 反戰車砲", troops:25,
-    track:[ // lat 校正 49.3758→49.3682（原值落海，改至灘線陸側崖頂）
-      { t:5.5, lng:-0.8430,lat:49.3682,s:25, st:'hold' },
-      { t:6.5, lng:-0.8430,lat:49.3682,s:25, st:'attack' },  // 88mm 擊毀上灘 DD 戰車
-      { t:8.5, lng:-0.8430,lat:49.3682,s:20, st:'attack' },
-      { t:9.5, lng:-0.8430,lat:49.3682,s:8,  st:'hold' },    // 遭 DD 戰車與驅逐艦對射壓制
-      { t:11,  lng:-0.8430,lat:49.3682,s:0,  st:'rout' },    // 較早失守
+    track:[ // lat 校正(DEM)：49.3682 仍在海面(0m)→49.3584（崖肩 13.3m，扼 E-3 東側）
+      { t:5.5, lng:-0.8430,lat:49.3584,s:25, st:'hold' },
+      { t:6.5, lng:-0.8430,lat:49.3584,s:25, st:'attack' },  // 88mm 擊毀上灘 DD 戰車
+      { t:8.5, lng:-0.8430,lat:49.3584,s:20, st:'attack' },
+      { t:9.5, lng:-0.8430,lat:49.3584,s:8,  st:'hold' },    // 遭 DD 戰車與驅逐艦對射壓制
+      { t:11,  lng:-0.8430,lat:49.3584,s:0,  st:'rout' },    // 較早失守
     ]},
   { id:"wn72", name_zh:"WN72 據點", name_ja:"Widerstandsnest 72", name_en:"WN72", side:'west', kind:'bunker', crest:null,
     title:"德軍 · 封鎖 D-1 Vierville 隘口·反戰車砲", troops:20,
-    track:[ // lat 校正 49.3745→49.3690（原值落海，改至灘線陸側崖肩）
+    track:[ // lat(DEM 驗證)：49.3690 已在 Pointe de la Percée 高地(46.5m)，無需再移
       { t:5.5, lng:-0.9040,lat:49.3690,s:20, st:'hold' },
       { t:6.5, lng:-0.9040,lat:49.3690,s:20, st:'attack' },  // 砲廓側射屠殺 Dog Green 的116團A連
       { t:9,   lng:-0.9040,lat:49.3690,s:18, st:'attack' },  // 死封 D-1 隘道
@@ -172,7 +172,7 @@ SEKI.armies = [
     ]},
   { id:"wn71", name_zh:"WN71 據點", name_ja:"Widerstandsnest 71", name_en:"WN71", side:'west', kind:'bunker', crest:null,
     title:"德軍 · Vierville 隘口東側火力點", troops:18,
-    track:[ // lat 校正 49.3748→49.3688（原值落海，改至灘線陸側崖肩）
+    track:[ // lat(DEM 驗證)：49.3688 已在西端高地(47.7m)，無需再移
       { t:5.5, lng:-0.9010,lat:49.3688,s:18, st:'hold' },
       { t:6.5, lng:-0.9010,lat:49.3688,s:18, st:'attack' },  // 與 WN72 構成交叉火網
       { t:11,  lng:-0.9010,lat:49.3688,s:10, st:'attack' },
@@ -180,47 +180,47 @@ SEKI.armies = [
     ]},
   { id:"wn70", name_zh:"WN70 據點", name_ja:"Widerstandsnest 70", name_en:"WN70", side:'west', kind:'bunker', crest:null,
     title:"德軍 · Les Moulins 上方崖頂火力點", troops:18,
-    track:[ // lat 校正 49.3752→49.3685（原值落海，改至灘線陸側崖頂）
-      { t:5.5, lng:-0.8730,lat:49.3685,s:18, st:'hold' },
-      { t:6.5, lng:-0.8730,lat:49.3685,s:18, st:'attack' },  // 俯瞰 Dog Red/Easy Green
-      { t:11,  lng:-0.8730,lat:49.3685,s:9,  st:'hold' },
-      { t:13,  lng:-0.8730,lat:49.3685,s:0,  st:'rout' },
+    track:[ // lat 校正(DEM)：49.3685 僅 2.5m(灘沙)→49.3677（崖肩 14.5m，俯瞰 Dog Red/Easy Green）
+      { t:5.5, lng:-0.8730,lat:49.3677,s:18, st:'hold' },
+      { t:6.5, lng:-0.8730,lat:49.3677,s:18, st:'attack' },  // 俯瞰 Dog Red/Easy Green
+      { t:11,  lng:-0.8730,lat:49.3677,s:9,  st:'hold' },
+      { t:13,  lng:-0.8730,lat:49.3677,s:0,  st:'rout' },
     ]},
   { id:"wn68", name_zh:"WN68 據點", name_ja:"Widerstandsnest 68", name_en:"WN68", side:'west', kind:'bunker', crest:null,
     title:"德軍 · St-Laurent E-1 上方據點", troops:16,
-    track:[ // lat 校正 49.3755→49.3683（原值落海，改至灘線陸側崖頂）
-      { t:5.5, lng:-0.8600,lat:49.3683,s:16, st:'hold' },
-      { t:6.5, lng:-0.8600,lat:49.3683,s:16, st:'attack' },  // 封鎖 Easy Red 西側
-      { t:11,  lng:-0.8600,lat:49.3683,s:7,  st:'hold' },
-      { t:12,  lng:-0.8600,lat:49.3683,s:0,  st:'rout' },    // E-1 最先被打通
+    track:[ // lat 校正(DEM)：49.3683 仍在海面(0m)→49.3633（崖肩 12.8m，封鎖 Easy Red 西側）
+      { t:5.5, lng:-0.8600,lat:49.3633,s:16, st:'hold' },
+      { t:6.5, lng:-0.8600,lat:49.3633,s:16, st:'attack' },  // 封鎖 Easy Red 西側
+      { t:11,  lng:-0.8600,lat:49.3633,s:7,  st:'hold' },
+      { t:12,  lng:-0.8600,lat:49.3633,s:0,  st:'rout' },    // E-1 最先被打通
     ]},
   { id:"flak_colleville", name_zh:"科勒維爾高射砲", name_ja:"Colleville Flak Battery", name_en:"Colleville Flak", side:'west', kind:'flak', crest:null,
     title:"德軍 · 崖頂高射砲·對空兼平射", troops:12,
-    track:[ // lat 校正 49.3800→49.3670（原值落海；改至 WN62 後方崖頂內陸側）
-      { t:5.5, lng:-0.8480,lat:49.3670,s:12, st:'hold' },
-      { t:6.0, lng:-0.8480,lat:49.3670,s:12, st:'attack' },  // 對掠過的 B-24 機群射擊
-      { t:9,   lng:-0.8480,lat:49.3670,s:10, st:'attack' },  // 轉平射支援 WN62
-      { t:13,  lng:-0.8480,lat:49.3670,s:4,  st:'hold' },
-      { t:15,  lng:-0.8480,lat:49.3670,s:0,  st:'rout' },
+    track:[ // lat 校正(DEM)：49.3670 仍在海面(0m)→49.3590（WN62 後方崖頂 35.8m，內陸側）
+      { t:5.5, lng:-0.8480,lat:49.3590,s:12, st:'hold' },
+      { t:6.0, lng:-0.8480,lat:49.3590,s:12, st:'attack' },  // 對掠過的 B-24 機群射擊
+      { t:9,   lng:-0.8480,lat:49.3590,s:10, st:'attack' },  // 轉平射支援 WN62
+      { t:13,  lng:-0.8480,lat:49.3590,s:4,  st:'hold' },
+      { t:15,  lng:-0.8480,lat:49.3590,s:0,  st:'rout' },
     ]},
   { id:"inf_352", name_zh:"352師反擊隊", name_ja:"352. Infanterie-Division", name_en:"352nd Infantry", side:'west', kind:'infantry', crest:null,
     title:"德軍 預備隊 · 自內陸前推反擊（情報誤判其存在）", troops:1500,
-    track:[ // lat 校正：原 49.388~49.405 在外海（北=海）。內陸應為低 lat；
-            // 改為自內陸(低 lat)向灘頭(高 lat 近灘線)前推→反擊→往內陸(低 lat)後撤
-      { t:5.5, lng:-0.8650,lat:49.3630,s:1500,st:'hold' },   // 內陸待命（盟軍情報未察其前調）
-      { t:9,   lng:-0.8650,lat:49.3655,s:1500,st:'march' },  // 自內陸向灘頭前推（lat 升=趨灘）
-      { t:11,  lng:-0.8650,lat:49.3675,s:1400,st:'attack' }, // 抵崖後·局部反擊·一度遲滯灘頭擴張
-      { t:14,  lng:-0.8680,lat:49.3650,s:900, st:'hold' },   // 遭艦砲與滲透打擊·後撤（lat 降=退內陸）
-      { t:18,  lng:-0.8700,lat:49.3625,s:700, st:'rout' },   // 傍晚全線向內陸後退
+    track:[ // lat 校正(DEM)：原 49.3655/49.3675 仍落在海面/灘沙(7.5m/0.3m)。
+            // 改為全程在崖後台地(低 lat)前推→抵崖肩反擊→往內陸後撤；前推峰值止於崖肩(≥10m)不入海。
+      { t:5.5, lng:-0.8650,lat:49.3600,s:1500,st:'hold' },   // 內陸台地待命 33.1m（情報未察其前調）
+      { t:9,   lng:-0.8650,lat:49.3630,s:1500,st:'march' },  // 自內陸向灘頭前推 25.8m（lat 升=趨灘）
+      { t:11,  lng:-0.8650,lat:49.3650,s:1400,st:'attack' }, // 抵崖肩 10.1m·局部反擊·一度遲滯灘頭擴張
+      { t:14,  lng:-0.8680,lat:49.3620,s:900, st:'hold' },   // 遭艦砲與滲透打擊·後撤 46.9m（lat 降=退內陸）
+      { t:18,  lng:-0.8700,lat:49.3600,s:700, st:'rout' },   // 傍晚全線向內陸後退 46.3m
     ]},
   { id:"mortar_352", name_zh:"352師迫擊砲", name_ja:"352nd Mortar Battery", name_en:"352nd Mortars", side:'west', kind:'artillery', crest:null,
     title:"德軍 · 預先標定灘頭·拋射壓制", troops:60,
-    track:[ // lat 校正 49.3900→49.3665（原值落深海；改至崖後內陸拋射陣地，往內陸後撤）
-      { t:5.5, lng:-0.8600,lat:49.3665,s:60, st:'hold' },
-      { t:6.5, lng:-0.8600,lat:49.3665,s:60, st:'attack' },  // 對預先標定的灘頭潮間帶拋射
-      { t:9,   lng:-0.8600,lat:49.3665,s:50, st:'attack' },
-      { t:13,  lng:-0.8600,lat:49.3665,s:20, st:'hold' },    // 觀測所失守·火力減弱
-      { t:16,  lng:-0.8630,lat:49.3655,s:0,  st:'rout' },    // 往內陸(更低 lat)後撤
+    track:[ // lat 校正(DEM)：49.3665 仍在海面(0m)→49.3631（崖後內陸拋射陣地 15.8m，往內陸後撤）
+      { t:5.5, lng:-0.8600,lat:49.3631,s:60, st:'hold' },
+      { t:6.5, lng:-0.8600,lat:49.3631,s:60, st:'attack' },  // 對預先標定的灘頭潮間帶拋射
+      { t:9,   lng:-0.8600,lat:49.3631,s:50, st:'attack' },
+      { t:13,  lng:-0.8600,lat:49.3631,s:20, st:'hold' },    // 觀測所失守·火力減弱
+      { t:16,  lng:-0.8630,lat:49.3615,s:0,  st:'rout' },    // 往內陸(更低 lat=37.4m)後撤
     ]},
 
   /* ---- 德軍內陸增援（被空降師截斷/遲滯；示意位置同空降單位，往灘頭推進） ---- */

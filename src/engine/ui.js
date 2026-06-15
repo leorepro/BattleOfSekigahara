@@ -40,7 +40,8 @@ window.SEKI = window.SEKI || {};
   S.initUI = function () {
     const ids = ['caption','evDate','evTitle','evTitleEn','evNarr','evCmd','btnPlay','scrub','spd','btnMode',
       'tlabel','barEast','barWest','valEast','valWest','balLabel','card','cardBody','cardClose','btnAudio','bgm',
-      'btnNotes','notes','notesBody','notesClose','roster','btnRoster','toast','markers'];
+      'btnNotes','notes','notesBody','notesClose','roster','btnRoster','toast','markers',
+      'cwrap','casEast','casWest','casValEast','casValWest'];   // 累積陣亡條
     ids.forEach(id => el[id] = document.getElementById(id));
 
     const init = S.sideStrength();
@@ -291,6 +292,18 @@ window.SEKI = window.SEKI || {};
         const SS = (S.config && S.config.sideShort) || { east:'東軍', west:'西軍' };
         el.balLabel.textContent = Math.abs(d) < 0.08 ? '抗衡' : (d > 0 ? `${SS.east}優勢` : `${SS.west}優勢`);
       }
+    }
+
+    // 累積陣亡條：隨時間單調攀升，東(左)/西(右)各自陣亡向兩側填充，彰顯傷亡的毀滅性
+    if (el.casEast && S.sideCasualties) {
+      const cs = S.sideCasualties();
+      // 各方填充比例 = 該方陣亡 / 該方初始總兵力（佔比越高=傷亡越慘重）
+      const pe = cs.eastInit > 0 ? Math.min(100, cs.east / cs.eastInit * 100) : 0;
+      const pw = cs.westInit > 0 ? Math.min(100, cs.west / cs.westInit * 100) : 0;
+      el.casEast.style.width = pe + '%';
+      el.casWest.style.width = pw + '%';
+      if (el.casValEast) el.casValEast.textContent = nf(cs.east);
+      if (el.casValWest) el.casValWest.textContent = nf(cs.west);
     }
   };
 })(window.SEKI);
