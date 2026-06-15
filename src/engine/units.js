@@ -97,20 +97,29 @@ window.SEKI = window.SEKI || {};
       const color = a.side === 'east' ? EAST : WEST;
       const group = new THREE.Group();
 
-      const pole = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.12, 0.12, POLE_H, 8),
-        new THREE.MeshStandardMaterial({ color: 0x241c12, roughness: 0.85 }));
-      pole.position.y = POLE_H / 2; pole.castShadow = true; group.add(pole);
+      const MODERN = !!(S.config && S.config.modern);
+      let flag = null, fmat = null, pole = null, body = null, fadeMats = [];
+      if (MODERN && S.buildUnitMesh) {
+        body = S.buildUnitMesh(a.kind, a.side, color);
+        group.add(body);
+        fadeMats = body.userData.fadeMats || [];
+      } else {
+        pole = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.12, 0.12, POLE_H, 8),
+          new THREE.MeshStandardMaterial({ color: 0x241c12, roughness: 0.85 }));
+        pole.position.y = POLE_H / 2; pole.castShadow = true; group.add(pole);
 
-      const fgeo = new THREE.PlaneGeometry(FW, FH, 14, 2);
-      const fmat = new THREE.MeshStandardMaterial({
-        map: S.flagTexture(a.crest, a.side), side: THREE.DoubleSide,
-        roughness: 0.7, transparent: true });
-      const flag = new THREE.Mesh(fgeo, fmat);
-      flag.castShadow = true;
-      flag.position.set(FW / 2 + 0.2, POLE_H - FH / 2 - 0.5, 0);
-      flag.userData.base = Float32Array.from(fgeo.attributes.position.array);
-      group.add(flag);
+        const fgeo = new THREE.PlaneGeometry(FW, FH, 14, 2);
+        fmat = new THREE.MeshStandardMaterial({
+          map: S.flagTexture(a.crest, a.side), side: THREE.DoubleSide,
+          roughness: 0.7, transparent: true });
+        flag = new THREE.Mesh(fgeo, fmat);
+        flag.castShadow = true;
+        flag.position.set(FW / 2 + 0.2, POLE_H - FH / 2 - 0.5, 0);
+        flag.userData.base = Float32Array.from(fgeo.attributes.position.array);
+        group.add(flag);
+        fadeMats = [fmat, pole.material];
+      }
 
       const ring = new THREE.Mesh(
         new THREE.RingGeometry(2.2, 3.0, 36),
@@ -125,7 +134,7 @@ window.SEKI = window.SEKI || {};
 
       const el = document.createElement('div');
       el.className = `lbl lbl-unit side-${a.side}`;
-      const KICON = { command:'本', artillery:'砲', matchlock:'銃', cavalry:'騎', infantry:'槍' };
+      const KICON = (S.config && S.config.kindIcons) || { command:'本', artillery:'砲', matchlock:'銃', cavalry:'騎', infantry:'槍' };
       el.innerHTML =
         `<div><span class="kbadge k-${a.kind}" title="${a.kind}">${KICON[a.kind] || '槍'}</span>` +
         `${a.name_zh}<span class="ja"> ${a.name_ja}</span></div>` +
@@ -140,7 +149,7 @@ window.SEKI = window.SEKI || {};
         8, color, 3, 2);
       arrow.visible = false; eng.scene.add(arrow);
 
-      const u = { data:a, group, flag, fmat, ring, pole, hit, el,
+      const u = { data:a, group, flag, fmat, ring, pole, hit, el, body, fadeMats,
         troopsEl: el.querySelector('.troops'), hpEl: el.querySelector('.hp i'),
         arrow, p: new THREE.Vector3() };
       hit.userData.unit = u;
@@ -187,14 +196,13 @@ window.SEKI = window.SEKI || {};
       const isFocus = !!_focus && _focus.has(u.data.id);
       const isDim = !!_focus && !isFocus;
       const emph = isDim ? 0.3 : 1;
-      u.fmat.opacity = op * emph;
-      u.pole.material.transparent = true; u.pole.material.opacity = op * emph;
+      for (const m of u.fadeMats) { m.transparent = true; m.opacity = op * emph; }
       // 倒戈視覺：金色旗環 + 「⚡裏切」標示
       const defected = u.data.defectAt != null && t >= u.data.defectAt;
       u.defected = defected;
       u.el.classList.toggle('defected', defected);
       u.ring.material.color.setHex(defected ? 0xffc23a : (u.data.side === 'east' ? EAST : WEST));
-      if (defected && !u._flagFlipped) {                 // 倒戈後軍旗底色翻藍
+      if (u.flag && defected && !u._flagFlipped) {       // 倒戈後軍旗底色翻藍（modern 無旗）
         u._flagFlipped = true;
         u.fmat.map = S.flagTexture(u.data.crest, 'east'); u.fmat.needsUpdate = true;
       }
@@ -226,6 +234,7 @@ window.SEKI = window.SEKI || {};
 
   S.waveFlags = function (time) {
     for (const u of _units) {
+      if (!u.flag) continue;                             // modern 單位無布面，免飄動
       const g = u.flag.geometry, pos = g.attributes.position, base = u.flag.userData.base;
       for (let i = 0; i < pos.count; i++) {
         const x = base[i*3], y = base[i*3+1];

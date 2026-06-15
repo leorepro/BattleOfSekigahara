@@ -136,6 +136,33 @@ window.SEKI = window.SEKI || {};
       life: 1.3 + Math.random()*0.8, size0: 3, size1: 13 + Math.random()*5, r: 0.4, g: 0.37, b: 0.34 });
   }
 
+  // —— 現代戰鬥特效（諾曼第）——
+  // 曳光彈火網：自碉堡射口朝灘頭(+前方)掃出紅色曳光點
+  function mgTracer(x,y,z,fx,fz){
+    for(let i=0;i<3;i++){ const d=4+Math.random()*10;
+      fire.emit(x+fx*1.5, y+1.6, z+fz*1.5, { vx:fx*42+rnd(3), vy:rnd(1.2), vz:fz*42+rnd(3),
+        life:0.28, size0:2.6, size1:1.4, r:1.0, g:0.5, b:0.18 }); }
+  }
+  // 對空高射砲：朝天發射 + 高空防空炸點(flak puff，黑灰煙球)
+  function flakBurst(x,y,z){
+    sparks(x,y+2,z,3,0.6,4);
+    const hx=x+rnd(10), hy=26+Math.random()*16, hz=z+rnd(10);
+    for(let i=0;i<5;i++) dust.emit(hx+rnd(1),hy+rnd(1),hz+rnd(1),{ vx:rnd(0.6),vy:rnd(0.4),vz:rnd(0.6),g:0,
+      life:0.7+Math.random()*0.4, size0:2, size1:8, r:0.28,g:0.28,b:0.3 });
+    for(let i=0;i<3;i++) fire.emit(hx,hy,hz,{ vx:rnd(2),vy:rnd(2),vz:rnd(2), life:0.18, size0:7, size1:1, r:1,g:0.6,b:0.2 });
+  }
+  // 水花：砲彈落海濺起白色水柱（用於艦砲未命中/近灘）
+  function waterSplash(x,z){
+    const y=0.4;
+    for(let i=0;i<6;i++) dust.emit(x+rnd(1),y,z+rnd(1),{ vx:rnd(1.4),vy:4+Math.random()*4,vz:rnd(1.4),g:1.2,
+      life:0.7+Math.random()*0.3, size0:2, size1:7, r:0.85,g:0.9,b:0.95 });
+  }
+  // 戰車/艦砲口閃光（短促亮閃 + 煙）
+  function muzzleFlash(x,y,z,fx,fz,power){
+    sparks(x,y,z,5,0.8,power||6);
+    dust.emit(x+fx,y,z+fz,{ vx:fx*3,vy:0.8,vz:fz*3,g:0.3, life:0.8, size0:2,size1:7, r:0.7,g:0.68,b:0.64 });
+  }
+
   // 發射一發大筒砲彈（拋物線）
   function launchShell(x0, y0, z0, x1, y1, z1) {
     const s = shells.find(s => !s.active); if (!s) return;
@@ -197,6 +224,25 @@ window.SEKI = window.SEKI || {};
             } break;
           case 'cavalry':   if (Math.random() < 0.7)  cavalryCharge(p.x, p.y, p.z, fx, fz); break;
           case 'matchlock': if (Math.random() < 0.3)  teppoVolley(p.x, p.y, p.z); break;
+          case 'warship':
+            if (Math.random() < 0.10) {                         // 艦砲齊射射向岸上(前方為灘頭/崖)
+              const reach = 22 + Math.random()*16;
+              const tx = p.x + fx*reach, tz = p.z + fz*reach;
+              const ty = S.terrain ? S.terrain.heightAt(tx, tz) : p.y;
+              muzzleFlash(p.x, p.y+4, p.z, fx, fz, 9);
+              launchShell(p.x, p.y+4, p.z, tx, ty, tz);
+            } break;
+          case 'bunker':
+            if (Math.random() < 0.85) mgTracer(p.x, p.y, p.z, fx, fz); break;
+          case 'flak':
+            if (Math.random() < 0.5) flakBurst(p.x, p.y, p.z); break;
+          case 'armor':
+            if (Math.random() < 0.18) { const reach=8+Math.random()*8, tx=p.x+fx*reach, tz=p.z+fz*reach;
+              const ty=S.terrain?S.terrain.heightAt(tx,tz):p.y; muzzleFlash(p.x,p.y+2,p.z,fx,fz,6); launchShell(p.x,p.y+2,p.z,tx,ty,tz); } break;
+          case 'landingcraft':
+            if (Math.random() < 0.08) waterSplash(p.x+rnd(4), p.z+rnd(4)); break;
+          case 'aircraft':
+            break;                                               // 飛機投彈由 main 的相位腳本驅動，避免每幀亂炸
           default:          if (Math.random() < 0.12) teppoVolley(p.x, p.y, p.z);
         }
       }
