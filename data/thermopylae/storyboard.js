@@ -43,12 +43,24 @@ SEKI.storyboard = [
     narration_zh:"列奧尼達率三百斯巴達精銳，連同賽斯比、底比斯、佛西斯等城邦之軍，總數約七千人扼守中門。他們重修了古老的福基斯牆，作為退守的支點，並在狹道前列陣。斯巴達人從容地梳理長髮、操練體格——對斯巴達戰士而言，整飾儀容是赴死的禮節。",
     commanders:[{zh:"列奧尼達一世",en:"King Leonidas I"}], focus:["leonidas","phocis","arcadia"], side:"west" },
 
+  { t:-1, hold:12, cam:{lng:22.5395, lat:38.7960, dist:95, az:18, el:18, orbit:0.5, fov:36}, cam2:{az:-12, dist:78},
+    dateLabel:"前 480 年 · 列陣對峙 · 中門", title_zh:"「你來取吧」· Molon labe",
+    title_en:"Molon Labe — Come and Take Them",
+    narration_zh:"波斯使者馳至陣前，傳薛西斯之命：『交出你們的武器！』列奧尼達凝視著使者，只回以兩個字——『μολὼν λαβέ』，『你來取吧』。又有人警告波斯弓箭之多，射出時將遮蔽太陽；斯巴達人迪埃內塞斯卻笑道：『那好極了，我們就在陰涼處作戰。』這份從容赴死的傲骨，正是斯巴達。",
+    commanders:[{zh:"列奧尼達一世",en:"King Leonidas I"}], focusUnit:"leonidas", focus:["leonidas"], side:"west" },
+
   /* ---------------- 第一日（t 0~8） ---------------- */
   { t:1, hold:14, cam:{lng:22.5050, lat:38.8200, dist:260, az:200, el:30, orbit:0.18, fov:50}, cam2:{az:235, dist:300}, span:0.5,
     dateLabel:"第一日 · 拂曉 · 特拉基斯平原", title_zh:"波斯人海 · 薛西斯駐蹕",
     title_en:"The Persian Multitude — Xerxes Arrives",
     narration_zh:"薛西斯一世親率波斯帝國大軍抵達，於特拉基斯平原紮營，營帳綿延至天際。希羅多德號稱波斯陸海軍合計達數百萬（後世學者多估實際戰鬥兵力約十餘萬至三十萬）。薛西斯坐於高處俯瞰狹道，遣使勸降，要希臘人『交出武器』；列奧尼達回以一句『μολὼν λαβέ』——『你來取吧』。",
     commanders:[{zh:"薛西斯一世",en:"King Xerxes I"}], focus:["xerxes","persian_main","persian_subjects"], side:"east" },
+
+  { t:1.5, hold:12, cam:{lng:22.5320, lat:38.7975, dist:150, az:250, el:32, orbit:0.4, fov:44}, cam2:{az:285}, span:0.4,
+    dateLabel:"第一日 · 拂曉 · 中門", title_zh:"箭雨遮天 · 波斯齊射",
+    title_en:"The Sky Darkens with Arrows",
+    narration_zh:"波斯弓兵在後方張弓，萬箭齊發，箭矢如蝗群般撲向希臘陣線。然而斯巴達的青銅大盾連成一道密不透風的盾牆，箭矢叮噹釘在盾面上紛紛彈落。希臘人安然立於盾後——迪埃內塞斯口中的『陰涼處』，正是這片遮天箭雨投下的陰影。",
+    commanders:[{zh:"波斯弓兵",en:"Persian Archers"}], focus:["persian_archers","leonidas","medes"], side:"east" },
 
   { t:2.5, hold:13, cam:{lng:22.5378, lat:38.7958, dist:120, az:250, el:24, orbit:0.45, fov:38}, cam2:{dist:88},
     dateLabel:"第一日 · 上午 · 中門", title_zh:"斯巴達盾牆 · 青銅之壁",
@@ -67,6 +79,12 @@ SEKI.storyboard = [
     title_en:"The Feigned Retreat — Even the Immortals Falter",
     narration_zh:"米底軍潰敗後，薛西斯投入帝國最精銳的『不死軍』（Ἀθάνατοι，常備萬人衛隊）。斯巴達人卻施展戰術假退——佯裝潰逃引波斯追擊，再驟然回身列陣反殺。連不死軍也在狹道上折損慘重。希羅多德記載，薛西斯在王座上三度驚跳而起，為他的軍隊膽寒。",
     commanders:[{zh:"不死軍",en:"The Immortals"}], focus:["immortals","leonidas","thespiae"], side:"east" },
+
+  { t:7, hold:13, cam:{lng:22.5350, lat:38.7975, dist:120, az:285, el:17, orbit:0.45, fov:40}, cam2:{az:320, dist:95}, span:0.5,
+    dateLabel:"第一日 · 黃昏 · 中門", title_zh:"屍積如牆 · 第一日波斯慘敗",
+    title_en:"A Wall of the Dead — Day One",
+    narration_zh:"第一日終了，狹道之前已堆起一道由波斯屍體壘成的牆。米底軍、西西亞軍、乃至帝國最精銳的不死軍，一波波撞上盾牆，又一波波倒下；波斯人甚至要踩著同袍的屍體才能前進。薛西斯在王座上三度驚跳而起——他生平第一次見識到，何謂真正的戰士。",
+    commanders:[{zh:"列奧尼達一世",en:"King Leonidas I"}], focusUnit:"leonidas", focus:["leonidas","medes","immortals"], side:"both" },
 
   /* ---------------- 第二日（t 8~16） ---------------- */
   { t:9, hold:13, cam:{lng:22.5380, lat:38.7958, dist:140, az:280, el:26, orbit:0.45, fov:40}, cam2:{az:330, dist:110}, span:0.5,
@@ -87,6 +105,12 @@ SEKI.storyboard = [
     narration_zh:"列奧尼達早料到山徑之危，派了一千佛西斯人守在山脊隘口。然而當不死軍踏著落葉摸上山時，佛西斯人誤以為敵軍主攻自己，慌忙退上高處列陣。波斯人不予理會，徑直越過——希臘聯軍的後路，就此被抄。天一亮，背腹受敵的命運已成定局。",
     commanders:[{zh:"佛西斯軍",en:"The Phocian Guard"}], focus:["phocis","immortals"], side:"both" },
 
+  { t:14.5, hold:12, cam:{lng:22.5550, lat:38.7850, dist:190, az:125, el:38, orbit:0.35, fov:50}, cam2:{az:165, dist:220}, span:0.5,
+    dateLabel:"第二日 · 深夜 · 卡利德羅莫山脊", title_zh:"不死軍夜越山徑",
+    title_en:"The Immortals' Night March",
+    narration_zh:"夜色掩護下，許達內斯率一萬不死軍，由叛徒厄菲阿爾特帶路，悄然踏上安諾派亞山徑。他們沿著卡利德羅莫山的陡峭山脊，借橡樹林落葉聲掩蓋足音，徹夜攀行。黎明之前，他們將翻過山頭，出現在毫無防備的希臘聯軍背後。",
+    commanders:[{zh:"不死軍",en:"The Immortals"},{zh:"厄菲阿爾特",en:"Ephialtes"}], focusUnit:"immortals", focus:["immortals"], side:"east" },
+
   /* ---------------- 第三日（t 16~24） ---------------- */
   { t:16.5, hold:14, cam:{lng:22.5700, lat:38.7820, dist:280, az:110, el:50, orbit:0.16, fov:54}, cam2:{az:160, dist:310}, span:0.5,
     dateLabel:"第三日 · 拂曉 · 卡利德羅莫山脊", title_zh:"山徑迂迴俯瞰 · 不死軍下山",
@@ -105,6 +129,12 @@ SEKI.storyboard = [
     title_en:"Beyond the Wall — A Fight to the Death",
     narration_zh:"列奧尼達不再死守牆後，而是率眾主動衝出狹道、進入更開闊處，要在倒下前盡可能多殺敵人。希羅多德記載：他們的長矛盡折，便拔出短劍肉搏；許多波斯人被擠落海中或自相踐踏。薛西斯麾下兩位異母兄弟也戰死於此。斯巴達人如颶風般收割，明知必死，卻愈戰愈烈。",
     commanders:[{zh:"列奧尼達一世",en:"King Leonidas I"}], focusUnit:"leonidas", meleeKey:"leonidas", focus:["leonidas","persian_main","immortals"], side:"both" },
+
+  { t:20.5, hold:12, cam:{lng:22.5400, lat:38.7965, dist:105, az:305, el:20, orbit:0.5, fov:38}, cam2:{az:340, dist:85}, span:0.4,
+    dateLabel:"第三日 · 上午 · 中門", title_zh:"矛折拔劍 · 波斯墜海",
+    title_en:"Broken Spears, Bronze Swords",
+    narration_zh:"殿後死戰進入最慘烈的時刻。希臘人的長矛盡數折斷，便拔出腰間短劍與蜂擁而來的波斯人貼身肉搏。狹道擁擠不堪，波斯兵被自己人推擠著向前，許多人墜入身旁大海，或在踐踏中窒息。斯巴達人如困獸般撕咬，每一寸土地都浸透了血。",
+    commanders:[{zh:"列奧尼達一世",en:"King Leonidas I"}], focusUnit:"leonidas", meleeKey:"leonidas", focus:["leonidas","persian_main"], side:"both" },
 
   { t:21.5, hold:14, cam:{lng:22.5392, lat:38.7965, dist:200, az:30, el:36, orbit:0.30, fov:46, orbitSweep:90}, cam2:{dist:150}, span:0.5,
     dateLabel:"第三日 · 午 · 科洛諾斯小丘", title_zh:"★ 科洛諾斯箭雨 · 退守小丘",
