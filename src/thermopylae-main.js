@@ -54,6 +54,8 @@
     boundedOrbit: true, orbitSpan: 34,
     // 希臘方陣：士兵以 hoplite 盾牆密集排列（formation.js 走 phalanx 分支）
     formationStyle: 'phalanx',
+    // 窄門區：波斯攻擊方接近此點 → 正面被地形壓窄成長直線(formation.js 讀此鍵)
+    chokeZone: { lng: 22.548, lat: 38.797, radius: 62 },
   };
 
   S.player = { time: -16, playing: true, speed: 0.5, program: true, T_START: -16, T_END: 26 };

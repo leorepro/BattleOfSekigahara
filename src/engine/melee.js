@@ -66,12 +66,12 @@ window.SEKI = window.SEKI || {};
 
   /* ---------- 箭雨（InstancedMesh 池 + 拋物線飛行） ---------- */
   let arrows = null, arrowState = [], arrowHead = 0;
-  const ARROW_N = 320;
+  const ARROW_N = 720;
   let volleyAcc = 0;
 
   function initArrows() {
-    const g = new THREE.CylinderGeometry(0.022, 0.022, 1.3, 5); g.rotateX(Math.PI / 2); // 軸沿 +Z
-    arrows = new THREE.InstancedMesh(g, new THREE.MeshStandardMaterial({ color: 0x4a3a24, roughness: 0.85 }), ARROW_N);
+    const g = new THREE.CylinderGeometry(0.03, 0.03, 1.8, 5); g.rotateX(Math.PI / 2); // 軸沿 +Z（加長加粗更可見）
+    arrows = new THREE.InstancedMesh(g, new THREE.MeshStandardMaterial({ color: 0x3a2c18, roughness: 0.85 }), ARROW_N);
     arrows.count = ARROW_N; arrows.frustumCulled = false; arrows.castShadow = false;
     S.engine.scene.add(arrows);
     for (let i = 0; i < ARROW_N; i++) { arrowState.push({ active: false, i }); hideArrow(i); }
@@ -161,18 +161,18 @@ window.SEKI = window.SEKI || {};
     if (arch && arch.cur && arch.cur.st === 'attack' && arch.cur.s > 1) {
       volleyAcc += dt;
       const finale = t >= 21 && t <= 23.5;
-      const interval = finale ? 0.22 : 0.7;
+      const interval = finale ? 0.16 : 0.4;
       if (volleyAcc >= interval) {
         volleyAcc = 0;
         const from = arch.group.position;
         const tgtU = S.unitById('leonidas');
         const tgt = tgtU ? tgtU.group.position : from;
         const fy = (S.terrain ? S.terrain.heightAt(from.x, from.z) : 0) + 2;
-        const K = finale ? 16 : 7, spread = finale ? 3 : 6;
+        const K = finale ? 34 : 18, spread = finale ? 3.5 : 7;   // 萬箭齊發·遮天蔽日
         for (let n = 0; n < K; n++) {
           const tx = tgt.x + rnd(spread), tz = tgt.z + rnd(spread);
           const ty = (S.terrain ? S.terrain.heightAt(tx, tz) : 0) + 0.15;
-          launchArrow(from.x + rnd(3), fy, from.z + rnd(3), tx, ty, tz, 0.9 + Math.random() * 0.4, 6 + Math.random() * 4);
+          launchArrow(from.x + rnd(4), fy, from.z + rnd(4), tx, ty, tz, 0.85 + Math.random() * 0.45, 7 + Math.random() * 5);
         }
       }
     }

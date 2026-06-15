@@ -148,7 +148,7 @@ window.SEKI = window.SEKI || {};
         pbody.instanceMatrix.needsUpdate = true;
         eng.scene.add(pbody);
         _forms.push({ data: a, body: pbody, sashi: null, max: count, facing: 0,
-          strengthPer: a.troops / count, showSoldiers: true, phalanx: true,
+          strengthPer: a.troops / count, showSoldiers: true, phalanx: true, east,
           base, lastX: 1e9, lastZ: 1e9, lastFacing: 1e9, lastN: -1, conformed: false });
         continue;
       }
@@ -206,12 +206,28 @@ window.SEKI = window.SEKI || {};
           || Math.abs(gp.x - f.lastX) > 0.04 || Math.abs(gp.z - f.lastZ) > 0.04
           || Math.abs(f.facing - f.lastFacing) > 0.008;
         if (dirty) {
+          // 隘道壓縮：波斯攻擊方接近中門 → 正面壓窄成「長直線」(地形所迫，只少數並肩→斯巴達能久守)
+          let sq = 1;
+          const cz = (f.east && S.config) ? S.config.chokeZone : null;
+          if (cz && S.engine) {
+            const p = S.engine.project(cz.lng, cz.lat, 0);
+            const d = Math.hypot(gp.x - p.x, gp.z - p.z), r = cz.radius || 55;
+            if (d < r) sq = 1 - 0.7 * (1 - d / r);     // 越近中門正面壓越窄
+          }
           const cos = Math.cos(f.facing), sin = Math.sin(f.facing), B = f.base;
+          const maxD = 2.2;   // 士兵與單位中心最大高度差：超過視為上山/落海 → 沿陣面拉回平地
           for (let i = 0; i < n; i++) {
             const b = B[i];
-            const wx = gp.x + b.x * cos + b.z * sin, wz = gp.z - b.x * sin + b.z * cos;
-            const ty = S.terrain.heightAt(wx, wz);
-            _m.compose(_p.set(b.x, ty - gp.y, b.z), _q.setFromAxisAngle(_up, b.yaw), _s);
+            let bx = b.x * sq, bz = b.z;
+            let wx = gp.x + bx * cos + bz * sin, wz = gp.z - bx * sin + bz * cos;
+            let ty = S.terrain.heightAt(wx, wz);
+            if (Math.abs(ty - gp.y) > maxD) {          // 不上山、不落海：把該兵拉回直到地勢平緩
+              const k = maxD / Math.abs(ty - gp.y);
+              bx *= k; bz *= k;
+              wx = gp.x + bx * cos + bz * sin; wz = gp.z - bx * sin + bz * cos;
+              ty = S.terrain.heightAt(wx, wz);
+            }
+            _m.compose(_p.set(bx, ty - gp.y, bz), _q.setFromAxisAngle(_up, b.yaw), _s);
             f.body.setMatrixAt(i, _m);
           }
           f.body.instanceMatrix.needsUpdate = true;
