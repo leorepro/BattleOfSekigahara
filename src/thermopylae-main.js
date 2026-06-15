@@ -57,10 +57,12 @@
     formationStyle: 'phalanx',
   };
 
-  S.player = { time: -6, playing: true, speed: 0.5, program: true, T_START: -6, T_END: 26 };
+  S.player = { time: -16, playing: true, speed: 0.5, program: true, T_START: -16, T_END: 26 };
 
   function phase(t) {
-    if (t < 0)     return '波斯大軍壓境 · 希臘聯軍據守中門 · 重修福基斯牆';
+    if (t < -8)    return '遠方行軍 · 波斯自西(特拉基斯)、希臘自東開進溫泉關';
+    if (t < -2)    return '集結布陣 · 波斯紮營特拉基斯平原 · 希臘據守中門重修福基斯牆';
+    if (t < 0)     return '列陣對峙 · 薛西斯遣使勸降「交出武器」 · 列奧尼達「Molon labe」';
     if (t < 4)     return '第一日 · 米底軍正面強攻 · 方陣盾牆輾壓';
     if (t < 8)     return '第一日 · 不死軍投入仍不得寸進 · 薛西斯三度驚起';
     if (t < 16)    return '第二日 · 波斯輪番猛攻 · 督戰隊以鞭驅前 · 仍突不破方陣';

@@ -17,6 +17,19 @@
 window.SEKI = window.SEKI || {};
 
 SEKI.storyboard = [
+  /* ---------------- 遠方行軍序幕（會戰前·t -16~-6） ---------------- */
+  { t:-15, hold:13, cam:{lng:22.4400, lat:38.8150, dist:340, az:205, el:33, orbit:0.5, fov:52}, cam2:{az:240, dist:380},
+    dateLabel:"公元前 480 年 · 仲夏 · 帖薩利亞海岸", title_zh:"波斯大軍遠來 · 帖薩利亞南下",
+    title_en:"The Great Host Marches South",
+    narration_zh:"薛西斯一世為雪父王大流士馬拉松戰敗之恥，傾帝國之力西征希臘。他在赫勒斯滂海峽架起浮橋，渡過數十萬大軍與龐大艦隊，沿著帖薩利亞的海岸線浩浩蕩蕩南下。馬利亞灣上戰船蔽海，岸上人馬綿延至天際——這支號稱『百萬』的大軍，目標直指通往希臘心臟的咽喉：溫泉關。",
+    commanders:[{zh:"薛西斯一世",en:"King Xerxes I"}], focus:["xerxes","persian_main","medes"], side:"east" },
+
+  { t:-10, hold:13, cam:{lng:22.5700, lat:38.7960, dist:300, az:75, el:30, orbit:0.5, fov:48}, cam2:{az:35, dist:260},
+    dateLabel:"前 480 年 · 溫泉關 · 中門", title_zh:"希臘聯軍進駐 · 扼守天險",
+    title_en:"The Hellenes Take the Gates",
+    narration_zh:"另一邊，列奧尼達率三百斯巴達精銳，會同賽斯比、底比斯、阿卡迪亞、科林斯等城邦之軍，約七千人自希臘中部疾行北上，搶先進駐溫泉關。他們選定最狹窄的中門列陣，重修古老的福基斯牆為支點，並分遣千名佛西斯人扼守山側的安諾派亞小徑。狹道雖小，卻是以寡擊眾的唯一勝算。",
+    commanders:[{zh:"列奧尼達一世",en:"King Leonidas I"}], focus:["leonidas","thespiae","phocis"], side:"west" },
+
   /* ---------------- 布陣階段（會戰前） ---------------- */
   { t:-6, hold:14, cam:{lng:22.5380, lat:38.7958, dist:240, az:35, el:38, orbit:0.20, fov:46}, cam2:{az:80, dist:280},
     dateLabel:"公元前 480 年 · 仲夏 · 溫泉關", title_zh:"天險全景 · 一邊是海，一邊是山",
