@@ -125,17 +125,21 @@ window.SEKI = window.SEKI || {};
         const pbody = new THREE.InstancedMesh(pgeo,
           new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.62, metalness: mass ? 0.05 : 0.16 }), count);
         pbody.castShadow = true; pbody.frustumCulled = false;
+        const base = [];   // 每兵本地座標（供逐兵貼地形高度，見 updateFormations）
         for (let i = 0; i < count; i++) {
           const fi = i % files, ri = Math.floor(i / files);          // 檔 fi、列 ri（0=前排）
-          const x = (fi - (files - 1) / 2) * fsp + Math.sin(i * 12.9) * 0.06;
-          const z = ((depth - 1) / 2 - ri) * rsp + Math.cos(i * 7.7) * 0.06;  // ri=0 → 前(+Z)
-          _m.compose(_p.set(x, 0, z), _q.setFromAxisAngle(_up, Math.sin(i * 4.1) * 0.07), _s);
+          const lx = (fi - (files - 1) / 2) * fsp + Math.sin(i * 12.9) * 0.06;
+          const lz = ((depth - 1) / 2 - ri) * rsp + Math.cos(i * 7.7) * 0.06;  // ri=0 → 前(+Z)
+          const yaw = Math.sin(i * 4.1) * 0.07;
+          base.push({ x: lx, z: lz, yaw });
+          _m.compose(_p.set(lx, 0, lz), _q.setFromAxisAngle(_up, yaw), _s);
           pbody.setMatrixAt(i, _m);
         }
         pbody.instanceMatrix.needsUpdate = true;
         eng.scene.add(pbody);
         _forms.push({ data: a, body: pbody, sashi: null, max: count, facing: 0,
-          strengthPer: a.troops / count, showSoldiers: true, phalanx: true });
+          strengthPer: a.troops / count, showSoldiers: true, phalanx: true,
+          base, lastX: 1e9, lastZ: 1e9, lastFacing: 1e9, lastN: -1, conformed: false });
         continue;
       }
 
@@ -185,6 +189,24 @@ window.SEKI = window.SEKI || {};
       if (modern) {
         const onLand = !S.terrain || S.terrain.heightAt(gp.x, gp.z) > SEA_Y;
         if (!onLand) n = 0;
+      }
+      // phalanx：逐兵貼地形高度（每兵依其世界座標取 heightAt，不再整片平面浮空；會動才重算省效能）
+      if (f.phalanx && S.terrain && f.base) {
+        const dirty = !f.conformed || n !== f.lastN
+          || Math.abs(gp.x - f.lastX) > 0.04 || Math.abs(gp.z - f.lastZ) > 0.04
+          || Math.abs(f.facing - f.lastFacing) > 0.008;
+        if (dirty) {
+          const cos = Math.cos(f.facing), sin = Math.sin(f.facing), B = f.base;
+          for (let i = 0; i < n; i++) {
+            const b = B[i];
+            const wx = gp.x + b.x * cos + b.z * sin, wz = gp.z - b.x * sin + b.z * cos;
+            const ty = S.terrain.heightAt(wx, wz);
+            _m.compose(_p.set(b.x, ty - gp.y, b.z), _q.setFromAxisAngle(_up, b.yaw), _s);
+            f.body.setMatrixAt(i, _m);
+          }
+          f.body.instanceMatrix.needsUpdate = true;
+          f.lastX = gp.x; f.lastZ = gp.z; f.lastFacing = f.facing; f.lastN = n; f.conformed = true;
+        }
       }
       // 現代戰役無 sashi（f.sashi 為 null），僅更新 body
       const meshes = f.sashi ? [f.body, f.sashi] : [f.body];
