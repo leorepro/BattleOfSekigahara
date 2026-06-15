@@ -9,11 +9,13 @@
   /* ---------- 戰役專屬設定（須在 boot/buildTerrain 之前就緒） ---------- */
   S.config = {
     modern: true,
-    // 時刻：距「1944年6月6日 00:00」的小時數 → 24 小時制
+    // 時刻：距「1944年6月6日 00:00」的小時數 → 跨兩天(D-Day 6/6 → D+1 6/7 → 6/8)自動換日
     fmtTime(t) {
-      const h = ((Math.floor(t) % 24) + 24) % 24;
+      const total = Math.max(0, Math.floor(t));
+      const day = 6 + Math.floor(total / 24);
+      const h = total % 24;
       const mm = Math.floor(((t % 1) + 1) % 1 * 60);
-      return `1944年6月6日 ${String(h).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
+      return `1944年6月${day}日 ${String(h).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
     },
     sideName:  { east: '盟軍', west: '德軍' },
     sideShort: { east: '盟軍', west: '德軍' },
@@ -36,13 +38,16 @@
     ],
     // 真實衛星影像（bbox 對齊 DEM 範圍）；若資產缺失於 normandy.html 端處理
     satelliteTexture: 'assets/terrain/normandy-sat.jpg',
+    // 非線性時間軸刻度分配 [時刻, 位置比例]：決戰白天(5~18)最寬，凌晨空降/夜間/D+1 壓縮
+    timelineAnchors: [[0.5, 0], [5, 0.08], [18, 0.62], [24, 0.74], [48, 1]],
   };
 
-  S.player = { time: 1.3, playing: true, speed: 0.4, program: true, T_START: 1.3, T_END: 18 };
+  S.player = { time: 0.5, playing: true, speed: 0.4, program: true, T_START: 0.5, T_END: 48 };
 
   function phase(t) {
-    if (t < 1.5)   return '★ 空降序幕 · 英6空降師滑翔機夜降奪橋';
-    if (t < 2.2)   return '★ 空降 · 82/101師夜降諾曼第內陸';
+    if (t < 1.0)   return '★ 空降序幕 · C-47 運輸機群跨海進場空投';
+    if (t < 1.5)   return '★ 空降 · 漫天傘花·傘兵夜降諾曼第內陸';
+    if (t < 2.2)   return '傘兵張傘落地 · 蟋蟀器集結建立臨時陣地';
     if (t < 3.2)   return '傘兵集結奪鎮 · 路口設障切斷公路';
     if (t < 5.0)   return '★ 截斷德軍增援 · 炸橋遲滯裝甲推進';
     if (t < 5.5)   return '增援被截於內陸 · 灘頭德軍孤立無援';
@@ -53,7 +58,11 @@
     if (t < 11.0)  return '驅逐艦抵近 · 直射摧毀抵抗巢';
     if (t < 13.0)  return '★ 隘道打通 · 工兵爆破障礙';
     if (t < 16.0)  return '突破灘頭 · 向內陸推進';
-    return '鞏固登陸場 · 後續梯隊上岸';
+    if (t < 20.0)  return '鞏固登陸場 · 灘頭堡縱深推進';
+    if (t < 24.0)  return '入夜固守 · 工兵清障·擊退滲透與反撲';
+    if (t < 32.0)  return 'D+1 · 五灘連線 · 後續梯隊(2步兵師)上陸';
+    if (t < 40.0)  return 'D+1 · 向內陸 Trévières / Isigny 推進';
+    return 'D+1 · 縱深轉穩固 · 奧馬哈成通往內陸的橋頭堡';
   }
 
   /* ---------- 海空戰場煙幕粒子（搶灘後沿灘頭升起、隨風飄移） ---------- */
@@ -166,6 +175,7 @@
     S.buildRoutes();
     S.initEffects();
     if (S.initSectors) S.initSectors();     // 灘段不規則閃光框（隨運鏡標出當前焦點灘段）
+    if (S.initAirdrop) S.initAirdrop();     // 凌晨空降序列：C-47 運輸機 + 傘兵緩降 + 臨時陣地
     S.buildEngagements();
     S.initWeather();
     initSmoke();
@@ -202,6 +212,7 @@
       updateSmoke(t, dt);
       updateCliffAssault(t);
       if (S.updateSectors) S.updateSectors(t);   // 灘段閃光框脈動 + 焦點切換
+      if (S.updateAirdrop) S.updateAirdrop(t);   // 空降動畫：機群進場/投放/傘兵緩降/飛離
       S.updateEffects(t, dt);
       S.updateEngagements(t, dt);
       S.updateEvents(t);

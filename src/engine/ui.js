@@ -109,14 +109,32 @@ window.SEKI = window.SEKI || {};
     if (el.btnPlay) el.btnPlay.textContent = S.player.playing ? '⏸' : '▶';
   }
 
-  // 非線性時間軸：戰前(T_START~7)佔 SPLIT 比例,決戰(7~T_END)佔其餘 → 決戰段拉長
+  // 非線性時間軸：戰前(T_START~7)佔 SPLIT 比例,決戰(7~T_END)佔其餘 → 決戰段拉長。
+  //   若 config.timelineAnchors 存在（如諾曼第兩天），改用多段 [時刻,位置比例] 分配，
+  //   把戲份重的時段(決戰白天)拉寬、安靜時段(凌晨/夜/D+1)壓縮。
   const TB = 7, SPLIT = 0.25;
   function timeToPos(t) {                    // 時刻 → 0..1
+    const A = S.config && S.config.timelineAnchors;
+    if (A) {
+      if (t <= A[0][0]) return 0;
+      if (t >= A[A.length - 1][0]) return 1;
+      for (let i = 0; i < A.length - 1; i++) { const a = A[i], b = A[i + 1];
+        if (t <= b[0]) return a[1] + (t - a[0]) / (b[0] - a[0]) * (b[1] - a[1]); }
+      return 1;
+    }
     const T0 = S.player.T_START, T1 = S.player.T_END;
     if (t <= TB) return Math.max(0, (t - T0) / (TB - T0)) * SPLIT;
     return SPLIT + Math.min(1, (t - TB) / (T1 - TB)) * (1 - SPLIT);
   }
   function posToTime(p) {                    // 0..1 → 時刻
+    const A = S.config && S.config.timelineAnchors;
+    if (A) {
+      if (p <= 0) return A[0][0];
+      if (p >= 1) return A[A.length - 1][0];
+      for (let i = 0; i < A.length - 1; i++) { const a = A[i], b = A[i + 1];
+        if (p <= b[1]) return a[0] + (p - a[1]) / (b[1] - a[1]) * (b[0] - a[0]); }
+      return A[A.length - 1][0];
+    }
     const T0 = S.player.T_START, T1 = S.player.T_END;
     if (p <= SPLIT) return T0 + (p / SPLIT) * (TB - T0);
     return TB + ((p - SPLIT) / (1 - SPLIT)) * (T1 - TB);
