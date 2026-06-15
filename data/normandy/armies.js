@@ -205,12 +205,13 @@ SEKI.armies = [
     ]},
   { id:"inf_352", name_zh:"352師反擊隊", name_ja:"352. Infanterie-Division", name_en:"352nd Infantry", side:'west', kind:'infantry', crest:null,
     title:"德軍 預備隊 · 自內陸前推反擊（情報誤判其存在）", troops:1500,
-    track:[
-      { t:5.5, lng:-0.8650,lat:49.4050,s:1500,st:'hold' },   // 內陸待命（盟軍情報未察其前調）
-      { t:9,   lng:-0.8650,lat:49.3950,s:1500,st:'march' },  // 自內陸向灘頭前推
-      { t:11,  lng:-0.8650,lat:49.3880,s:1400,st:'attack' }, // 局部反擊·一度遲滯灘頭擴張
-      { t:14,  lng:-0.8680,lat:49.3950,s:900, st:'hold' },   // 遭艦砲與滲透打擊·後撤
-      { t:18,  lng:-0.8700,lat:49.4050,s:700, st:'rout' },   // 傍晚全線後退
+    track:[ // lat 校正：原 49.388~49.405 在外海（北=海）。內陸應為低 lat；
+            // 改為自內陸(低 lat)向灘頭(高 lat 近灘線)前推→反擊→往內陸(低 lat)後撤
+      { t:5.5, lng:-0.8650,lat:49.3630,s:1500,st:'hold' },   // 內陸待命（盟軍情報未察其前調）
+      { t:9,   lng:-0.8650,lat:49.3655,s:1500,st:'march' },  // 自內陸向灘頭前推（lat 升=趨灘）
+      { t:11,  lng:-0.8650,lat:49.3675,s:1400,st:'attack' }, // 抵崖後·局部反擊·一度遲滯灘頭擴張
+      { t:14,  lng:-0.8680,lat:49.3650,s:900, st:'hold' },   // 遭艦砲與滲透打擊·後撤（lat 降=退內陸）
+      { t:18,  lng:-0.8700,lat:49.3625,s:700, st:'rout' },   // 傍晚全線向內陸後退
     ]},
   { id:"mortar_352", name_zh:"352師迫擊砲", name_ja:"352nd Mortar Battery", name_en:"352nd Mortars", side:'west', kind:'artillery', crest:null,
     title:"德軍 · 預先標定灘頭·拋射壓制", troops:60,
