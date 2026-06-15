@@ -308,6 +308,109 @@ window.SEKI = window.SEKI || {};
       bar(ctx, cx, cy - R * 0.36, R * 1.7, R * 0.3);
       bar(ctx, cx, cy + R * 0.36, R * 1.7, R * 0.3);
     },
+
+    /* ===== 溫泉關之戰：希臘/波斯盾徽（純新增，不影響既有 key） ===== */
+    /* 斯巴達 — Λ（lambda，Lacedaemon 的標誌） */
+    sparta(ctx, cx, cy, R) {
+      ctx.save();
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ctx.lineWidth = R * 0.26;
+      // 倒 V 形的 Λ：左下 → 頂 → 右下
+      ctx.beginPath();
+      ctx.moveTo(cx - R * 0.62, cy + R * 0.78);
+      ctx.lineTo(cx, cy - R * 0.82);
+      ctx.lineTo(cx + R * 0.62, cy + R * 0.78);
+      ctx.stroke();
+      ctx.restore();
+    },
+    /* 科林斯 — 飛馬 Pegasus（剪影：身軀 + 翼 + 四肢 + 頭） */
+    corinth(ctx, cx, cy, R) {
+      ctx.save();
+      ctx.translate(cx, cy);
+      // 身軀
+      ctx.beginPath();
+      ctx.ellipse(0, R * 0.08, R * 0.62, R * 0.34, 0, 0, 7);
+      ctx.fill();
+      // 頸 + 頭（朝右上）
+      ctx.beginPath();
+      ctx.moveTo(R * 0.42, -R * 0.1);
+      ctx.quadraticCurveTo(R * 0.72, -R * 0.5, R * 0.86, -R * 0.62);
+      ctx.lineTo(R * 1.02, -R * 0.5);
+      ctx.quadraticCurveTo(R * 0.82, -R * 0.34, R * 0.58, -R * 0.02);
+      ctx.closePath(); ctx.fill();
+      // 翼（向後上展開）
+      ctx.beginPath();
+      ctx.moveTo(-R * 0.05, -R * 0.12);
+      ctx.quadraticCurveTo(-R * 0.55, -R * 0.95, -R * 0.95, -R * 0.78);
+      ctx.quadraticCurveTo(-R * 0.55, -R * 0.5, -R * 0.2, -R * 0.05);
+      ctx.closePath(); ctx.fill();
+      // 四肢
+      ctx.lineCap = 'round'; ctx.lineWidth = R * 0.13;
+      ctx.beginPath();
+      ctx.moveTo(-R * 0.42, R * 0.3); ctx.lineTo(-R * 0.5, R * 0.86);
+      ctx.moveTo(-R * 0.2, R * 0.34); ctx.lineTo(-R * 0.12, R * 0.86);
+      ctx.moveTo(R * 0.3, R * 0.3); ctx.lineTo(R * 0.24, R * 0.86);
+      ctx.moveTo(R * 0.48, R * 0.26); ctx.lineTo(R * 0.56, R * 0.82);
+      ctx.stroke();
+      // 尾
+      ctx.beginPath();
+      ctx.moveTo(-R * 0.58, R * 0.0);
+      ctx.quadraticCurveTo(-R * 0.95, R * 0.3, -R * 0.88, R * 0.6);
+      ctx.lineTo(-R * 0.72, R * 0.5);
+      ctx.quadraticCurveTo(-R * 0.6, R * 0.28, -R * 0.5, R * 0.08);
+      ctx.closePath(); ctx.fill();
+      ctx.restore();
+    },
+    /* 底比斯 — 赫拉克勒斯之棍棒（club；底比斯英雄象徵） */
+    thebes(ctx, cx, cy, R) {
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(-Math.PI / 4);                       // 斜置棍棒
+      // 棍身（上窄下寬）
+      ctx.beginPath();
+      ctx.moveTo(-R * 0.12, -R * 0.78);
+      ctx.lineTo(R * 0.12, -R * 0.78);
+      ctx.lineTo(R * 0.3, R * 0.7);
+      ctx.quadraticCurveTo(R * 0.3, R * 0.92, 0, R * 0.92);
+      ctx.quadraticCurveTo(-R * 0.3, R * 0.92, -R * 0.3, R * 0.7);
+      ctx.closePath(); ctx.fill();
+      // 棍頭瘤節
+      disc(ctx, -R * 0.06, R * 0.66, R * 0.18);
+      disc(ctx, R * 0.16, R * 0.4, R * 0.15);
+      disc(ctx, -R * 0.16, R * 0.3, R * 0.14);
+      disc(ctx, R * 0.1, R * 0.06, R * 0.12);
+      ctx.restore();
+    },
+    /* 波斯 — 翼日（Faravahar 式翼盤；阿契美尼德王權象徵，簡化） */
+    persia(ctx, cx, cy, R) {
+      ctx.save();
+      ctx.translate(cx, cy);
+      // 中央日盤
+      disc(ctx, 0, 0, R * 0.3);
+      ctx.save(); ctx.globalCompositeOperation = 'destination-out';
+      disc(ctx, 0, 0, R * 0.14);                       // 盤心鏤空成環
+      ctx.restore();
+      // 雙翼（左右各三層羽）
+      [-1, 1].forEach(sgn => {
+        for (let i = 0; i < 3; i++) {
+          const y = -R * 0.18 + i * R * 0.2;
+          const len = R * (0.95 - i * 0.16);
+          ctx.beginPath();
+          ctx.moveTo(sgn * R * 0.3, y - R * 0.06);
+          ctx.quadraticCurveTo(sgn * len, y - R * 0.12, sgn * len, y + R * 0.02);
+          ctx.quadraticCurveTo(sgn * len * 0.7, y + R * 0.06, sgn * R * 0.3, y + R * 0.08);
+          ctx.closePath(); ctx.fill();
+        }
+      });
+      // 下方尾羽（三道）
+      ctx.lineCap = 'round'; ctx.lineWidth = R * 0.12;
+      ctx.beginPath();
+      ctx.moveTo(0, R * 0.26); ctx.lineTo(0, R * 0.82);
+      ctx.moveTo(-R * 0.22, R * 0.24); ctx.lineTo(-R * 0.3, R * 0.74);
+      ctx.moveTo(R * 0.22, R * 0.24); ctx.lineTo(R * 0.3, R * 0.74);
+      ctx.stroke();
+      ctx.restore();
+    },
   };
 
   /* ---- 幟旗材質：陣營色底 + 白色家紋 ------------------------------ */

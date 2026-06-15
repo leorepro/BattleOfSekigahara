@@ -10,8 +10,14 @@ window.SEKI = window.SEKI || {};
   // 類型 → 圖示
   const ICON = { mountain:'▲', hill:'▲', castle:'🏯', fort:'▣', shrine:'⛩', battlefield:'⚔',
                  town:'◉', river:'〜', road:'—', camp:'◆',
-                 bunker:'▣', naval:'⚓', beach:'⌣', draw:'⌇', cliff:'▲' };
-  const MAJOR = { mountain:1, castle:1, battlefield:1 };
+                 bunker:'▣', naval:'⚓', beach:'⌣', draw:'⌇', cliff:'▲',
+                 // 溫泉關之戰新增地標型別（純新增、向後相容）
+                 pass:'⧖',              // 隘口（溫泉關狹道）
+                 wall:'▤',              // 城牆（福基斯之牆 Phocian Wall）
+                 'mountain-path':'⛰',   // 山徑（阿諾派亞小徑 Anopaea）
+                 monument:'🏛' };       // 紀念碑（列奧尼達紀念碑）
+  // pass / wall / monument 視為主要地標（顯眼）；mountain-path 為次要（小而淡）
+  const MAJOR = { mountain:1, castle:1, battlefield:1, pass:1, wall:1, monument:1 };
   const SKIP  = { camp:1, road:1 };       // 陣跡由軍旗呈現、街道用折線呈現
 
   S.buildGeoLabels = function () {

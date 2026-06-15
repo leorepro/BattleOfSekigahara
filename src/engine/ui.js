@@ -238,6 +238,28 @@ window.SEKI = window.SEKI || {};
   }
 
   function nf(n) { return Math.round(Math.max(n, 0)).toLocaleString('en-US'); }
+  // 中文「萬」量級縮寫：110000 →「~11萬」、1700000 → 「170萬」（用於兵力宣稱並陳）
+  function nfWan(n) {
+    n = Math.max(0, Math.round(n));
+    if (n >= 10000) {
+      const wan = n / 10000;
+      const s = (Math.abs(wan - Math.round(wan)) < 1e-6) ? String(Math.round(wan)) : wan.toFixed(1);
+      return s + '萬';
+    }
+    return n.toLocaleString('en-US');
+  }
+  // 兵力「雙數字並陳」HTML：現代估計 ‖ 史料宣稱（config-gated；無 claim 則回傳純數字）
+  //   tc 形如 { estimate:110000, claim:1700000, estLabel?, claimLabel? }
+  function troopsClaimHtml(live, tc) {
+    if (!tc) return nf(live);
+    const est = '~' + nfWan(live);
+    const claim = nfWan(tc.claim);
+    const estLbl = tc.estLabel || '現代估計';
+    const claimLbl = tc.claimLabel || '史料宣稱';
+    return `<span class="tc-est" title="${estLbl}">${est}</span>` +
+           `<span class="tc-sep"> ‖ </span>` +
+           `<span class="tc-claim" title="${claimLbl}">${claimLbl} ${claim}</span>`;
+  }
   function sideOf(u) { return ((u.data.side === 'east') || u.defected) ? 'e' : 'w'; }
   let _rframe = 0;
   function updateRoster(t) {
@@ -304,8 +326,13 @@ window.SEKI = window.SEKI || {};
       const tot = Math.max(ss.east + ss.west, 1);        // 抗衡拉鋸:藍紅各佔比例,交會點即優勢
       el.barEast.style.width = (ss.east / tot * 100) + '%';
       el.barWest.style.width = (ss.west / tot * 100) + '%';
-      el.valEast.textContent = nf(ss.east);
-      el.valWest.textContent = nf(ss.west);
+      // config.troopsClaim 存在時，對應陣營「雙數字並陳」（現代估計 ‖ 史料宣稱）；
+      //   其他戰役無此 config → 照舊純數字。east=波斯方並陳薛西斯宣稱、west=希臘真實兵力。
+      const TC = S.config && S.config.troopsClaim;
+      if (TC && TC.east) { el.valEast.innerHTML = troopsClaimHtml(ss.east, TC.east); }
+      else { el.valEast.textContent = nf(ss.east); }
+      if (TC && TC.west) { el.valWest.innerHTML = troopsClaimHtml(ss.west, TC.west); }
+      else { el.valWest.textContent = nf(ss.west); }
       if (el.balLabel) {
         const d = (ss.east - ss.west) / tot;
         const SS = (S.config && S.config.sideShort) || { east:'東軍', west:'西軍' };
