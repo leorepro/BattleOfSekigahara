@@ -88,6 +88,13 @@ window.SEKI = window.SEKI || {};
     const EXAG = exag();
     const sceneY = e => (e - base) * WS * EXAG;
 
+    // 古海岸線（溫泉關等）：config.ancientCoast.seaLevel 以下的低地夾平為古海面 + 海藍，
+    // 重建「一邊大海、一邊陡崖」的窄道。未設則為 null → 維持原行為（前三場不受影響）。
+    const ac = (S.config && S.config.ancientCoast) || null;
+    const seaLv = ac ? (ac.seaLevel != null ? ac.seaLevel : 0) : null;
+    const seaCol = new THREE.Color((S.config && S.config.seaColor != null) ? S.config.seaColor : 0x21405e);
+    const clampSea = e => (seaLv != null && e < seaLv) ? seaLv : e;
+
     const geo = new THREE.BufferGeometry();
     const pos = new Float32Array(cols * rows * 3);
     const col = new Float32Array(cols * rows * 3);
@@ -99,10 +106,11 @@ window.SEKI = window.SEKI || {};
       for (let c = 0; c < cols; c++) {
         const lng = lngMin + (lngMax - lngMin) * c / (cols - 1);
         const x = (lng - o.lng) * mPerDegLng * WS;
-        const e = data[r * cols + c];
+        const eRaw = data[r * cols + c];
+        const e = clampSea(eRaw);                       // 古海岸：低地夾平為海面
         const i = (r * cols + c) * 3, j = (r * cols + c) * 2;
         pos[i] = x; pos[i + 1] = sceneY(e); pos[i + 2] = z;
-        const cc = colorByElev(e);
+        const cc = (seaLv != null && eRaw < seaLv) ? seaCol : colorByElev(e);
         col[i] = cc.r; col[i + 1] = cc.g; col[i + 2] = cc.b;
         uv[j] = c / (cols - 1);            // 西→東
         uv[j + 1] = r / (rows - 1);        // 南→北（配合 texture flipY 預設）
@@ -165,7 +173,7 @@ window.SEKI = window.SEKI || {};
       const h00 = data[r0 * cols + c0], h10 = data[r0 * cols + c1];
       const h01 = data[r1 * cols + c0], h11 = data[r1 * cols + c1];
       const h = (h00 * (1 - tx) + h10 * tx) * (1 - tz) + (h01 * (1 - tx) + h11 * tx) * tz;
-      return sceneY(h);
+      return sceneY(seaLv != null && h < seaLv ? seaLv : h);   // 古海岸夾平
     }
     return { mesh, heightAt, source: 'dem' };
   }

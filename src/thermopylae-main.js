@@ -28,15 +28,18 @@
       matchlock: ['鉄砲（火縄銃）', '永祿年間火器尚少，配屬鉄砲'],
       artillery: ['鉄砲隊', '鉄砲齊射'],
     },
-    // 桶狹間丘陵低矮（0~82m），需更大垂直誇張才見微地形
-    exag: 9,
-    // 低海拔海岸色階：海面海藍 → 灘地 → 陸綠 → 丘陵土黃
+    // 溫泉關：北面馬利亞灣(海) + 南面卡利德羅莫山(~760m) → 中等誇張凸顯峽谷封閉感
+    exag: 2.8,
+    // 古海岸線：seaLevel 以下低地夾平為古海面（重建窄道），terrain.js 讀此鍵
+    ancientCoast: { seaLevel: 15 },
+    seaColor: 0x1a4a6e,   // 愛琴海深藍
+    // 海拔色階（seaLevel 以上）：出水窄灘沙黃 → 乾草綠 → 山坡土黃 → 高坡灰褐 → 裸岩灰
     elevStops: [
-      [0, 0x21405e], [1.5, 0x355f78], [4, 0x5d7048], [18, 0x6f7440],
-      [40, 0x7d6e49], [62, 0x8a7559], [82, 0x9a8a72],
+      [15, 0xcdb88c], [60, 0x8a9a55], [200, 0x7d7048],
+      [450, 0x8a7d63], [760, 0x9a958a],
     ],
-    // 真實衛星影像（EOX Sentinel-2 cloudless，bbox 對齊 DEM 範圍）
-    satelliteTexture: 'assets/terrain/okehazama-sat.jpg',
+    // 純海拔著色（無衛星圖：今日地貌含現代公路/農田，與古戰場不符）
+    satelliteTexture: null,
   };
 
   S.player = { time: -8, playing: true, speed: 0.35, program: true, T_START: -8, T_END: 14 };
