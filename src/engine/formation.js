@@ -126,11 +126,16 @@ window.SEKI = window.SEKI || {};
           new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.62, metalness: mass ? 0.05 : 0.16 }), count);
         pbody.castShadow = true; pbody.frustumCulled = false;
         const base = [];   // 每兵本地座標（供逐兵貼地形高度，見 updateFormations）
+        // 雜亂度：波斯人海最雜亂(像人群)、希臘方陣較整齊但非機械網格；前排密、後排散
+        const jit = east ? (mass ? 0.36 : 0.22) : 0.13;
+        const yawJit = east ? 0.55 : 0.14;
         for (let i = 0; i < count; i++) {
           const fi = i % files, ri = Math.floor(i / files);          // 檔 fi、列 ri（0=前排）
-          const lx = (fi - (files - 1) / 2) * fsp + Math.sin(i * 12.9) * 0.06;
-          const lz = ((depth - 1) / 2 - ri) * rsp + Math.cos(i * 7.7) * 0.06;  // ri=0 → 前(+Z)
-          const yaw = Math.sin(i * 4.1) * 0.07;
+          const j = jit * (1 + ri * 0.06);                            // 後排較散
+          // 雙頻雜訊打散規則網格 → 不再方方正正
+          const lx = (fi - (files - 1) / 2) * fsp + (Math.sin(i * 12.9) + 0.6 * Math.sin(i * 3.7)) * j;
+          const lz = ((depth - 1) / 2 - ri) * rsp + (Math.cos(i * 7.7) + 0.6 * Math.cos(i * 2.3)) * j;  // ri=0 → 前(+Z)
+          const yaw = (Math.sin(i * 4.1) + 0.5 * Math.sin(i * 1.7)) * yawJit;
           base.push({ x: lx, z: lz, yaw });
           _m.compose(_p.set(lx, 0, lz), _q.setFromAxisAngle(_up, yaw), _s);
           pbody.setMatrixAt(i, _m);
