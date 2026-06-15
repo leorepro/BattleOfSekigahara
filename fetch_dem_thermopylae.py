@@ -10,10 +10,11 @@
 """
 import json, time, urllib.request, urllib.parse, sys
 
-# bbox：經度東西沿隘道、緯度南(山)北(灣)
-LNG_MIN, LNG_MAX = 22.490, 22.620    # 西↔東 沿溫泉關隘道
-LAT_MIN, LAT_MAX = 38.770, 38.860    # 南:卡利德羅莫山北坡   北:馬利亞灣
-COLS, ROWS = 141, 141                 # 約 70m 解析度
+# bbox：大幅擴大（約東西4倍×南北2.5倍），納入波斯自西(特拉基斯/帖薩利亞)行軍走廊、
+#   希臘自東(中部)進場走廊，與南面卡利德羅莫山、北面馬利亞灣，供「遠方行軍→會戰」呈現。
+LNG_MIN, LNG_MAX = 22.300, 22.820    # 西:波斯行軍來向   東:希臘進場/東門外
+LAT_MIN, LAT_MAX = 38.700, 38.930    # 南:卡利德羅莫山脈   北:馬利亞灣海面
+COLS, ROWS = 177, 101                 # 約 255m 解析度（大範圍策略視角）
 API = "https://api.opentopodata.org/v1/srtm30m"
 
 # 由南到北(row 0 = LAT_MIN)、由西到東(col 0 = LNG_MIN)建格點

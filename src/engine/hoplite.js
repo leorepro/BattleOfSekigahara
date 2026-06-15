@@ -54,30 +54,49 @@ window.SEKI = window.SEKI || {};
     const cloak = opts.cloak != null ? opts.cloak : C.crimson;
     const crest = opts.crest != null ? opts.crest : cloak;
     const parts = [
-      // 雙腿（裸腿）+ 青銅脛甲
-      { geo: box(0.15, 0.58, 0.17, -0.11, 0.29, 0), color: C.skin },
-      { geo: box(0.15, 0.58, 0.17,  0.11, 0.29, 0.03), color: C.skin },
-      { geo: box(0.17, 0.26, 0.19, -0.11, 0.16, 0.01), color: C.bronze },   // 脛甲L
-      { geo: box(0.17, 0.26, 0.19,  0.11, 0.18, 0.04), color: C.bronze },   // 脛甲R
-      // 胸甲（肌肉甲感）
-      { geo: box(0.42, 0.54, 0.28, 0, 0.87, 0), color: C.bronze },
-      // 緋紅披風（背後 -Z，自肩垂落）
-      { geo: box(0.5, 0.74, 0.05, 0, 0.82, -0.18), color: cloak },
-      // 頭 + 科林斯盔 + 鼻樑護 + 縱向盔冠
-      { geo: box(0.2, 0.2, 0.2, 0, 1.27, 0.01), color: C.skin },
-      { geo: box(0.27, 0.26, 0.28, 0, 1.42, 0), color: C.bronze },
-      { geo: box(0.05, 0.13, 0.06, 0, 1.33, 0.16), color: C.bronzeDk },     // 鼻樑護
-      { geo: box(0.07, 0.17, 0.36, 0, 1.62, -0.02), color: crest },         // 馬鬃盔冠（縱）
-      // 右臂持矛、左臂持盾
-      { geo: box(0.12, 0.46, 0.12, 0.27, 0.92, 0.06), color: C.skin },
-      { geo: box(0.12, 0.4, 0.12, -0.27, 0.95, 0.1), color: C.skin },
-      // Aspis 圓盾（前左，盤面朝 +Z）+ 盾緣
-      { geo: disc(0.44, 0.07, -0.16, 0.98, 0.24), color: C.bronze },
-      { geo: disc(0.46, 0.04, -0.16, 0.98, 0.21), color: C.bronzeDk },
-      // Dory 長矛（沿 Z，前刺）+ 矛頭 + 尾鐏
-      { geo: box(0.045, 0.045, 2.4, 0.2, 1.16, 0.35), color: C.wood },
-      { geo: box(0.08, 0.08, 0.22, 0.2, 1.16, 1.6), color: C.iron },        // 矛頭
-      { geo: box(0.06, 0.06, 0.16, 0.2, 1.16, -0.78), color: C.bronzeDk },  // 尾鐏
+      // 雙腿（裸腿）+ 青銅脛甲 + 腳
+      { geo: box(0.15, 0.5, 0.16, -0.11, 0.27, 0.01), color: C.skin },
+      { geo: box(0.15, 0.5, 0.16,  0.11, 0.27, 0.03), color: C.skin },
+      { geo: box(0.17, 0.24, 0.18, -0.11, 0.13, 0.02), color: C.bronze },   // 脛甲L
+      { geo: box(0.17, 0.24, 0.18,  0.11, 0.13, 0.04), color: C.bronze },   // 脛甲R
+      { geo: box(0.17, 0.08, 0.26, -0.11, 0.04, 0.07), color: C.bronzeDk }, // 腳L
+      { geo: box(0.17, 0.08, 0.26,  0.11, 0.04, 0.09), color: C.bronzeDk }, // 腳R
+      // 戰裙 pteruges（皮條裙）
+      { geo: box(0.44, 0.2, 0.3, 0, 0.62, 0), color: C.wood },
+      // 胸甲（胸＋腹兩段肌肉甲）＋ 肩
+      { geo: box(0.44, 0.32, 0.3, 0, 0.92, 0), color: C.bronze },
+      { geo: box(0.4, 0.16, 0.28, 0, 0.74, 0), color: C.bronzeDk },
+      { geo: box(0.5, 0.12, 0.3, 0, 1.08, 0), color: C.bronze },
+      // 緋紅披風（背後，寬長垂落）
+      { geo: box(0.54, 0.84, 0.05, 0, 0.86, -0.19), color: cloak },
+      // 頸 + 頭
+      { geo: box(0.13, 0.1, 0.13, 0, 1.16, 0.01), color: C.skin },
+      { geo: box(0.2, 0.18, 0.2, 0, 1.28, 0.02), color: C.skin },
+      // 科林斯盔：頂罩 + 面罩 + 鼻護 + 兩頰
+      { geo: box(0.26, 0.18, 0.27, 0, 1.43, 0), color: C.bronze },
+      { geo: box(0.24, 0.14, 0.24, 0, 1.3, 0.03), color: C.bronze },
+      { geo: box(0.045, 0.14, 0.06, 0, 1.28, 0.16), color: C.bronzeDk },    // 鼻護
+      { geo: box(0.05, 0.16, 0.2, -0.12, 1.3, 0.04), color: C.bronze },     // 頰L
+      { geo: box(0.05, 0.16, 0.2,  0.12, 1.3, 0.04), color: C.bronze },     // 頰R
+      // 馬鬃盔冠（弧形後傾，三段堆疊）
+      { geo: box(0.06, 0.18, 0.18, 0, 1.62, 0.04), color: crest },
+      { geo: box(0.06, 0.16, 0.16, 0, 1.6, -0.12), color: crest },
+      { geo: box(0.06, 0.12, 0.14, 0, 1.54, -0.26), color: crest },
+      // 右臂（上臂 + 前臂前伸持矛）
+      { geo: box(0.12, 0.28, 0.12, 0.28, 1.0, 0.02), color: C.skin },
+      { geo: box(0.1, 0.1, 0.34, 0.28, 0.92, 0.2), color: C.skin },
+      // 左臂持盾
+      { geo: box(0.12, 0.34, 0.12, -0.28, 0.96, 0.08), color: C.skin },
+      // Aspis 大圓盾（盤面朝 +Z）+ 盾緣 + 中心盾凸 boss
+      { geo: disc(0.5, 0.06, -0.14, 1.0, 0.26), color: C.bronze },
+      { geo: disc(0.52, 0.035, -0.14, 1.0, 0.23), color: C.bronzeDk },
+      { geo: disc(0.12, 0.1, -0.14, 1.0, 0.32), color: C.bronzeDk },
+      // Dory 長矛（前刺）+ 矛頭 + 尾鐏
+      { geo: box(0.05, 0.05, 2.5, 0.2, 1.0, 0.4), color: C.wood },
+      { geo: box(0.09, 0.09, 0.26, 0.2, 1.0, 1.7), color: C.iron },
+      { geo: box(0.06, 0.06, 0.16, 0.2, 1.0, -0.82), color: C.bronzeDk },
+      // xiphos 短劍劍鞘（左腰）
+      { geo: box(0.06, 0.4, 0.08, -0.26, 0.6, -0.04), color: C.bronzeDk },
     ];
     return merge(parts);
   }
@@ -86,25 +105,35 @@ window.SEKI = window.SEKI || {};
   function persianGeo(opts) {
     const robe = opts.cloak != null ? opts.cloak : C.robe;
     const parts = [
-      // 長褲（anaxyrides）
-      { geo: box(0.16, 0.6, 0.18, -0.11, 0.3, 0), color: robe },
-      { geo: box(0.16, 0.6, 0.18,  0.11, 0.3, 0.03), color: robe },
-      // 花紋長袍（較寬軀幹）+ 鱗甲感腰帶
-      { geo: box(0.46, 0.6, 0.3, 0, 0.9, 0), color: robe },
-      { geo: box(0.48, 0.1, 0.32, 0, 0.66, 0), color: C.persianTrim },
-      // 頭 + 軟布帽 tiara
-      { geo: box(0.2, 0.2, 0.2, 0, 1.27, 0.01), color: C.skin },
-      { geo: box(0.24, 0.22, 0.24, 0, 1.41, 0), color: C.cap },
-      { geo: box(0.26, 0.08, 0.26, 0, 1.3, 0), color: C.persianTrim },      // 帽簷
-      // 雙臂
-      { geo: box(0.11, 0.44, 0.11, 0.26, 0.92, 0.05), color: robe },
-      { geo: box(0.11, 0.4, 0.11, -0.26, 0.95, 0.1), color: robe },
-      // 柳條方盾（gerron，前左）
-      { geo: box(0.5, 0.72, 0.06, -0.18, 0.92, 0.22), color: C.wicker },
-      { geo: box(0.5, 0.1, 0.07, -0.18, 0.92, 0.23), color: C.persianTrim },// 盾紋
-      // 短矛
-      { geo: box(0.04, 0.04, 1.5, 0.2, 1.1, 0.2), color: C.wood },
-      { geo: box(0.07, 0.07, 0.18, 0.2, 1.1, 1.0), color: C.iron },
+      // 長褲（anaxyrides）+ 鞋
+      { geo: box(0.15, 0.56, 0.17, -0.11, 0.29, 0.01), color: robe },
+      { geo: box(0.15, 0.56, 0.17,  0.11, 0.29, 0.03), color: robe },
+      { geo: box(0.16, 0.08, 0.24, -0.11, 0.04, 0.06), color: C.bronzeDk }, // 鞋L
+      { geo: box(0.16, 0.08, 0.24,  0.11, 0.04, 0.08), color: C.bronzeDk }, // 鞋R
+      // 花紋長袍（軀幹）+ 鱗甲腰帶 + 下襬 + 領
+      { geo: box(0.46, 0.5, 0.3, 0, 0.85, 0), color: robe },
+      { geo: box(0.48, 0.1, 0.32, 0, 0.64, 0), color: C.persianTrim },
+      { geo: box(0.5, 0.18, 0.32, 0, 0.5, 0), color: robe },
+      { geo: box(0.46, 0.08, 0.3, 0, 1.06, 0), color: C.persianTrim },
+      // 頸 + 頭
+      { geo: box(0.13, 0.1, 0.13, 0, 1.16, 0.01), color: C.skin },
+      { geo: box(0.2, 0.18, 0.2, 0, 1.28, 0.02), color: C.skin },
+      // 軟布帽 tiara + 帽簷 + 後護頸布
+      { geo: box(0.23, 0.2, 0.23, 0, 1.43, 0), color: C.cap },
+      { geo: box(0.26, 0.07, 0.26, 0, 1.32, 0), color: C.persianTrim },
+      { geo: box(0.22, 0.14, 0.06, 0, 1.3, -0.13), color: C.cap },
+      // 右臂（上臂 + 前臂前伸持矛）+ 左臂持盾
+      { geo: box(0.11, 0.3, 0.11, 0.27, 1.0, 0.03), color: robe },
+      { geo: box(0.1, 0.1, 0.3, 0.27, 0.92, 0.2), color: C.skin },
+      { geo: box(0.11, 0.34, 0.11, -0.27, 0.96, 0.08), color: robe },
+      // 柳條方盾（gerron）+ 上下編紋
+      { geo: box(0.52, 0.78, 0.06, -0.18, 0.92, 0.24), color: C.wicker },
+      { geo: box(0.52, 0.08, 0.07, -0.18, 1.05, 0.25), color: C.persianTrim },
+      { geo: box(0.52, 0.08, 0.07, -0.18, 0.8, 0.25), color: C.persianTrim },
+      // 短矛 + 矛頭 + 背後箭袋
+      { geo: box(0.04, 0.04, 1.55, 0.2, 0.95, 0.25), color: C.wood },
+      { geo: box(0.08, 0.08, 0.2, 0.2, 0.95, 1.05), color: C.iron },
+      { geo: box(0.12, 0.4, 0.1, 0.16, 1.0, -0.22), color: C.bronzeDk },
     ];
     return merge(parts);
   }

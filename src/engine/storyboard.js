@@ -121,7 +121,9 @@ window.SEKI = window.SEKI || {};
       // 方位 az：cam2.az 顯式 pan > cam.orbit/orbitSweep 公轉 > 預設緩慢 orbit
       if (c2 && c2.az != null) az = mix(cur.cam.az, c2.az);          // 電影式 pan
       else if (cur.cam.orbitSweep != null) az = cur.cam.az + cur.cam.orbitSweep * ease; // Phase 5：固定角度掃 orbit
-      else az += cur.cam.orbit * dt * 2.4;                            // 否則緩慢 orbit（原行為）
+      else if (S.config && S.config.boundedOrbit)                     // 有界公轉：整段只掃固定小角度，永不繞到地形背面
+        az = cur.cam.az + (cur.cam.orbit || 0) * (S.config.orbitSpan || 36) * ease;
+      else az += cur.cam.orbit * dt * 2.4;                            // 否則緩慢 orbit（原行為，前三場不受影響）
       const want = spherical(tgt2, dist, az, el);
       const k = 1 - Math.exp(-dt * 4);
       cam.position.lerp(want, k); eng.controls.target.lerp(tgt2, k);
