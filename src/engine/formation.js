@@ -92,11 +92,41 @@ window.SEKI = window.SEKI || {};
     // 海上/空中/載具（warship/landingcraft/aircraft/flak/bunker/armor）只顯示自身 3D 模型，
     // 不再額外渲染漂浮的士兵 box / sashimono 背旗（即「空中白色小方塊」之來源）。
     const modern = !!(S.config && S.config.modern);
+    // 溫泉關：希臘方陣（hoplite 盾牆）。formationStyle==='phalanx' 時走專屬排列；
+    // 前三場無此 config → phalanx=false，維持原行為。
+    const phalanx = !!(S.config && S.config.formationStyle === 'phalanx');
     // 依時代決定士兵幾何：現代＝鋼盔步兵（無背旗）；戰國＝足軽＋sashimono 背旗。
     const sGeo = modern ? modernSoldierGeo() : soldierGeo();
     const fGeo = modern ? null : sashimonoGeo();
     for (const a of S.armies) {
       const east = a.side === 'east';
+
+      /* ---- 希臘方陣分支（hoplite 盾牆 / 波斯兵） ---- */
+      if (phalanx) {
+        // 變體：east=波斯（柳條盾） / west=希臘（hoplite）。陣營專屬色於 Phase 3 由 a.faction 帶入。
+        const variant = east ? 'persian' : (a.faction === 'sparta' ? 'spartan' : 'ally');
+        const cloak = (a.factionColor != null) ? a.factionColor : undefined;
+        const pgeo = S.buildHopliteGeo(variant, { cloak, crest: cloak });
+        const maxP = maxSoldiersFor(a.troops);
+        const P = S.PHALANX, depth = Math.max(1, Math.min(P.depth, maxP));
+        const files = Math.ceil(maxP / depth);
+        const pbody = new THREE.InstancedMesh(pgeo,
+          new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.62, metalness: 0.18 }), maxP);
+        pbody.castShadow = true; pbody.frustumCulled = false;
+        for (let i = 0; i < maxP; i++) {
+          const fi = i % files, ri = Math.floor(i / files);          // 檔 fi、列 ri（0=前排）
+          const x = (fi - (files - 1) / 2) * P.fileSpacing + Math.sin(i * 12.9) * P.jitterPos;
+          const z = ((depth - 1) / 2 - ri) * P.rankSpacing + Math.cos(i * 7.7) * P.jitterPos;  // ri=0 → 前(+Z)
+          _m.compose(_p.set(x, 0, z), _q.setFromAxisAngle(_up, Math.sin(i * 4.1) * 0.08), _s);
+          pbody.setMatrixAt(i, _m);
+        }
+        pbody.instanceMatrix.needsUpdate = true;
+        eng.scene.add(pbody);
+        _forms.push({ data: a, body: pbody, sashi: null, max: maxP, facing: 0,
+          strengthPer: a.troops / maxP, showSoldiers: true, phalanx: true });
+        continue;
+      }
+
       const showSoldiers = !modern || a.kind === 'infantry';
       const max = maxSoldiersFor(a.troops);
       const cols = Math.max(5, Math.round(Math.sqrt(max * 1.8)));
@@ -151,7 +181,8 @@ window.SEKI = window.SEKI || {};
         mesh.rotation.y = f.facing;
         mesh.count = n;
       }
-      // 倒戈後改投東軍 → 兵團（與背旗，若有）轉藍
+      // 倒戈後改投東軍 → 兵團（與背旗，若有）轉藍。phalanx 用頂點色（陣營專屬），不整體重染。
+      if (f.phalanx) continue;
       const eastNow = (f.data.side === 'east') || (f.data.defectAt != null && t >= f.data.defectAt);
       if (eastNow !== f.eastNow) {
         f.eastNow = eastNow;

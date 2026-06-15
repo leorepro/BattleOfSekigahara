@@ -40,6 +40,8 @@
     ],
     // 純海拔著色（無衛星圖：今日地貌含現代公路/農田，與古戰場不符）
     satelliteTexture: null,
+    // 希臘方陣：士兵以 hoplite 盾牆密集排列（formation.js 走 phalanx 分支）
+    formationStyle: 'phalanx',
   };
 
   S.player = { time: -8, playing: true, speed: 0.35, program: true, T_START: -8, T_END: 14 };
