@@ -311,15 +311,24 @@ window.SEKI = window.SEKI || {};
     return { east, west };
   };
 
-  // 雙方累積陣亡（單調增長）：某單位陣亡 = max(0, 初始兵力 - 當前兵力)。
+  // 雙方累積陣亡：某單位陣亡 = max(0, 「至今投入過的峰值兵力」 - 當前兵力)。
+  //   ※ 以「峰值」而非「初始 troops」為基準，是為了正確處理『逐步抵達戰場』的部隊
+  //      （空降師、增援縱隊：track 起始 s 遠低於 troops 並隨時間上升）——它們尚未抵達
+  //      的兵力不該被誤算成陣亡，否則開場就憑空冒出上萬「陣亡」且隨抵達而遞減（非單調）。
+  //      峰值取「t 之前已抵達的關鍵影格中的最大 s」，部隊集結期間 current≈peak → 陣亡=0，
+  //      開始受創後 peak 固定、current 下降 → 陣亡單調攀升。
   //   無 cur（尚未取樣）視為未損失=0；倒戈者依當下陣營歸戶（諾曼第無倒戈）。
-  //   同時回傳各方初始總兵力，供 UI 算填充比例。
+  //   eastInit/westInit 回傳各方初始總兵力(troops)，作為 UI 填充比例的穩定分母。
   S.sideCasualties = function () {
+    const t = (S.player && S.player.time != null) ? S.player.time : Infinity;
     let east = 0, west = 0, eastInit = 0, westInit = 0;
     for (const u of _units) {
       const init = u.data.troops || 0;
-      const cur = u.cur ? u.cur.s : init;                       // 找不到 cur → 未損失
-      const dead = Math.max(0, init - cur);
+      const tk = u.data.track;
+      let peak = tk[0].s;                                        // 至今投入過的峰值兵力
+      for (let i = 0; i < tk.length && tk[i].t <= t; i++) peak = Math.max(peak, tk[i].s);
+      const cur = u.cur ? u.cur.s : peak;                        // 無 cur → 未損失
+      const dead = Math.max(0, peak - cur);
       const isEast = (u.data.side === 'east') || u.defected;
       if (isEast) { east += dead; eastInit += init; }
       else { west += dead; westInit += init; }
