@@ -12,11 +12,12 @@ window.SEKI = window.SEKI || {};
   const _t = new THREE.Vector3(), _p = new THREE.Vector3();
   let idx = 0, phase = 'tween', shotTimer = 0, tweenTimer = 0, az = 0;
 
-  function targetOf(shot) {
-    const p = S.engine.project(shot.cam.lng, shot.cam.lat, 0);
+  function targetLL(lng, lat) {
+    const p = S.engine.project(lng, lat, 0);
     const y = (S.terrain ? S.terrain.heightAt(p.x, p.z) : 0) + 4;
     return _t.set(p.x, y, p.z);
   }
+  function targetOf(shot) { return targetLL(shot.cam.lng, shot.cam.lat); }
   function spherical(target, r, azDeg, elDeg) {
     const a = azDeg * D2R, e = elDeg * D2R, h = r * Math.cos(e);
     return _p.set(target.x + h * Math.cos(a), target.y + r * Math.sin(e), target.z + h * Math.sin(a));
@@ -51,14 +52,25 @@ window.SEKI = window.SEKI || {};
       if (cam.position.distanceTo(want) < cur.cam.dist * 0.04 || tweenTimer > 3.2) {
         phase = 'hold'; shotTimer = 0; S.player.time = cur.t;
       }
-    } else { // hold：緩慢環繞
+    } else { // hold：電影運鏡——dolly 推拉 / pan 隨砲火角度掃 / 關鍵時刻慢動作
       shotTimer += dt;
-      az += cur.cam.orbit * dt * 2.4;          // 慢速 orbit
-      const want = spherical(tgt, cur.cam.dist, az, cur.cam.el);
-      cam.position.lerp(want, 1 - Math.exp(-dt * 4));
-      eng.controls.target.lerp(tgt, 1 - Math.exp(-dt * 4));
-      S.player.time = cur.t;
-      if (shotTimer >= holdOf(cur) && S.player.playing) {
+      const H = holdOf(cur), p = Math.min(1, shotTimer / H);
+      const ease = p * p * (3 - 2 * p);                 // smoothstep
+      const c2 = cur.cam2;                               // 終點鏡位(部分覆寫)：推拉/pan/pull-out
+      const mix = (a, b) => (b == null ? a : a + (b - a) * ease);
+      const dist = c2 ? mix(cur.cam.dist, c2.dist) : cur.cam.dist;
+      const el = c2 ? mix(cur.cam.el, c2.el) : cur.cam.el;
+      const tgt2 = (c2 && (c2.lng != null || c2.lat != null))
+        ? targetLL(mix(cur.cam.lng, c2.lng), mix(cur.cam.lat, c2.lat)) : tgt;
+      if (c2 && c2.az != null) az = mix(cur.cam.az, c2.az);   // 電影式 pan（可沿砲火角度掃）
+      else az += cur.cam.orbit * dt * 2.4;                     // 否則緩慢 orbit
+      const want = spherical(tgt2, dist, az, el);
+      const k = 1 - Math.exp(-dt * 4);
+      cam.position.lerp(want, k); eng.controls.target.lerp(tgt2, k);
+      // 慢動作：關鍵鏡在 hold 期間讓戰場時刻緩慢推進(span 小→很慢)，呈現 slow-mo
+      if (cur.slowmo) S.player.time = cur.t + Math.min(cur.span || 0.6, p * (cur.span || 0.6));
+      else S.player.time = cur.t;
+      if (shotTimer >= H && S.player.playing) {
         idx = (idx + 1) % sb.length; phase = 'tween'; tweenTimer = 0;
       }
     }
