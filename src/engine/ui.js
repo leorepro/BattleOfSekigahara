@@ -7,6 +7,7 @@ window.SEKI = window.SEKI || {};
 
 (function (S) {
   let el = {}, scrubbing = false, raycaster, mouse;
+  let _casPrev = null; const _casAcc = { east: 0, west: 0 };   // 陣亡跳動偵測：上幀值 + 累積增量
   let eastMax = 1, westMax = 1;
   let _freeShotIdx = -1;   // 自由運鏡：目前對應的 storyboard 鏡頭索引
 
@@ -41,7 +42,7 @@ window.SEKI = window.SEKI || {};
     const ids = ['caption','evDate','evTitle','evTitleEn','evNarr','evCmd','btnPlay','scrub','spd','btnMode',
       'tlabel','barEast','barWest','valEast','valWest','balLabel','card','cardBody','cardClose','btnAudio','bgm',
       'btnNotes','notes','notesBody','notesClose','roster','btnRoster','toast','markers',
-      'cwrap','casEast','casWest','casValEast','casValWest'];   // 累積陣亡條
+      'cwrap','casEast','casWest','casValEast','casValWest','casTrack'];   // 累積陣亡條
     ids.forEach(id => el[id] = document.getElementById(id));
 
     const init = S.sideStrength();
@@ -304,6 +305,23 @@ window.SEKI = window.SEKI || {};
       el.casWest.style.width = pw + '%';
       if (el.casValEast) el.casValEast.textContent = nf(cs.east);
       if (el.casValWest) el.casValWest.textContent = nf(cs.west);
+      // 傷亡攀升 → highlight＋震動：某方每累積一定陣亡就脈動一次數字，並抖動整條
+      if (_casPrev) {
+        let surged = false;
+        for (const sd of ['east', 'west']) {
+          const d = cs[sd] - _casPrev[sd];
+          if (d > 0) {
+            _casAcc[sd] += d;
+            if (_casAcc[sd] >= 12) {                  // 每 +12 陣亡觸發一次脈動（激戰時近乎連續）
+              _casAcc[sd] = 0; surged = true;
+              const ne = sd === 'east' ? el.casValEast : el.casValWest;
+              if (ne) { ne.classList.remove('cas-surge'); void ne.offsetWidth; ne.classList.add('cas-surge'); }
+            }
+          } else if (d < 0) { _casAcc[sd] = 0; }       // 倒帶/循環：重置
+        }
+        if (surged && el.casTrack) { el.casTrack.classList.remove('cas-surge'); void el.casTrack.offsetWidth; el.casTrack.classList.add('cas-surge'); }
+      }
+      _casPrev = { east: cs.east, west: cs.west };
     }
   };
 })(window.SEKI);
