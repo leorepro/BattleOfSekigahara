@@ -32,6 +32,10 @@
       persia_royal:0x6a3d9a, immortals:0x2a4a8a, medes:0x4a6a8a,
       persia:0x3a3a8a, persia_archer:0x2f6a72, persia_subjects:0x5a6a7a,
     },
+    // 兵力儀表「雙數字並陳」：波斯方同時顯示現代估計 vs 希羅多德宣稱（把數字爭議當賣點）
+    troopsClaim: {
+      east: { estimate: 110000, claim: 1700000, estLabel: '現代估計', claimLabel: '希羅多德宣稱' },
+    },
     // 溫泉關：北面馬利亞灣(海) + 南面卡利德羅莫山(~760m) → 中等誇張凸顯峽谷封閉感
     exag: 2.8,
     // 古海岸線：seaLevel 以下低地夾平為古海面（重建窄道），terrain.js 讀此鍵
@@ -111,6 +115,7 @@
     S.buildRoutes();
     S.initEffects();
     S.buildEngagements();
+    if (S.initMelee) S.initMelee();   // 近戰：倒地堆屍 + 箭雨
     S.initWeather();
     initRain();
     S.initUI();
@@ -143,8 +148,11 @@
       S.waveFlags(elapsed);
       S.updateWeather(t, elapsed);
       updateRain(t, dt);
-      S.updateEffects(t, dt);
-      S.updateEngagements(t, dt);
+      // 子彈時間：storyboard 把慢動作係數寫到 S.player.cinemaScale，乘入動畫/特效的 dt
+      const cdt = dt * ((S.player.cinemaScale != null) ? S.player.cinemaScale : 1);
+      S.updateEffects(t, cdt);
+      S.updateEngagements(t, cdt);
+      if (S.updateMelee) S.updateMelee(t, cdt);
       S.updateEvents(t);
       S.updateUI(t);
 
