@@ -143,12 +143,21 @@
     // 攀崖兵 = 鋼盔人形(取代抽象方塊)
     function ranger() {
       const g = new THREE.Group();
-      const body = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.3, 1.05, 6),
-        new THREE.MeshStandardMaterial({ color: 0x4d5a48, roughness: 0.95 }));
+      const mat = new THREE.MeshStandardMaterial({ color: 0x4d5a48, roughness: 0.95 });
+      const body = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.3, 1.05, 6), mat);
       body.position.y = 0.5; g.add(body);
       const helm = new THREE.Mesh(new THREE.SphereGeometry(0.27, 8, 6, 0, Math.PI * 2, 0, Math.PI * 0.55),
         new THREE.MeshStandardMaterial({ color: 0x39432f, roughness: 0.9 }));
       helm.position.y = 1.08; g.add(helm);
+      // 雙臂(攀爬時交替上舉、抓繩)；樞軸設在肩
+      const arms = [];
+      for (const sx of [-1, 1]) {
+        const arm = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.62, 0.12), mat);
+        arm.geometry.translate(0, 0.31, 0);
+        arm.position.set(sx * 0.26, 0.95, -0.08); arm.rotation.x = -1.2;
+        g.add(arm); arms.push(arm);
+      }
+      g.userData.arms = arms;
       g.traverse((o) => { if (o.isMesh) o.castShadow = true; });
       return g;
     }
@@ -183,12 +192,26 @@
     cliff.grp.visible = on;
     if (!on) return;
     const prog = Math.max(0, Math.min(1, (t - 7.1) / 2.9));       // 整體攀爬進度
-    for (const c of cliff.climbers) {
+    const now = S.engine.clock.getElapsedTime();
+    for (let i = 0; i < cliff.climbers.length; i++) {
+      const c = cliff.climbers[i], r = c.rope, m = c.mesh;
       const k = Math.max(0, Math.min(1, prog * 1.3 - c.off * 0.3)); // 各人錯開先後
-      const r = c.rope;
-      c.mesh.position.set(r.bx + (r.tx - r.bx) * k,
-        cliff.baseY + (cliff.topY - cliff.baseY) * k + 0.5,
+      const ph = now * 1.7 + i * 0.9;                              // 各人攀爬相位
+      const climbing = k < 0.99;
+      const bob = climbing ? Math.sin(ph * 2) * 0.13 : 0;          // 出力時上下起伏
+      m.position.set(r.bx + (r.tx - r.bx) * k,
+        cliff.baseY + (cliff.topY - cliff.baseY) * k + 0.5 + bob,
         r.bz + (r.tz - r.bz) * k);
+      // 攀爬擺動：身體左右微擺 + 前後出力傾
+      m.rotation.set(climbing ? -0.12 + Math.sin(ph * 2) * 0.1 : 0,
+        Math.PI, climbing ? Math.sin(ph) * 0.16 : 0);
+      // 雙臂交替上舉(手腳並用、一把把往上抓)
+      const arms = m.userData.arms;
+      if (arms) {
+        const a = climbing ? 0.6 : 0;
+        arms[0].rotation.x = -1.2 - Math.sin(ph) * a;
+        arms[1].rotation.x = -1.2 - Math.sin(ph + Math.PI) * a;
+      }
     }
   }
 
