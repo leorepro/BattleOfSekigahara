@@ -97,12 +97,40 @@ SEKI.armies = [
       { t:44,  lng:-0.8650,lat:49.4000,s:9, st:'hold' },     // 午後火力支援轉為內陸縱深·登陸場已穩固
     ]},
   { id:"bombers", name_zh:"B-24 轟炸機群", name_ja:"B-24 Liberator", name_en:"Heavy Bombers", side:'east', kind:'aircraft', crest:null,
-    title:"盟軍 第八航空隊 · H時前地毯轟炸（炸偏內陸）", troops:36,
-    track:[
-      { t:5.9, lng:-0.8800,lat:49.4200,s:36, st:'march' },    // 自海上進場
-      { t:6.0, lng:-0.8700,lat:49.3800,s:36, st:'attack' },   // 雲層遮蔽·延遲投彈
-      { t:6.2, lng:-0.8650,lat:49.3950,s:36, st:'attack' },   // 炸彈落入內陸·灘頭工事完好
-      { t:6.5, lng:-0.8500,lat:49.4200,s:36, st:'march' },    // 脫離
+    title:"盟軍 第八航空隊 · H時前地毯轟炸後持續滯空·多趟巡航投彈", troops:36,
+    track:[ // 全程移動·沿海岸來回多趟掠灘投彈(yoff 飛行高度由 effects 處理)；lat 偏外海/灘後讓機群在空中掠過
+      // 第1趟 西→東 (H時前地毯轟炸·炸偏內陸)
+      { t:5.8, lng:-0.9500,lat:49.4050,s:36, st:'march' },    // 自海上由西進場
+      { t:6.0, lng:-0.8800,lat:49.3850,s:36, st:'attack' },   // 雲層遮蔽·延遲投彈
+      { t:6.2, lng:-0.8500,lat:49.3950,s:36, st:'attack' },   // 炸彈落入內陸·灘頭工事完好
+      { t:6.4, lng:-0.8000,lat:49.4050,s:36, st:'march' },    // 掠至東端·拉高轉向
+      // 第2趟 東→西 折返
+      { t:6.7, lng:-0.8400,lat:49.3900,s:36, st:'attack' },   // 折返再炸內陸目標
+      { t:6.9, lng:-0.8900,lat:49.3950,s:36, st:'attack' },   // 灘後砲兵陣地
+      { t:7.2, lng:-0.9500,lat:49.4050,s:36, st:'march' },    // 抵西端轉向
+      // 第3趟 西→東
+      { t:7.6, lng:-0.8900,lat:49.3900,s:36, st:'attack' },   // 再次掠灘投彈
+      { t:7.9, lng:-0.8300,lat:49.3950,s:36, st:'attack' },   // 內陸交通線
+      { t:8.2, lng:-0.8000,lat:49.4050,s:36, st:'march' },    // 東端轉向
+      // 第4趟 東→西
+      { t:8.7, lng:-0.8600,lat:49.3900,s:36, st:'attack' },   // 壓制德軍縱深
+      { t:9.0, lng:-0.9200,lat:49.3950,s:36, st:'attack' },   // 西段崖線目標
+      { t:9.4, lng:-0.9500,lat:49.4050,s:36, st:'march' },    // 西端轉向
+      // 第5趟 西→東 (上午支援突破)
+      { t:10.0,lng:-0.8800,lat:49.3900,s:36, st:'attack' },   // 配合步兵突破·炸德軍預備隊
+      { t:10.4,lng:-0.8200,lat:49.3950,s:36, st:'attack' },   // 內陸集結地
+      { t:10.8,lng:-0.8000,lat:49.4050,s:36, st:'march' },    // 東端轉向
+      // 第6趟 東→西
+      { t:11.4,lng:-0.8700,lat:49.3900,s:36, st:'attack' },   // 切斷增援道路
+      { t:11.8,lng:-0.9300,lat:49.3950,s:36, st:'attack' },   // 西翼縱深
+      { t:12.2,lng:-0.9500,lat:49.4050,s:36, st:'march' },    // 西端轉向
+      // 第7趟 西→東 (午後最後一趟)
+      { t:12.6,lng:-0.8800,lat:49.3900,s:36, st:'attack' },   // 午後再炸德軍反擊集結
+      { t:13.0,lng:-0.8200,lat:49.4050,s:36, st:'march' },    // 任務完成·脫離向東返航
+      // D+1 零星出擊
+      { t:30.0,lng:-0.9500,lat:49.4050,s:24, st:'march' },    // D+1 進場
+      { t:30.4,lng:-0.8600,lat:49.3900,s:24, st:'attack' },   // 支援內陸推進·炸德軍據點
+      { t:30.8,lng:-0.8000,lat:49.4050,s:24, st:'march' },    // 脫離返航
     ]},
   { id:"lcvp_1", name_zh:"登陸艇 首波（西）", name_ja:"LCVP 1st Wave (West)", name_en:"LCVP Wave 1", side:'east', kind:'landingcraft', crest:null,
     title:"盟軍 希金斯艇 · Dog/Easy 首波", troops:36,
@@ -250,6 +278,61 @@ SEKI.armies = [
       { t:9,   lng:-0.8480,lat:49.3590,s:10, st:'attack' },  // 轉平射支援 WN62
       { t:13,  lng:-0.8480,lat:49.3590,s:4,  st:'hold' },
       { t:15,  lng:-0.8480,lat:49.3590,s:0,  st:'rout' },
+    ]},
+  // === 德軍高射砲群 · 沿崖線與內陸密集分布(對空兼平射) ===
+  { id:"flak_vierville", name_zh:"維埃維爾高射砲", name_ja:"Vierville Flak Battery", name_en:"Vierville Flak", side:'west', kind:'flak', crest:null,
+    title:"德軍 · 西段崖頂高射砲(WN72/71 後方)", troops:14,
+    track:[ // 灘西端崖肩內陸側(lat 在陸地)
+      { t:5.5, lng:-0.9050,lat:49.3650,s:14, st:'hold' },
+      { t:6.0, lng:-0.9050,lat:49.3650,s:14, st:'attack' },  // 對掠過的 B-24 機群射擊
+      { t:9,   lng:-0.9050,lat:49.3650,s:12, st:'attack' },  // 轉平射封鎖 Dog 灘段
+      { t:13,  lng:-0.9050,lat:49.3650,s:5,  st:'hold' },
+      { t:15,  lng:-0.9050,lat:49.3650,s:0,  st:'rout' },
+    ]},
+  { id:"flak_stlaurent", name_zh:"聖洛朗高射砲", name_ja:"St-Laurent Flak Battery", name_en:"St-Laurent Flak", side:'west', kind:'flak', crest:null,
+    title:"德軍 · 中段崖頂高射砲(WN68/WN65 後方)", troops:12,
+    track:[
+      { t:5.5, lng:-0.8800,lat:49.3640,s:12, st:'hold' },
+      { t:6.0, lng:-0.8800,lat:49.3640,s:12, st:'attack' },  // 對空攔截轟炸機群
+      { t:9,   lng:-0.8800,lat:49.3640,s:10, st:'attack' },  // 平射壓制灘頭出口
+      { t:13,  lng:-0.8800,lat:49.3640,s:4,  st:'hold' },
+      { t:15,  lng:-0.8800,lat:49.3640,s:0,  st:'rout' },
+    ]},
+  { id:"flak_colleville2", name_zh:"科勒維爾東高射砲", name_ja:"Colleville East Flak", name_en:"Colleville East Flak", side:'west', kind:'flak', crest:null,
+    title:"德軍 · 東段崖頂高射砲(WN60/61 後方)", troops:12,
+    track:[
+      { t:5.5, lng:-0.8420,lat:49.3600,s:12, st:'hold' },
+      { t:6.0, lng:-0.8420,lat:49.3600,s:12, st:'attack' },  // 對空射擊
+      { t:9,   lng:-0.8420,lat:49.3600,s:10, st:'attack' },  // 平射支援東翼據點
+      { t:13,  lng:-0.8420,lat:49.3600,s:4,  st:'hold' },
+      { t:15,  lng:-0.8420,lat:49.3600,s:0,  st:'rout' },
+    ]},
+  { id:"flak_inland1", name_zh:"內陸高射砲(一)", name_ja:"Inland Flak Battery 1", name_en:"Inland Flak 1", side:'west', kind:'flak', crest:null,
+    title:"德軍 · 內陸縱深防空陣地(西)", troops:10,
+    track:[ // 灘後內陸·純對空(航路下方)
+      { t:5.5, lng:-0.9000,lat:49.3480,s:10, st:'hold' },
+      { t:6.0, lng:-0.9000,lat:49.3480,s:10, st:'attack' },  // 攔截通過內陸的轟炸航路
+      { t:9,   lng:-0.9000,lat:49.3480,s:10, st:'attack' },  // 持續對空
+      { t:13,  lng:-0.9000,lat:49.3480,s:6,  st:'hold' },
+      { t:16,  lng:-0.9000,lat:49.3480,s:0,  st:'rout' },
+    ]},
+  { id:"flak_inland2", name_zh:"內陸高射砲(二)", name_ja:"Inland Flak Battery 2", name_en:"Inland Flak 2", side:'west', kind:'flak', crest:null,
+    title:"德軍 · 內陸縱深防空陣地(東)", troops:10,
+    track:[
+      { t:5.5, lng:-0.8400,lat:49.3470,s:10, st:'hold' },
+      { t:6.0, lng:-0.8400,lat:49.3470,s:10, st:'attack' },  // 對掠過的機群射擊
+      { t:9,   lng:-0.8400,lat:49.3470,s:10, st:'attack' },  // 持續對空
+      { t:13,  lng:-0.8400,lat:49.3470,s:6,  st:'hold' },
+      { t:16,  lng:-0.8400,lat:49.3470,s:0,  st:'rout' },
+    ]},
+  { id:"flak_pointe", name_zh:"奧克角高射砲", name_ja:"Pointe du Hoc Flak", name_en:"Pointe du Hoc Flak", side:'west', kind:'flak', crest:null,
+    title:"德軍 · 西側岬角防空(掩護砲台)", troops:8,
+    track:[ // 最西岬角·陸地
+      { t:5.5, lng:-0.9450,lat:49.3660,s:8, st:'hold' },
+      { t:6.0, lng:-0.9450,lat:49.3660,s:8, st:'attack' },   // 對進場機群射擊
+      { t:9,   lng:-0.9450,lat:49.3660,s:6, st:'attack' },   // 抵抗遊騎兵攀崖
+      { t:13,  lng:-0.9450,lat:49.3660,s:3, st:'hold' },
+      { t:15,  lng:-0.9450,lat:49.3660,s:0, st:'rout' },
     ]},
   { id:"inf_352", name_zh:"352師反擊隊", name_ja:"352. Infanterie-Division", name_en:"352nd Infantry", side:'west', kind:'infantry', crest:null,
     title:"德軍 預備隊 · 自內陸前推反擊（情報誤判其存在）", troops:1500,

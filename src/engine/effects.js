@@ -83,7 +83,7 @@ window.SEKI = window.SEKI || {};
     // 大筒砲彈池（小而暗的砲丸，沿拋物線飛行 + 煙霧尾跡）
     shells = [];
     const sgeo = new THREE.SphereGeometry(0.35, 8, 8);
-    for (let i = 0; i < 18; i++) {
+    for (let i = 0; i < 40; i++) {   // 池放大：容納 B-24 多次飛掠的成串炸彈(stick) + 砲彈同時飛行
       const m = new THREE.Mesh(sgeo, new THREE.MeshStandardMaterial({ color: 0x232323, roughness: 0.5 }));
       m.visible = false; S.engine.scene.add(m);
       shells.push({ mesh: m, active: false, age: 0, dur: 1, peak: 10,
@@ -145,13 +145,37 @@ window.SEKI = window.SEKI || {};
       fire.emit(x+cx*1.5, y+1.6, z+cz*1.5, { vx:cx*42+rnd(2), vy:rnd(1.0), vz:cz*42+rnd(2),
         life:0.28, size0:2.6, size1:1.4, r:1.0, g:0.5, b:0.18 }); }
   }
-  // 對空高射砲：朝天發射 + 高空防空炸點(flak puff，黑灰煙球)
+  // 朝天曳光彈流：自高射砲口往天空噴出一道上升的紅黃曳光點(高初速、會略散)
+  function flakTracerStream(x,y,z){
+    const ax = rnd(0.22), az = rnd(0.22);                 // 砲管略偏，讓多道曳光朝不同天區
+    for(let i=0;i<4;i++){
+      const sp = 30 + Math.random()*10;                   // 沿曳光線等距撒點，形成連續光柱
+      fire.emit(x+rnd(0.5), y+2.2+i*0.4, z+rnd(0.5), {
+        vx: ax*sp+rnd(1), vy: sp+rnd(3), vz: az*sp+rnd(1),
+        life: 0.34+Math.random()*0.12, size0: 3.2, size1: 1.2, r:1.0, g:0.62, b:0.22 });
+    }
+  }
+  // 高空 airburst：棉花團爆炸(亮橙閃心 + 黑灰煙球綻開，模擬 88mm flak puff)
+  function flakAirburst(x,y,z){
+    sparks(x,y,z,5,1.4,9);                                 // 閃心：橙黃火花綻開
+    for(let i=0;i<3;i++) fire.emit(x,y,z,{ vx:rnd(3),vy:rnd(3),vz:rnd(3),
+      life:0.2, size0:9+Math.random()*4, size1:1, r:1,g:0.6,b:0.2 });
+    for(let i=0;i<7;i++) dust.emit(x+rnd(1.2),y+rnd(1.2),z+rnd(1.2),{ vx:rnd(0.7),vy:0.3+rnd(0.4),vz:rnd(0.7),g:0,
+      life:0.9+Math.random()*0.6, size0:2.5, size1:11+Math.random()*4, r:0.3,g:0.3,b:0.32 }); // 棉花團黑煙
+  }
+  // 對空高射砲(單發)：朝天曳光彈流 + 一朵高空棉花團 airburst
   function flakBurst(x,y,z){
-    sparks(x,y+2,z,3,0.6,4);
-    const hx=x+rnd(10), hy=26+Math.random()*16, hz=z+rnd(10);
-    for(let i=0;i<5;i++) dust.emit(hx+rnd(1),hy+rnd(1),hz+rnd(1),{ vx:rnd(0.6),vy:rnd(0.4),vz:rnd(0.6),g:0,
-      life:0.7+Math.random()*0.4, size0:2, size1:8, r:0.28,g:0.28,b:0.3 });
-    for(let i=0;i<3;i++) fire.emit(hx,hy,hz,{ vx:rnd(2),vy:rnd(2),vz:rnd(2), life:0.18, size0:7, size1:1, r:1,g:0.6,b:0.2 });
+    flakTracerStream(x,y,z);
+    const hx=x+rnd(14), hy=26+Math.random()*20, hz=z+rnd(14);
+    flakAirburst(hx,hy,hz);
+  }
+  // 漫天高射砲火(密集版)：多道朝天曳光 + 多朵高空棉花團 airburst → 空降/空襲時鋪滿天空
+  function flakBarrage(x,y,z){
+    for(let i=0;i<3;i++) flakTracerStream(x+rnd(2),y,z+rnd(2));   // 多道曳光齊射
+    for(let i=0;i<3;i++){                                          // 多朵高空爆炸散佈整片天空
+      const hx=x+rnd(26), hy=24+Math.random()*26, hz=z+rnd(26);
+      flakAirburst(hx,hy,hz);
+    }
   }
   // 水花：砲彈落海濺起白色水柱（用於艦砲未命中/近灘）
   function waterSplash(x,z){
@@ -168,11 +192,13 @@ window.SEKI = window.SEKI || {};
   //   史實 B-24 因雲層遮蔽延遲投彈 → 炸彈越過灘頭工事、落入『灘後內陸』。
   //   故落點偏內陸(本圖 lat 越低越內陸 = +z 方向)，並用 terrain 確認落在陸地而非海面；
   //   若指定 target(交戰對象)則以其位置為基準向內陸再退一段。
-  function dropBomb(x,y,z,fx,fz,target){
+  //   單發炸彈：挑一個偏內陸且落在陸地的落點，從飛機高度近乎垂直墜落。
+  function dropOneBomb(x,y,z,fx,fz,target,ahead){
     const s = shells.find(s => !s.active); if (!s) return;
     let bx, bz;
     if (target) { bx = target.x; bz = target.z; }          // 以據點為基準
     else { const reach = 8 + Math.random()*12; bx = x + fx*reach; bz = z + fz*reach; }
+    bx += fx*(ahead||0); bz += fz*(ahead||0);              // 串列投彈：沿航向前移，形成一條彈著線
     // 嘗試數個偏內陸(+z)的落點，挑第一個落在陸地(高於海面)的；皆不行則取最高者
     let tx = bx, tz = bz, ty = -1, bestY = -1e9, bx2 = bx, bz2 = bz;
     for (let i = 0; i < 4; i++) {
@@ -186,6 +212,12 @@ window.SEKI = window.SEKI || {};
     s.dur = 0.65 + Math.random()*0.3; s.peak = 0;        // peak=0 → 直線墜落、無拋物峰
     s.p0.set(x, y, z); s.p1.set(tx, ty, tz);
     s.mesh.visible = true; s.mesh.position.copy(s.p0);
+  }
+  // 一輪投彈：B-24 飛掠時釋放『一串炸彈(stick)』沿航向先後落地，而非只炸一發。
+  //   每次觸發投下 3~5 發，沿 fx/fz 方向間隔排開 → 一條彈著線，視覺上連環爆炸。
+  function dropBomb(x,y,z,fx,fz,target){
+    const n = 3 + (Math.random()*3|0);                    // 一串 3~5 發
+    for (let i = 0; i < n; i++) dropOneBomb(x,y,z,fx,fz,target, i*(6+Math.random()*4));
   }
 
   // 發射一發大筒砲彈（拋物線）
@@ -267,8 +299,13 @@ window.SEKI = window.SEKI || {};
             break;
           case 'bunker':
             if (Math.random() < 0.85) mgTracer(p.x, p.y, p.z, fx, fz); break;
-          case 'flak':
-            if (Math.random() < 0.5) flakBurst(p.x, p.y, p.z); break;
+          case 'flak': {
+            // AA 活躍時段：凌晨空降(t0.5~2.2) + 拂曉空襲(t5.8~7) → 漫天高射砲火，密度拉高
+            const aaHot = (t >= 0.5 && t <= 2.2) || (t >= 5.8 && t <= 7.0);
+            if (aaHot) { if (Math.random() < 0.9) flakBarrage(p.x, p.y, p.z); }  // 多道曳光+多朵爆炸
+            else if (Math.random() < 0.35) flakBurst(p.x, p.y, p.z);             // 平時零星對空
+            break;
+          }
           case 'armor':
             if (Math.random() < 0.18) {
               let tx, tz;
@@ -283,8 +320,11 @@ window.SEKI = window.SEKI || {};
               dust.emit(p.x+fx*3+rnd(1.5), p.y+0.5, p.z+fz*3+rnd(1.5),
                 { vx:fx*6+rnd(2), vy:0.5+Math.random(), vz:fz*6+rnd(2), g:0.3, life:0.5, size0:1.4, size1:4, r:0.72,g:0.68,b:0.6 });
             if (Math.random() < 0.08) waterSplash(p.x+rnd(4), p.z+rnd(4)); break;
-          case 'aircraft':                                        // 飛抵投彈點(track 標 attack=目標上空)才連續投下一串炸彈，落內陸
-            if (Math.random() < 0.5) dropBomb(p.x, p.y, p.z, fx, fz, p.target); break;
+          case 'aircraft':
+            // B-24 多次轟炸：只要這架轟炸機出現在 firePoints(armies.js 端讓它多次飛掠 attack 上空)，
+            // 就每一輪 emit 機率性投下『一串炸彈(stick)』→ 整段飛掠期間連環落彈、落內陸。
+            // armies.js 安排 bombers 做多次 pass，故畫面上會看到 B-24 反覆飛過去多炸幾次。
+            if (Math.random() < 0.55) dropBomb(p.x, p.y, p.z, fx, fz, p.target); break;
           default:          if (Math.random() < 0.12) teppoVolley(p.x, p.y, p.z);
         }
       }

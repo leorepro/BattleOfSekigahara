@@ -70,6 +70,11 @@ window.SEKI = window.SEKI || {};
   const T_HIDE_LO = 0.4;          // 整體顯示下界
   const T_HIDE_HI = 2.4;          // 整體顯示上界（臨時陣地另由 group 控制）
 
+  // 被高射砲擊落（固定 index，非亂數）：編隊中第 1、2 架在投放時段中彈墜落。
+  const SHOTDOWN_IDX = [1, 2];    // 被擊中機在 _planes 的 index
+  const T_HIT  = [1.10, 1.28];    // 各機「中彈起火」時刻（與 SHOTDOWN_IDX 對應）
+  const T_CRASH = [1.55, 1.78];   // 各機「墜地爆炸」時刻（中彈後逐步下墜到此刻觸地）
+
   /* ---------- 顏色 ---------- */
   const COL_FUSELAGE = 0x6b6f54;  // 橄欖綠機身
   const COL_DARK     = 0x3a3d2e;  // 暗部
@@ -234,7 +239,32 @@ window.SEKI = window.SEKI || {};
     });
 
     plane.traverse((o) => { if (o.isMesh) o.castShadow = true; });
-    return { mesh: plane, props };
+
+    // --- 被擊落特效節點（預設隱藏；只有被選中的機會啟用） ---
+    // 火光：機身上方一顆橙黃半透明球，update 內以 clock 閃動 scale/opacity。
+    const fireMat = new THREE.MeshBasicMaterial({
+      color: 0xff7b1e, transparent: true, opacity: 0, depthWrite: false });
+    const fire = new THREE.Mesh(new THREE.SphereGeometry(1.6, 10, 8), fireMat);
+    fire.position.set(1.0, 0.4, 0);   // 引擎/機身受創處
+    fire.visible = false;
+    plane.add(fire);
+
+    // 黑煙拖尾：沿機身往後(-X)排一串半透明黑球，越後越大越淡，模擬拖尾。
+    const smoke = [];
+    const smokeMats = [];
+    for (let i = 0; i < 6; i++) {
+      const sm = new THREE.MeshBasicMaterial({
+        color: 0x2b2b2b, transparent: true, opacity: 0, depthWrite: false });
+      smokeMats.push(sm);
+      const puff = new THREE.Mesh(new THREE.SphereGeometry(1.2 + i * 0.5, 8, 6), sm);
+      // 往機尾後方排開，略微上揚（拖在機身後上方）
+      puff.position.set(-2 - i * 2.6, 0.3 + i * 0.25, 0);
+      puff.visible = false;
+      plane.add(puff);
+      smoke.push(puff);
+    }
+
+    return { mesh: plane, props, fire, fireMat, smoke, smokeMats };
   }
 
   /* 建立一個傘兵（傘蓋 + 傘繩 + 小人形），回傳可移動的 group。
@@ -325,6 +355,39 @@ window.SEKI = window.SEKI || {};
     return { group: g, mats };
   }
 
+  /* 建立一個墜地火球（外層橙火 + 內層亮黃核 + 上沖黑煙柱），預設隱藏。
+   * 回傳引用供 update 內以 t/clock 驅動膨脹與淡出。 */
+  function makeFireball() {
+    const g = new THREE.Group();
+    const coreMat = new THREE.MeshBasicMaterial({
+      color: 0xffe07a, transparent: true, opacity: 0, depthWrite: false });
+    const core = new THREE.Mesh(new THREE.SphereGeometry(2.2, 12, 10), coreMat);
+    core.position.y = 2.2;
+    g.add(core);
+
+    const flameMat = new THREE.MeshBasicMaterial({
+      color: 0xff5a16, transparent: true, opacity: 0, depthWrite: false });
+    const flame = new THREE.Mesh(new THREE.SphereGeometry(3.6, 12, 10), flameMat);
+    flame.position.y = 3.0;
+    g.add(flame);
+
+    // 上沖黑煙柱：幾顆往上排的黑球
+    const smokeMats = [];
+    const smoke = [];
+    for (let i = 0; i < 4; i++) {
+      const sm = new THREE.MeshBasicMaterial({
+        color: 0x232323, transparent: true, opacity: 0, depthWrite: false });
+      smokeMats.push(sm);
+      const puff = new THREE.Mesh(new THREE.SphereGeometry(2.0 + i * 0.7, 8, 6), sm);
+      puff.position.y = 5 + i * 3.2;
+      g.add(puff);
+      smoke.push(puff);
+    }
+
+    g.visible = false;
+    return { group: g, core, coreMat, flame, flameMat, smoke, smokeMats };
+  }
+
   /* ===================================================================
    * API 1：建立
    * =================================================================== */
@@ -354,8 +417,39 @@ window.SEKI = window.SEKI || {};
         rank * 1.5,                          // 後排略高，避免完全重疊
         FORMATION_DZ * rank * side);
       built.offset = offset;
+      built.shotdown = false;     // 預設正常機
       _group.add(built.mesh);
       _planes.push(built);
+    }
+
+    // --- 標記被擊落機，並為每架建立一顆墜地火球（落點隨機群方向估算） ---
+    for (let k = 0; k < SHOTDOWN_IDX.length; k++) {
+      const idx = SHOTDOWN_IDX[k];
+      if (idx < 0 || idx >= _planes.length) continue;
+      const pl = _planes[idx];
+      pl.shotdown = true;
+      pl.tHit = T_HIT[k];
+      pl.tCrash = T_CRASH[k];
+      // 中彈瞬間的機群基準位置（用 tHit 反推 flyProg），作為墜落起點 X/Z；
+      // 落點 X/Z 沿前段飛行方向略往前帶一點，Y 取地形高度。
+      const hitProg = c01((pl.tHit - T_START) / (T_EXIT - T_START));
+      const hb = pathAt(hitProg);
+      pl.fallStart = hb.pos.clone().add(pl.offset.clone()
+        .applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.atan2(-hb.dir.z, hb.dir.x)));
+      // 墜地點：自起點沿水平前進方向再帶 30 單位（穩定，非亂數）
+      const flat = new THREE.Vector3(hb.dir.x, 0, hb.dir.z);
+      if (flat.lengthSq() < 1e-6) flat.set(1, 0, 0);
+      flat.normalize();
+      const cx = pl.fallStart.x + flat.x * 30;
+      const cz = pl.fallStart.z + flat.z * 30;
+      const cy = (S.terrain ? S.terrain.heightAt(cx, cz) : 0);
+      pl.crashX = cx; pl.crashY = cy; pl.crashZ = cz;
+      pl.rollSign = (k % 2 === 0) ? 1 : -1;   // 兩機往不同側翻滾
+
+      const fb = makeFireball();
+      fb.group.position.set(cx, cy, cz);
+      _group.add(fb.group);
+      pl.fireball = fb;
     }
 
     // --- 傘兵池 ---
@@ -424,6 +518,95 @@ window.SEKI = window.SEKI || {};
   }
 
   /* ===================================================================
+   * 被擊落機更新（中彈起火 → 側傾下墜 → 墜地火球 → 殘骸淡出）
+   *   時序全由 campaign 小時 t 與 plane 上的 tHit/tCrash 控制：
+   *     t  <  tHit         正常飛（由主迴圈處理，不進此函式）
+   *     tHit ≤ t < tCrash  墜落段：高度由 fallStart 線性插值到地面 crashY，
+   *                        並沿時間加大 roll/pitch 與機首下俯；火光+黑煙拖尾顯示。
+   *     t  ≥  tCrash       觸地：機身隱藏，墜地火球膨脹後淡出。
+   *   火光閃動用 elapsed(clock)；位移/姿態用 t，固定不亂跳。
+   * =================================================================== */
+  function updateShotdown(pl, t, elapsed) {
+    const tHit = pl.tHit, tCrash = pl.tCrash;
+    const fb = pl.fireball;
+
+    if (t >= tCrash) {
+      // --- 觸地：機身與機上火煙隱藏，改演墜地火球 ---
+      pl.mesh.visible = false;
+      if (pl.fire) pl.fire.visible = false;
+      for (let s = 0; s < pl.smoke.length; s++) pl.smoke[s].visible = false;
+
+      if (fb) {
+        // 火球生命週期：tCrash → tCrash+0.6 膨脹+全亮，之後 ~0.8 淡出
+        const age = t - tCrash;
+        const grow = c01(age / 0.6);
+        const fade = c01(1 - (age - 0.6) / 0.8);   // 0.6h 後開始淡出
+        const flick = 0.85 + 0.15 * Math.sin(elapsed * 30);
+        const op = c01(grow) * fade;
+        fb.group.visible = op > 0.02;
+        if (fb.group.visible) {
+          const sc = 0.5 + 1.0 * smooth(grow);
+          fb.flame.scale.setScalar(sc * flick);
+          fb.core.scale.setScalar(sc * 0.7);
+          fb.flameMat.opacity = 0.85 * op * flick;
+          fb.coreMat.opacity = 0.95 * op;
+          // 黑煙柱：隨 age 上升並擴散、緩慢淡出
+          for (let s = 0; s < fb.smoke.length; s++) {
+            const rise = 1 + age * 1.2;
+            fb.smoke[s].scale.setScalar((0.6 + s * 0.25) * (0.6 + 0.6 * grow) * rise);
+            fb.smokeMats[s].opacity = 0.5 * c01(grow) * c01(1 - (age - 0.4) / 1.2);
+          }
+        }
+      }
+      return;
+    }
+
+    // --- 墜落段：tHit → tCrash ---
+    pl.mesh.visible = true;
+    const k = c01((t - tHit) / (tCrash - tHit));   // 0→1 墜落進度
+    const kE = smooth(k);
+
+    // 位置：水平由起點線性帶向墜地點；垂直加速下墜（k^2 讓後段更快）
+    const sx = pl.fallStart.x, sz = pl.fallStart.z, sy = pl.fallStart.y;
+    const px = sx + (pl.crashX - sx) * kE;
+    const pz = sz + (pl.crashZ - sz) * kE;
+    const py = sy + (pl.crashY - sy) * (k * k);     // 下墜加速
+    pl.mesh.position.set(px, py, pz);
+
+    // 姿態：機首朝水平前進方向(yaw)；側傾 roll 隨 k 增大到約 1.4 rad；
+    // 機首下俯 pitch 隨 k 增大（繞 Z 軸負向，因 +X 為機首）。
+    const dx = pl.crashX - sx, dz = pl.crashZ - sz;
+    const yaw = Math.atan2(-dz, dx);
+    const roll = pl.rollSign * (0.2 + 1.2 * kE);     // 側翻
+    const pitch = -(0.1 + 0.9 * kE);                 // 機首下俯（繞 Z）
+    // 順序：先 yaw(Y) 再 pitch(Z) 再 roll(X)，用 Euler 'YZX'
+    pl.mesh.rotation.set(roll, yaw, pitch, 'YZX');
+
+    // 螺旋槳：中彈後一具卡死、一具仍轉（視覺受創感）
+    for (let s = 0; s < pl.props.length; s++) {
+      if (s === 0) pl.props[s].rotation.x = elapsed * (22 - 18 * kE);  // 漸慢
+      // s===1 維持原角度（卡死）
+    }
+
+    // 火光：機身受創處跳動（scale/opacity 由 clock 閃動）
+    if (pl.fire) {
+      pl.fire.visible = true;
+      const flick = 0.6 + 0.4 * Math.abs(Math.sin(elapsed * 18 + 1.3));
+      pl.fire.scale.setScalar((0.8 + 0.7 * k) * (0.7 + 0.5 * flick));
+      pl.fireMat.opacity = (0.55 + 0.35 * flick);
+    }
+
+    // 黑煙拖尾：隨墜落進度漸濃、漸長（越後的 puff 越淡）
+    for (let s = 0; s < pl.smoke.length; s++) {
+      pl.smoke[s].visible = true;
+      const tailFade = 1 - s / pl.smoke.length;
+      pl.smokeMats[s].opacity = c01(0.15 + 0.6 * k) * (0.4 + 0.6 * tailFade);
+      const puffFlick = 1 + 0.12 * Math.sin(elapsed * 8 + s);
+      pl.smoke[s].scale.setScalar((0.5 + 0.9 * k) * (0.7 + s * 0.12) * puffFlick);
+    }
+  }
+
+  /* ===================================================================
    * API 2：更新
    * =================================================================== */
   S.updateAirdrop = function (t) {
@@ -453,6 +636,13 @@ window.SEKI = window.SEKI || {};
 
     for (let i = 0; i < _planes.length; i++) {
       const pl = _planes[i];
+
+      // === 被擊落機：中彈後走獨立墜落分支，不沿用正常飛行/編隊邏輯 ===
+      if (pl.shotdown && t >= pl.tHit) {
+        updateShotdown(pl, t, elapsed);
+        continue;
+      }
+
       pl.mesh.visible = planesVisible;
       if (!planesVisible) continue;
       // 編隊 offset 需隨機群朝向旋轉，才能維持 V 形相對機首方向
