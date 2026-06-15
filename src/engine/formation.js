@@ -188,7 +188,15 @@ window.SEKI = window.SEKI || {};
       const u = S.unitById(f.data.id); if (!u) continue;
       const gp = u.group.position;
       let dx = u.moveDir ? u.moveDir.dx : 0, dz = u.moveDir ? u.moveDir.dz : 0;
-      if (Math.hypot(dx, dz) < 1e-4) { dx = -gp.x; dz = -gp.z; }
+      if (Math.hypot(dx, dz) < 1e-4) {
+        // 靜止時面向敵人：phalanx 朝中門(接觸點)；已在門口則依陣營朝敵方來向(希臘朝西/波斯朝東)
+        const cz = S.config && S.config.chokeZone;
+        if (f.phalanx && cz && S.engine) {
+          const p = S.engine.project(cz.lng, cz.lat, 0);
+          dx = p.x - gp.x; dz = p.z - gp.z;
+          if (Math.hypot(dx, dz) < 4) { dx = f.east ? 1 : -1; dz = 0; }
+        } else { dx = -gp.x; dz = -gp.z; }   // 前三場維持朝場景中心
+      }
       const want = Math.atan2(dx, dz);
       f.facing += ((want - f.facing + Math.PI*3) % (Math.PI*2) - Math.PI) * 0.1;
       const s = u.cur ? u.cur.s : f.data.troops;
