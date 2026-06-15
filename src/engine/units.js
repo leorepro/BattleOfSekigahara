@@ -125,6 +125,7 @@ window.SEKI = window.SEKI || {};
         new THREE.RingGeometry(2.2, 3.0, 36),
         new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.55, side: THREE.DoubleSide }));
       ring.rotation.x = -Math.PI / 2; ring.position.y = 0.25; group.add(ring);
+      if (MODERN && a.kind === 'aircraft') ring.visible = false;   // 飛機在空中，地面選擇環無意義
 
       // 點選 hitbox（透明）
       const hit = new THREE.Mesh(
@@ -150,6 +151,8 @@ window.SEKI = window.SEKI || {};
       arrow.visible = false; eng.scene.add(arrow);
 
       const u = { data:a, group, flag, fmat, ring, pole, hit, el, body, fadeMats,
+        yoff: (MODERN && a.kind === 'aircraft') ? 26 : 0,                 // 飛機飛行高度
+        ramp: (body && body.getObjectByName) ? body.getObjectByName('ramp') : null,
         troopsEl: el.querySelector('.troops'), hpEl: el.querySelector('.hp i'),
         arrow, p: new THREE.Vector3() };
       hit.userData.unit = u;
@@ -188,7 +191,21 @@ window.SEKI = window.SEKI || {};
     for (const u of _units) {
       const s = u.cur;
       const y = S.terrain ? S.terrain.heightAt(u.p.x, u.p.z) : 0;
-      u.group.position.set(u.p.x, y, u.p.z);
+      u.group.position.set(u.p.x, y + (u.yoff || 0), u.p.z);
+      // 現代模型轉向：移動者面向移動方向；靜止開火者（碉堡/砲/泊船）面向戰場中心(灘頭/岸)
+      if (u.body) {
+        let dx = u.moveDir.dx, dz = u.moveDir.dz;
+        if (Math.hypot(dx, dz) < 1e-5) { dx = -u.p.x; dz = -u.p.z; }   // 靜止 → 朝向中心
+        if (Math.hypot(dx, dz) > 1e-5) {
+          const target = Math.atan2(-dz, dx);                          // 模型 +X 為前方（與 arrow 一致）
+          let d = target - u.body.rotation.y;
+          while (d > Math.PI) d -= 2 * Math.PI;
+          while (d < -Math.PI) d += 2 * Math.PI;
+          u.body.rotation.y += d * 0.2;                                // 平滑轉向，避免抖動
+        }
+        // 登陸艇搶灘 → 放下前跳板
+        if (u.ramp) u.ramp.rotation.z = (s.st === 'attack' || s.st === 'breakthrough') ? -1.15 : 0;
+      }
 
       const dead = s.s <= 1;
       const op = dead ? 0.12 : 1;

@@ -139,8 +139,10 @@ window.SEKI = window.SEKI || {};
   // —— 現代戰鬥特效（諾曼第）——
   // 曳光彈火網：自碉堡射口朝灘頭(+前方)掃出紅色曳光點
   function mgTracer(x,y,z,fx,fz){
-    for(let i=0;i<3;i++){ const d=4+Math.random()*10;
-      fire.emit(x+fx*1.5, y+1.6, z+fz*1.5, { vx:fx*42+rnd(3), vy:rnd(1.2), vz:fz*42+rnd(3),
+    for(let i=0;i<3;i++){
+      const a = rnd(0.38);                                 // 火網左右掃動（raking fire 扇形）
+      const cx = fx*Math.cos(a) - fz*Math.sin(a), cz = fx*Math.sin(a) + fz*Math.cos(a);
+      fire.emit(x+cx*1.5, y+1.6, z+cz*1.5, { vx:cx*42+rnd(2), vy:rnd(1.0), vz:cz*42+rnd(2),
         life:0.28, size0:2.6, size1:1.4, r:1.0, g:0.5, b:0.18 }); }
   }
   // 對空高射砲：朝天發射 + 高空防空炸點(flak puff，黑灰煙球)
@@ -161,6 +163,17 @@ window.SEKI = window.SEKI || {};
   function muzzleFlash(x,y,z,fx,fz,power){
     sparks(x,y,z,5,0.8,power||6);
     dust.emit(x+fx,y,z+fz,{ vx:fx*3,vy:0.8,vz:fz*3,g:0.3, life:0.8, size0:2,size1:7, r:0.7,g:0.68,b:0.64 });
+  }
+  // 空襲投彈：自飛機高度近乎垂直墜落、著地大爆炸（諾曼第空襲多落內陸 → 朝機首前方偏內陸）
+  function dropBomb(x,y,z,fx,fz){
+    const s = shells.find(s => !s.active); if (!s) return;
+    const reach = 8 + Math.random()*12;
+    const tx = x + fx*reach + rnd(5), tz = z + fz*reach + rnd(5);
+    const ty = S.terrain ? S.terrain.heightAt(tx, tz) : 0;
+    s.active = true; s.age = 0;
+    s.dur = 0.65 + Math.random()*0.3; s.peak = 0;        // peak=0 → 直線墜落、無拋物峰
+    s.p0.set(x, y, z); s.p1.set(tx, ty, tz);
+    s.mesh.visible = true; s.mesh.position.copy(s.p0);
   }
 
   // 發射一發大筒砲彈（拋物線）
@@ -231,7 +244,8 @@ window.SEKI = window.SEKI || {};
               const ty = S.terrain ? S.terrain.heightAt(tx, tz) : p.y;
               muzzleFlash(p.x, p.y+4, p.z, fx, fz, 9);
               launchShell(p.x, p.y+4, p.z, tx, ty, tz);
-            } break;
+            } else if (Math.random() < 0.05) waterSplash(p.x+fx*(10+rnd(8)), p.z+fz*(10+rnd(8))); // 近岸落彈水柱
+            break;
           case 'bunker':
             if (Math.random() < 0.85) mgTracer(p.x, p.y, p.z, fx, fz); break;
           case 'flak':
@@ -240,9 +254,12 @@ window.SEKI = window.SEKI || {};
             if (Math.random() < 0.18) { const reach=8+Math.random()*8, tx=p.x+fx*reach, tz=p.z+fz*reach;
               const ty=S.terrain?S.terrain.heightAt(tx,tz):p.y; muzzleFlash(p.x,p.y+2,p.z,fx,fz,6); launchShell(p.x,p.y+2,p.z,tx,ty,tz); } break;
           case 'landingcraft':
+            if (Math.random() < 0.4)                              // 搶灘：跳板前方步兵衝出的塵土
+              dust.emit(p.x+fx*3+rnd(1.5), p.y+0.5, p.z+fz*3+rnd(1.5),
+                { vx:fx*6+rnd(2), vy:0.5+Math.random(), vz:fz*6+rnd(2), g:0.3, life:0.5, size0:1.4, size1:4, r:0.72,g:0.68,b:0.6 });
             if (Math.random() < 0.08) waterSplash(p.x+rnd(4), p.z+rnd(4)); break;
-          case 'aircraft':
-            break;                                               // 飛機投彈由 main 的相位腳本驅動，避免每幀亂炸
+          case 'aircraft':                                        // 空襲時段(約 06:00)投彈，落內陸；其餘時段僅飛越
+            if (t > 5.7 && t < 6.7 && Math.random() < 0.22) dropBomb(p.x, p.y, p.z, fx, fz); break;
           default:          if (Math.random() < 0.12) teppoVolley(p.x, p.y, p.z);
         }
       }
