@@ -127,25 +127,52 @@
     const eng = S.engine;
     const base = eng.project(-1.005, 49.3985, 0);                 // 崖腳(海側)
     const baseY = S.terrain ? S.terrain.heightAt(base.x, base.z) : 0;
-    const topY = baseY + 9;                                       // 誇張崖高，讓攀爬可見
+    const topY = baseY + 11;                                      // 誇張崖高，讓攀爬可見
     const grp = new THREE.Group();
-    const ropeMat = new THREE.LineBasicMaterial({ color: 0x202020, transparent: true, opacity: 0.85 });
+
+    // 崖壁(斜陡岩壁)+崖頂草緣：讓「遊騎兵攀崖」一眼可辨，不再是抽象細線
+    const wallH = topY - baseY + 2;
+    const wall = new THREE.Mesh(new THREE.BoxGeometry(15, wallH, 2.4),
+      new THREE.MeshStandardMaterial({ color: 0x6b6256, roughness: 1 }));
+    wall.position.set(base.x, baseY + wallH / 2 - 1, base.z - 0.6);
+    wall.rotation.x = -0.16; wall.castShadow = true; grp.add(wall);
+    const cap = new THREE.Mesh(new THREE.BoxGeometry(15, 1.3, 4.5),
+      new THREE.MeshStandardMaterial({ color: 0x5f6b44, roughness: 0.95 }));
+    cap.position.set(base.x, topY, base.z - 1.8); grp.add(cap);
+
+    // 攀崖兵 = 鋼盔人形(取代抽象方塊)
+    function ranger() {
+      const g = new THREE.Group();
+      const body = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.3, 1.05, 6),
+        new THREE.MeshStandardMaterial({ color: 0x4d5a48, roughness: 0.95 }));
+      body.position.y = 0.5; g.add(body);
+      const helm = new THREE.Mesh(new THREE.SphereGeometry(0.27, 8, 6, 0, Math.PI * 2, 0, Math.PI * 0.55),
+        new THREE.MeshStandardMaterial({ color: 0x39432f, roughness: 0.9 }));
+      helm.position.y = 1.08; g.add(helm);
+      g.traverse((o) => { if (o.isMesh) o.castShadow = true; });
+      return g;
+    }
+
+    const ropeMat = new THREE.LineBasicMaterial({ color: 0x141414, transparent: true, opacity: 0.9 });
     const ropes = [];
-    for (let i = 0; i < 6; i++) {
-      const ox = (i - 2.5) * 1.5;
-      const bx = base.x + ox, bz = base.z + 1.4;                  // 崖腳略偏海
-      const tx = base.x + ox * 0.7, tz = base.z - 0.6;           // 崖頂略偏陸
-      const geo = new THREE.BufferGeometry().setFromPoints([
-        new THREE.Vector3(bx, baseY, bz), new THREE.Vector3(tx, topY, tz)]);
-      grp.add(new THREE.Line(geo, ropeMat));
+    for (let i = 0; i < 7; i++) {
+      const ox = (i - 3) * 1.8;
+      const bx = base.x + ox, bz = base.z + 2.2;                  // 崖腳(海側)
+      const tx = base.x + ox * 0.85, tz = base.z - 0.9;          // 崖頂(陸側)
+      grp.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(bx, baseY, bz), new THREE.Vector3(tx, topY, tz)]), ropeMat));
       ropes.push({ bx, bz, tx, tz });
     }
-    const cmat = new THREE.MeshStandardMaterial({ color: 0x4d5a48, roughness: 0.9 });
     const climbers = [];
-    for (let i = 0; i < 10; i++) {
-      const m = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.0, 0.5), cmat);
+    for (let i = 0; i < 12; i++) {
+      const m = ranger(); m.rotation.y = Math.PI;                // 面向崖壁
       grp.add(m);
-      climbers.push({ mesh: m, rope: ropes[i % ropes.length], off: Math.random() });
+      climbers.push({ mesh: m, rope: ropes[i % ropes.length], off: (i % 6) / 6 * 0.55 + (i % 3) * 0.08 });
+    }
+    // 已攻上崖頂的遊騎兵(靜態)，強化「攻克崖頂」感
+    for (let i = 0; i < 3; i++) {
+      const m = ranger(); m.rotation.y = Math.PI;
+      m.position.set(base.x + (i - 1) * 2.4, topY + 0.3, base.z - 2.4); grp.add(m);
     }
     grp.visible = false; eng.scene.add(grp);
     cliff = { grp, climbers, baseY, topY };

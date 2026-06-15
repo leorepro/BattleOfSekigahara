@@ -68,8 +68,12 @@ window.SEKI = window.SEKI || {};
       const k = 1 - Math.exp(-dt * 4);
       cam.position.lerp(want, k); eng.controls.target.lerp(tgt2, k);
       // 慢動作：關鍵鏡在 hold 期間讓戰場時刻緩慢推進(span 小→很慢)，呈現 slow-mo
-      if (cur.slowmo) S.player.time = cur.t + Math.min(cur.span || 0.6, p * (cur.span || 0.6));
-      else S.player.time = cur.t;
+      // 節目播放速度：每鏡可設 span(此鏡 hold 期間推進的戰場小時數)；span/hold=有效倍速，
+      //   小→慢動作(0.2x)、大→接近即時(1x)、未設則凍結成定格。自動夾住不超過下一鏡時刻。
+      let span = cur.span || 0;
+      const nextT = sb[(idx + 1) % sb.length].t;
+      if (nextT > cur.t) span = Math.min(span, nextT - cur.t - 0.05);
+      S.player.time = span > 0 ? cur.t + p * span : cur.t;
       if (shotTimer >= H && S.player.playing) {
         idx = (idx + 1) % sb.length; phase = 'tween'; tweenTimer = 0;
       }
