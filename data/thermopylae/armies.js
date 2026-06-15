@@ -1,123 +1,150 @@
 /* =========================================================================
- * data/okehazama/armies.js — 桶狹間之戰雙方部隊（含五月十八~十九日調動）
- *   side : 'east'(織田/藍) | 'west'(今川/紅)
- *   kind : command/matchlock/cavalry/infantry（驅動兵種特效）
- *   crest: 對應 SEKI.crests 的家紋 key
+ * data/thermopylae/armies.js — 溫泉關之戰雙方部隊（三日，西元前 480 年）
+ *   side : 'east'(波斯/藍) | 'west'(希臘/紅)
+ *   faction / factionColor : 城邦或民族 + 專屬色（暖色系=希臘、冷色系=波斯；
+ *     formation.js phalanx 分支以 factionColor 為披風/盔冠色，UI 圖例同此色）
+ *   kind : command / infantry / archer / cavalry（驅動名牌 icon 與兵種說明）
  *   track: 關鍵影格 {t, lng, lat, s, st}
- *     t  = 距「永祿三年五月十九日(1560/6/12) 00:00」的小時數
- *          戰前為負：-8≈十八日午後(沓掛布陣)、-6≈十八日夜(大高兵糧入)
- *          4~6 = 十九日拂曉(鷲津・丸根攻防)、8~14 = 信長奇襲~義元討死(辰~未刻)
- *     s  = 兵力  st = hold/march/attack/rout
- *   ※ 兵力為依《信長公記》與近年研究之代表值（見史料面板）；今川總數史料誇大，
- *     本作取「義元本陣周邊約六千、織田主隊約二千」之決戰實戰力觀點。
+ *     t = 距「會戰第一日拂曉」的時數。布陣為負(-6)；第一日 0–8、第二日 8–16、
+ *         第三日 16–24（背叛~16、遣散~19、殿後~20、列奧尼達戰死~22）、尾聲 24–26。
+ *     s = 兵力  st = hold/march/attack/rout
+ *   ※ 希臘逐邦本於希羅多德；波斯採現代可信估計（~11 萬，UI 並陳希羅多德 170 萬）。
  * ======================================================================= */
 window.SEKI = window.SEKI || {};
 
 SEKI.armies = [
-  /* ============================ 織田軍（藍） ============================ */
-  { id:"nobunaga", name_zh:"織田信長", name_ja:"織田信長", side:'east', crest:'mokkou', kind:'command',
-    title:"織田 總大將 · 清洲→熱田→善照寺→中島→桶狹間", troops:2000,
+  /* ============================ 希臘聯軍（紅 · 暖色系） ============================ */
+  { id:"leonidas", name_zh:"列奧尼達一世", name_ja:"Λεωνίδας", side:'west', faction:'sparta', factionColor:0xb11f2a, kind:'command',
+    title:"斯巴達國王 · 298 精兵 · 中門死守至最後", troops:298,
     track:[
-      { t:-8,  lng:136.8436,lat:35.2166,s:2000, st:'hold' },     // 清洲城（整軍待報）
-      { t:3,   lng:136.8436,lat:35.2166,s:2000, st:'hold' },     // 接鷲津丸根急報、舞「敦盛」
-      { t:3.6, lng:136.8436,lat:35.2166,s:2000, st:'march' },    // 清洲出陣（單騎先行）
-      { t:4.5, lng:136.9087,lat:35.1274,s:2000, st:'march' },    // 熱田神宮參拜
-      { t:7,   lng:136.9540,lat:35.1000,s:2000, st:'march' },    // 沿鳴海潟南下
-      { t:9,   lng:136.9575,lat:35.0816,s:2000, st:'hold' },     // 善照寺砦集結（約二千~三千）
-      { t:11.5,lng:136.9540,lat:35.0769,s:2000, st:'march' },    // 前進中島砦
-      { t:12.5,lng:136.9680,lat:35.0680,s:2000, st:'march' },    // 暴雨中接近桶狹間山
-      { t:13,  lng:136.9720,lat:35.0600,s:2000, st:'attack' },   // 雨止·正面突擊
-      { t:13.5,lng:136.9752,lat:35.0578,s:1900, st:'attack' },   // 突入義元本陣
-      { t:14,  lng:136.9752,lat:35.0578,s:1900, st:'hold' },     // 討取義元·凱旋
+      { t:-6, lng:22.5360,lat:38.7956,s:298, st:'hold' },     // 進駐中門·重修福基斯牆
+      { t:0,  lng:22.5375,lat:38.7958,s:298, st:'hold' },     // 第一日布陣
+      { t:2,  lng:22.5378,lat:38.7958,s:298, st:'attack' },   // 迎擊米底軍·盾牆輾壓
+      { t:8,  lng:22.5375,lat:38.7958,s:296, st:'hold' },     // 第一日終·幾乎無損
+      { t:11, lng:22.5378,lat:38.7958,s:294, st:'attack' },   // 第二日輪戰
+      { t:16, lng:22.5375,lat:38.7958,s:290, st:'hold' },     // 第三日晨·得知遭包抄
+      { t:19, lng:22.5370,lat:38.7955,s:290, st:'march' },    // 遣散聯軍·出福基斯牆推進
+      { t:20, lng:22.5384,lat:38.7960,s:280, st:'attack' },   // 殿後死戰·主動迎敵
+      { t:22, lng:22.5390,lat:38.7964,s:120, st:'attack' },   // 列奧尼達戰死·奪回遺體
+      { t:23, lng:22.5392,lat:38.7965,s:0,   st:'rout' },     // 科洛諾斯小丘·箭雨全滅
     ]},
-  { id:"sassa", name_zh:"佐佐政次・千秋季忠", name_ja:"佐々政次・千秋季忠", side:'east', crest:'mokkou', kind:'cavalry',
-    title:"織田 前衛 · 中島前突出戰死", troops:300,
+  { id:"thespiae", name_zh:"賽斯比軍", name_ja:"Θεσπιαί", side:'west', faction:'thespiae', factionColor:0xc8842e, kind:'infantry',
+    title:"賽斯比 700 · 拒絕撤退 · 與斯巴達共死", troops:700,
     track:[
-      { t:-8,  lng:136.9575,lat:35.0816,s:300, st:'hold' },      // 善照寺一帶
-      { t:9,   lng:136.9575,lat:35.0816,s:300, st:'hold' },
-      { t:10.8,lng:136.9620,lat:35.0720,s:300, st:'march' },     // 突出
-      { t:11,  lng:136.9680,lat:35.0660,s:300, st:'attack' },    // 攻今川前衛
-      { t:11.4,lng:136.9690,lat:35.0650,s:0,   st:'rout' },      // 佐佐・千秋戰死
+      { t:-6, lng:22.5350,lat:38.7950,s:700, st:'hold' },
+      { t:2,  lng:22.5368,lat:38.7954,s:700, st:'attack' },
+      { t:16, lng:22.5358,lat:38.7952,s:680, st:'hold' },
+      { t:19, lng:22.5366,lat:38.7956,s:680, st:'attack' },   // 拒撤·留守殿後
+      { t:22, lng:22.5386,lat:38.7962,s:300, st:'attack' },
+      { t:23, lng:22.5392,lat:38.7965,s:0,   st:'rout' },     // 統帥得摩菲魯斯率眾死戰到底
     ]},
-  { id:"washizu", name_zh:"鷲津砦守備", name_ja:"鷲津砦 飯尾定宗・織田秀敏", side:'east', crest:'mokkou', kind:'infantry',
-    title:"織田 · 鷲津砦（拂曉陷落）", troops:400,
+  { id:"thebes", name_zh:"底比斯軍", name_ja:"Θῆβαι", side:'west', faction:'thebes', factionColor:0xd4a82a, kind:'infantry',
+    title:"底比斯 400 · 殿後（一說最後向波斯投降）", troops:400,
     track:[
-      { t:-8,  lng:136.9423,lat:35.0696,s:400, st:'hold' },
-      { t:3,   lng:136.9423,lat:35.0696,s:400, st:'hold' },
-      { t:4,   lng:136.9423,lat:35.0696,s:400, st:'attack' },    // 朝比奈來攻
-      { t:6,   lng:136.9423,lat:35.0696,s:0,   st:'rout' },      // 陷落·二將戰死
+      { t:-6, lng:22.5345,lat:38.7948,s:400, st:'hold' },
+      { t:2,  lng:22.5362,lat:38.7952,s:400, st:'attack' },
+      { t:19, lng:22.5360,lat:38.7952,s:380, st:'hold' },
+      { t:22, lng:22.5378,lat:38.7958,s:200, st:'attack' },
+      { t:23.5,lng:22.5384,lat:38.7960,s:120,st:'rout' },     // ⚠史料爭議:投降說
     ]},
-  { id:"marune", name_zh:"丸根砦守備", name_ja:"丸根砦 佐久間盛重", side:'east', crest:'hikiryo', kind:'infantry',
-    title:"織田 · 丸根砦（凌晨陷落）", troops:400,
+  { id:"phocis", name_zh:"佛西斯軍", name_ja:"Φωκεῖς", side:'west', faction:'phocis', factionColor:0xb08a3a, kind:'infantry',
+    title:"佛西斯 1000 · 守安諾派亞山徑（第三日被不死軍繞過）", troops:1000,
     track:[
-      { t:-8,  lng:136.9453,lat:35.0644,s:400, st:'hold' },
-      { t:3,   lng:136.9453,lat:35.0644,s:400, st:'hold' },
-      { t:4,   lng:136.9453,lat:35.0644,s:400, st:'attack' },    // 松平元康來攻
-      { t:5.5, lng:136.9453,lat:35.0644,s:0,   st:'rout' },      // 陷落·盛重戰死
+      { t:-6, lng:22.5860,lat:38.7805,s:1000, st:'hold' },    // 受命守山徑
+      { t:8,  lng:22.5880,lat:38.7800,s:1000, st:'hold' },    // 連日無戰事·鬆懈
+      { t:16, lng:22.5900,lat:38.7800,s:1000, st:'attack' },  // 不死軍夜至·倉促列陣
+      { t:16.5,lng:22.5940,lat:38.7820,s:900, st:'march' },   // 退守高地·被繞過
+      { t:24, lng:22.5980,lat:38.7850,s:900, st:'hold' },
+    ]},
+  { id:"arcadia", name_zh:"阿卡迪亞軍", name_ja:"Ἀρκαδία", side:'west', faction:'arcadia', factionColor:0x9c5a33, kind:'infantry',
+    title:"阿卡迪亞聯軍 1120（曼提尼亞/特吉亞等）", troops:1120,
+    track:[
+      { t:-6, lng:22.5335,lat:38.7946,s:1120, st:'hold' },
+      { t:2,  lng:22.5356,lat:38.7950,s:1120, st:'attack' },
+      { t:11, lng:22.5350,lat:38.7950,s:1100, st:'attack' },
+      { t:18, lng:22.5320,lat:38.7948,s:1100, st:'march' },   // 第三日遭遣散·撤退保存實力
+      { t:24, lng:22.5150,lat:38.7990,s:1100, st:'march' },
+    ]},
+  { id:"corinth", name_zh:"科林斯軍", name_ja:"Κόρινθος", side:'west', faction:'corinth', factionColor:0xd9533a, kind:'infantry',
+    title:"科林斯 400（盾徽飛馬 Pegasus）", troops:400,
+    track:[
+      { t:-6, lng:22.5340,lat:38.7944,s:400, st:'hold' },
+      { t:5,  lng:22.5358,lat:38.7950,s:400, st:'attack' },
+      { t:18, lng:22.5325,lat:38.7946,s:395, st:'march' },    // 遣散撤退
+      { t:24, lng:22.5160,lat:38.7988,s:395, st:'march' },
+    ]},
+  { id:"tegea_mant", name_zh:"特吉亞·曼提尼亞軍", name_ja:"Τεγέα · Μαντίνεια", side:'west', faction:'tegea', factionColor:0xa01f28, kind:'infantry',
+    title:"特吉亞 500 + 曼提尼亞 500", troops:1000,
+    track:[
+      { t:-6, lng:22.5348,lat:38.7942,s:1000, st:'hold' },
+      { t:5,  lng:22.5360,lat:38.7948,s:1000, st:'attack' },
+      { t:18, lng:22.5328,lat:38.7944,s:990, st:'march' },
+      { t:24, lng:22.5170,lat:38.7986,s:990, st:'march' },
+    ]},
+  { id:"other_greek", name_zh:"其他城邦聯軍", name_ja:"Φλιοῦς · Μυκῆναι · Λοκροί", side:'west', faction:'phlius', factionColor:0xd9772a, kind:'infantry',
+    title:"菲琉斯 200 · 邁錫尼 80 · 奧普蒂恩-羅克里斯等", troops:600,
+    track:[
+      { t:-6, lng:22.5342,lat:38.7940,s:600, st:'hold' },
+      { t:5,  lng:22.5358,lat:38.7946,s:600, st:'attack' },
+      { t:18, lng:22.5330,lat:38.7942,s:590, st:'march' },
+      { t:24, lng:22.5175,lat:38.7984,s:590, st:'march' },
     ]},
 
-  /* ============================ 今川軍（紅） ============================ */
-  { id:"yoshimoto", name_zh:"今川義元", name_ja:"今川義元", side:'west', crest:'futatsuhikiryo', kind:'command',
-    title:"今川 總大將 · 沓掛→桶狹間山本陣", troops:6000,
+  /* ============================ 波斯帝國（藍 · 冷色系） ============================ */
+  { id:"xerxes", name_zh:"薛西斯一世", name_ja:"Xšayāršā", side:'east', faction:'persia_royal', factionColor:0x6a3d9a, kind:'command',
+    title:"波斯萬王之王 · 特拉基斯平原本陣觀戰", troops:2000,
     track:[
-      { t:-8,  lng:137.0218,lat:35.0689,s:6000, st:'hold' },     // 沓掛城布陣（十八日）
-      { t:-2,  lng:137.0218,lat:35.0689,s:6000, st:'hold' },
-      { t:6,   lng:136.9900,lat:35.0640,s:6000, st:'march' },    // 西進
-      { t:9,   lng:136.9780,lat:35.0585,s:6000, st:'march' },
-      { t:10,  lng:136.9755,lat:35.0575,s:6000, st:'hold' },     // 桶狹間山布陣·連捷休整唱謠
-      { t:12.5,lng:136.9755,lat:35.0575,s:6000, st:'hold' },     // 暴雨
-      { t:13,  lng:136.9755,lat:35.0575,s:5000, st:'attack' },   // 遭織田正面突襲·本陣混戰
-      { t:13.5,lng:136.9752,lat:35.0578,s:800,  st:'rout' },     // 親衛崩潰
-      { t:13.7,lng:136.9752,lat:35.0578,s:0,    st:'rout' },     // 義元討死（毛利新介）
+      { t:-6, lng:22.5050,lat:38.8200,s:2000, st:'hold' },    // 本陣紮營·設寶座
+      { t:2,  lng:22.5050,lat:38.8200,s:2000, st:'hold' },    // 見米底敗·三度驚起
+      { t:26, lng:22.5050,lat:38.8200,s:2000, st:'hold' },
     ]},
-  { id:"matsudaira", name_zh:"松平元康", name_ja:"松平元康（德川家康）", side:'west', crest:'mitsubaAoi', kind:'cavalry',
-    title:"今川 先鋒 · 大高城兵糧入·攻丸根（戰後獨立）", troops:2000,
+  { id:"medes", name_zh:"米底軍", name_ja:"Μῆδοι", side:'east', faction:'medes', factionColor:0x4a6a8a, kind:'infantry',
+    title:"米底·西西亞軍 · 第一日首波強攻", troops:20000,
     track:[
-      { t:-8,  lng:137.000, lat:35.0660,s:2000, st:'march' },    // 三河勢西進
-      { t:-6,  lng:136.9362,lat:35.0644,s:2000, st:'hold' },     // 夜突破封鎖·大高城兵糧入
-      { t:4,   lng:136.9453,lat:35.0644,s:2000, st:'attack' },   // 攻丸根砦
-      { t:5.5, lng:136.9430,lat:35.0644,s:2000, st:'attack' },   // 丸根陷
-      { t:7,   lng:136.9362,lat:35.0644,s:2000, st:'hold' },     // 返大高城留守
-      { t:14,  lng:136.9362,lat:35.0644,s:2000, st:'hold' },     // 未捲入本陣戰·全軍生還
+      { t:-2, lng:22.5180,lat:38.7980,s:20000, st:'march' },  // 西門集結
+      { t:1,  lng:22.5300,lat:38.7958,s:20000, st:'attack' }, // 正面強攻中門
+      { t:4,  lng:22.5320,lat:38.7958,s:17000, st:'attack' }, // 受窄道所制·死傷枕藉
+      { t:7,  lng:22.5240,lat:38.7965,s:15000, st:'march' },  // 敗退
+      { t:26, lng:22.5180,lat:38.7980,s:15000, st:'hold' },
     ]},
-  { id:"asahina", name_zh:"朝比奈泰朝", name_ja:"朝比奈泰朝", side:'west', crest:'futatsuhikiryo', kind:'infantry',
-    title:"今川 · 攻陷鷲津砦", troops:2000,
+  { id:"immortals", name_zh:"不死軍", name_ja:"Ἀθάνατοι", side:'east', faction:'immortals', factionColor:0x2a4a8a, kind:'infantry',
+    title:"波斯萬人精銳 · 第一日受挫→第三日循山徑迂迴包抄", troops:10000,
     track:[
-      { t:-8,  lng:136.985, lat:35.0670,s:2000, st:'march' },
-      { t:-2,  lng:136.9500,lat:35.0700,s:2000, st:'hold' },     // 逼近鷲津
-      { t:4,   lng:136.9423,lat:35.0696,s:2000, st:'attack' },   // 攻鷲津砦
-      { t:6,   lng:136.9423,lat:35.0696,s:2000, st:'hold' },     // 陷落
-      { t:10,  lng:136.9560,lat:35.0640,s:2000, st:'hold' },     // 向大高·桶狹間方向
-      { t:14,  lng:136.9600,lat:35.0620,s:2000, st:'hold' },
+      { t:-1, lng:22.5160,lat:38.8050,s:10000, st:'hold' },
+      { t:5,  lng:22.5310,lat:38.7958,s:10000, st:'attack' }, // 第一日投入·仍不得寸進
+      { t:8,  lng:22.5240,lat:38.7968,s:9000,  st:'march' },
+      { t:15, lng:22.5300,lat:38.7860,s:9000,  st:'march' },  // 夜入山徑（埃菲亞特斯引路）
+      { t:16.5,lng:22.5900,lat:38.7800,s:9000, st:'march' },  // 越卡利德羅莫·過佛西斯
+      { t:18, lng:22.5820,lat:38.7930,s:9000,  st:'attack' }, // 東門下山·背後包抄
+      { t:21, lng:22.5400,lat:38.7962,s:8500,  st:'attack' }, // 夾擊殿後希臘軍
+      { t:26, lng:22.5392,lat:38.7965,s:8500,  st:'hold' },
     ]},
-  { id:"ii", name_zh:"井伊直盛", name_ja:"井伊直盛", side:'west', crest:'tachibana', kind:'infantry',
-    title:"今川 本隊先導 · 桶狹間山戰死", troops:800,
+  { id:"persian_main", name_zh:"波斯本軍", name_ja:"Πέρσαι", side:'east', faction:'persia', factionColor:0x3a3a8a, kind:'infantry',
+    title:"波斯主力步兵 · 第二日輪番猛攻", troops:40000,
     track:[
-      { t:-8,  lng:137.010, lat:35.0680,s:800, st:'march' },
-      { t:6,   lng:136.9850,lat:35.0620,s:800, st:'march' },
-      { t:10,  lng:136.9770,lat:35.0588,s:800, st:'hold' },      // 近義元本陣
-      { t:13,  lng:136.9762,lat:35.0584,s:800, st:'attack' },    // 迎擊織田突襲
-      { t:13.6,lng:136.9760,lat:35.0582,s:0,   st:'rout' },      // 戰死
+      { t:6,  lng:22.5200,lat:38.7975,s:40000, st:'march' },
+      { t:9,  lng:22.5305,lat:38.7958,s:40000, st:'attack' }, // 第二日猛攻·督戰隊以鞭驅前
+      { t:13, lng:22.5318,lat:38.7958,s:36000, st:'attack' }, // 突不破方陣
+      { t:16, lng:22.5250,lat:38.7968,s:35000, st:'hold' },
+      { t:20, lng:22.5340,lat:38.7958,s:35000, st:'attack' }, // 第三日總攻
+      { t:23, lng:22.5388,lat:38.7962,s:33000, st:'attack' },
+      { t:26, lng:22.5380,lat:38.7958,s:33000, st:'hold' },
     ]},
-  { id:"matsui", name_zh:"松井宗信", name_ja:"松井宗信", side:'west', crest:'futatsuhikiryo', kind:'infantry',
-    title:"今川 近臣 · 桶狹間山戰死", troops:1000,
+  { id:"persian_archers", name_zh:"波斯弓兵", name_ja:"Τοξόται", side:'east', faction:'persia_archer', factionColor:0x2f6a72, kind:'archer',
+    title:"波斯弓兵 · 箭雨遮天（結局覆蓋科洛諾斯小丘）", troops:8000,
     track:[
-      { t:-8,  lng:137.012, lat:35.0700,s:1000, st:'march' },
-      { t:6,   lng:136.9860,lat:35.0600,s:1000, st:'march' },
-      { t:10,  lng:136.9775,lat:35.0568,s:1000, st:'hold' },
-      { t:13,  lng:136.9766,lat:35.0572,s:1000, st:'attack' },
-      { t:13.6,lng:136.9763,lat:35.0574,s:0,    st:'rout' },     // 戰死
+      { t:1,  lng:22.5270,lat:38.7958,s:8000, st:'attack' },  // 齊射掩護
+      { t:16, lng:22.5290,lat:38.7958,s:8000, st:'hold' },
+      { t:21, lng:22.5360,lat:38.7958,s:8000, st:'attack' },  // 對科洛諾斯小丘箭雨
+      { t:23, lng:22.5375,lat:38.7960,s:8000, st:'attack' },  // 覆蓋全滅
+      { t:26, lng:22.5375,lat:38.7960,s:8000, st:'hold' },
     ]},
-  { id:"udono", name_zh:"鵜殿長照", name_ja:"鵜殿長照", side:'west', crest:'futatsuhikiryo', kind:'infantry',
-    title:"今川 · 大高城原守將", troops:1500,
+  { id:"persian_subjects", name_zh:"屬民聯軍", name_ja:"Βάκτριοι · Σάκαι κ.ἄ.", side:'east', faction:'persia_subjects', factionColor:0x5a6a7a, kind:'infantry',
+    title:"巴克特里亞·薩迦等帝國屬民 · 人海後備", troops:30000,
     track:[
-      { t:-8,  lng:136.9382,lat:35.0662,s:1500, st:'hold' },     // 大高城周邊
-      { t:14,  lng:136.9382,lat:35.0662,s:1500, st:'hold' },     // 守城·全軍存
-    ]},
-  { id:"okabe", name_zh:"岡部元信", name_ja:"岡部元信", side:'west', crest:'futatsuhikiryo', kind:'infantry',
-    title:"今川 · 鳴海城守將（戰後以首級換開城）", troops:2000,
-    track:[
-      { t:-8,  lng:136.9504,lat:35.0816,s:2000, st:'hold' },     // 鳴海城
-      { t:14,  lng:136.9504,lat:35.0816,s:2000, st:'hold' },     // 義元死後仍抵抗
+      { t:6,  lng:22.5120,lat:38.8050,s:30000, st:'hold' },
+      { t:12, lng:22.5210,lat:38.7980,s:30000, st:'march' },  // 第二日後備壓上
+      { t:20, lng:22.5280,lat:38.7965,s:30000, st:'march' },  // 第三日填線
+      { t:26, lng:22.5300,lat:38.7960,s:30000, st:'hold' },
     ]},
 ];

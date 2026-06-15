@@ -17,16 +17,20 @@
     },
     sideName:  { east: '波斯帝國', west: '希臘聯軍' },
     sideShort: { east: '波斯', west: '希臘' },
-    crestNames: {
-      mokkou: '織田木瓜（五瓜に唐花）', futatsuhikiryo: '足利二つ引両',
-      hikiryo: '丸に三つ引', mitsubaAoi: '三つ葉葵', tachibana: '井伊橘',
-    },
+    // 名牌兵種 icon（戰國 fallback 為文字；此處覆寫為希臘/波斯兵種字）
+    kindIcons: { command:'帥', infantry:'重', archer:'弓', cavalry:'騎' },
     kindArms: {
-      command:   ['本陣 · 旗本', '總大將直屬精銳，馬廻・旗本眾'],
-      cavalry:   ['騎馬隊', '騎馬武者突擊'],
-      infantry:  ['足軽 · 長槍 · 弓', '長槍足軽為主，配屬弓與少量鉄砲'],
-      matchlock: ['鉄砲（火縄銃）', '永祿年間火器尚少，配屬鉄砲'],
-      artillery: ['鉄砲隊', '鉄砲齊射'],
+      command:   ['主帥 · 親衛', '統帥與直屬精銳'],
+      infantry:  ['重裝步兵（hoplite）', '圓盾Aspis + 長矛Dory + 科林斯盔，密集方陣盾牆'],
+      archer:    ['弓兵', '波斯弓兵齊射，「箭矢遮天蔽日」'],
+      cavalry:   ['騎兵', '機動部隊'],
+    },
+    // 逐邦/民族專屬色（方案A 色系分群；暖色=希臘、冷色=波斯）。armies 各單位亦帶 factionColor。
+    factionColors: {
+      sparta:0xb11f2a, thespiae:0xc8842e, thebes:0xd4a82a, phocis:0xb08a3a,
+      arcadia:0x9c5a33, corinth:0xd9533a, tegea:0xa01f28, phlius:0xd9772a,
+      persia_royal:0x6a3d9a, immortals:0x2a4a8a, medes:0x4a6a8a,
+      persia:0x3a3a8a, persia_archer:0x2f6a72, persia_subjects:0x5a6a7a,
     },
     // 溫泉關：北面馬利亞灣(海) + 南面卡利德羅莫山(~760m) → 中等誇張凸顯峽谷封閉感
     exag: 2.8,
@@ -44,17 +48,18 @@
     formationStyle: 'phalanx',
   };
 
-  S.player = { time: -8, playing: true, speed: 0.35, program: true, T_START: -8, T_END: 14 };
+  S.player = { time: -6, playing: true, speed: 0.5, program: true, T_START: -6, T_END: 26 };
 
   function phase(t) {
-    if (t < -2)    return '波斯大軍壓境 · 希臘聯軍據守中門 · 重修福基斯牆';
+    if (t < 0)     return '波斯大軍壓境 · 希臘聯軍據守中門 · 重修福基斯牆';
     if (t < 4)     return '第一日 · 米底軍正面強攻 · 方陣盾牆輾壓';
-    if (t < 8)     return '第二日 · 不死軍投入仍不得寸進';
-    if (t < 11)    return '第三日 · 埃菲亞特斯獻安諾派亞山徑 · 不死軍迂迴';
-    if (t < 12.4)  return '佛西斯守軍被破 · 希臘遭包抄';
-    if (t < 13.6)  return '★ 列奧尼達遣散聯軍 · 298 斯巴達殿後死戰';
-    if (t < 13.9)  return '★ 列奧尼達戰死 · 奪回遺體';
-    return '溫泉關陷落 · 拖延換得薩拉米斯之機';
+    if (t < 8)     return '第一日 · 不死軍投入仍不得寸進 · 薛西斯三度驚起';
+    if (t < 16)    return '第二日 · 波斯輪番猛攻 · 督戰隊以鞭驅前 · 仍突不破方陣';
+    if (t < 18)    return '第三日 · 埃菲亞特斯獻安諾派亞山徑 · 不死軍夜越山徑包抄';
+    if (t < 20)    return '佛西斯守軍被繞過 · 列奧尼達遣散聯軍 · 298 斯巴達殿後';
+    if (t < 22.5)  return '★ 殿後死戰 · 長矛折斷改短劍肉搏 · 列奧尼達戰死·奪回遺體';
+    if (t < 24)    return '★ 科洛諾斯小丘 · 殘軍據守 · 波斯箭雨覆蓋全滅';
+    return '溫泉關陷落 · 拖延換得薩拉米斯之機 → 普拉提亞終局勝利';
   }
 
   /* ---------- 暴雨雨絲粒子（風自西向東，呼應「楠木倒向東」） ---------- */

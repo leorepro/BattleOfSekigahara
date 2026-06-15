@@ -242,9 +242,17 @@ window.SEKI = window.SEKI || {};
         pole.position.y = POLE_H / 2; pole.castShadow = true; group.add(pole);
 
         const fgeo = new THREE.PlaneGeometry(FW, FH, 14, 2);
-        fmat = new THREE.MeshStandardMaterial({
-          map: S.flagTexture(a.crest, a.side), side: THREE.DoubleSide,
-          roughness: 0.7, transparent: true });
+        // phalanx（溫泉關）：希臘/波斯不用日式家紋——改陣營專屬色純色軍旗（無 crest 貼圖）。
+        // 前三場無 formationStyle → 仍走家紋幟旗，零影響。
+        const PHALANX = !!(S.config && S.config.formationStyle === 'phalanx');
+        fmat = PHALANX
+          ? new THREE.MeshStandardMaterial({
+              color: (a.factionColor != null) ? a.factionColor : (a.side === 'east' ? EAST : WEST),
+              emissive: (a.factionColor != null) ? a.factionColor : (a.side === 'east' ? EAST : WEST),
+              emissiveIntensity: 0.2, side: THREE.DoubleSide, roughness: 0.7, transparent: true })
+          : new THREE.MeshStandardMaterial({
+              map: S.flagTexture(a.crest, a.side), side: THREE.DoubleSide,
+              roughness: 0.7, transparent: true });
         flag = new THREE.Mesh(fgeo, fmat);
         flag.castShadow = true;
         flag.position.set(FW / 2 + 0.2, POLE_H - FH / 2 - 0.5, 0);
