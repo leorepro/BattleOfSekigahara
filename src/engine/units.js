@@ -112,6 +112,116 @@ window.SEKI = window.SEKI || {};
     }
   };
 
+  /* ---- 精緻方向指示：流動雪佛龍 (chevron) 方向箭頭 ----
+     用實體幾何取代陽春的 THREE.ArrowHelper，外觀更俐落且有「流動感」：
+       · 一條貼地略抬高的發光「軌道」(箭身)，加色彩漸層 + Additive 發光。
+       · 三枚朝行進方向的尖頭雪佛龍，沿軌道向前脈動流動 (用 clock 驅動)。
+       · 前端一支俐落的箭頭三角。
+     維持與舊 u.arrow 相同呼叫介面（.visible / .position / setDirection / setLength），
+     方向沿用呼叫端傳入的世界向量，方向邏輯不變；update(elapsed) 每幀驅動流動。
+     全程僅用 bundled three.js 基本幾何 (Plane/Shape/Buffer)，不用 CapsuleGeometry/BufferGeometryUtils。 */
+  function makeMoveArrow(color) {
+    const root = new THREE.Group();
+    root.visible = false;
+
+    // 軌道貼地，整組在 XZ 平面構圖、以 root.rotation.y 對齊方向（+X 為前方，與 atan2(-dz,dx) 一致）。
+    const W = 1.7;                 // 箭身寬度（半寬 W/2）
+    let LEN = 9;                   // 由 setLength 設定的總長度（沿用舊預設）
+
+    // 1) 漸層發光軌道：用頂點色讓尾端淡、前端亮，Additive 疊加在亮底圖上仍鮮明。
+    const trail = new THREE.Mesh(
+      new THREE.PlaneGeometry(1, W, 1, 1),
+      new THREE.MeshBasicMaterial({
+        color, transparent: true, opacity: 0.32, depthWrite: false,
+        blending: THREE.AdditiveBlending, side: THREE.DoubleSide, vertexColors: true }));
+    {
+      // 四頂點順序 (PlaneGeometry 1x1)：左上,右上,左下,右下 → 以 x 區分頭尾，尾端較暗。
+      const c = new THREE.Color(color), dark = c.clone().multiplyScalar(0.25);
+      const cols = new Float32Array(4 * 3), pos = trail.geometry.attributes.position;
+      for (let i = 0; i < 4; i++) {
+        const head = pos.getX(i) > 0;                 // +x 端為頭（亮）
+        const col = head ? c : dark;
+        cols[i*3] = col.r; cols[i*3+1] = col.g; cols[i*3+2] = col.b;
+      }
+      trail.geometry.setAttribute('color', new THREE.BufferAttribute(cols, 3));
+    }
+    trail.rotation.x = -Math.PI / 2;                  // 平躺於地面
+    root.add(trail);
+
+    // 雪佛龍 / 箭頭外形：以 Shape 擠出薄片，做一個「ᐅ」形尖角。
+    function chevronGeo(size, thick) {
+      const sh = new THREE.Shape();
+      const h = size, w = size * 0.78, t = thick;     // h:沿前進方向長度  w:半展寬  t:臂厚
+      sh.moveTo(h, 0);
+      sh.lineTo(h - t, w * 0.0);
+      sh.lineTo(0, w);
+      sh.lineTo(-t, w);
+      sh.lineTo(h - t * 2, 0);
+      sh.lineTo(-t, -w);
+      sh.lineTo(0, -w);
+      sh.lineTo(h - t, 0);
+      sh.closePath();
+      const g = new THREE.ShapeGeometry(sh);
+      g.rotateX(-Math.PI / 2);                         // 攤平到 XZ 平面
+      return g;
+    }
+
+    // 2) 三枚流動雪佛龍
+    const chevs = [];
+    const chevGeo = chevronGeo(1.5, 0.55);
+    for (let i = 0; i < 3; i++) {
+      const m = new THREE.Mesh(chevGeo, new THREE.MeshBasicMaterial({
+        color, transparent: true, opacity: 0.9, depthWrite: false,
+        blending: THREE.AdditiveBlending, side: THREE.DoubleSide }));
+      m.position.y = 0.05;
+      root.add(m); chevs.push(m);
+    }
+
+    // 3) 前端俐落箭頭（較大的雪佛龍，固定在頭部）
+    const tip = new THREE.Mesh(chevronGeo(2.4, 0.9), new THREE.MeshBasicMaterial({
+      color, transparent: true, opacity: 1, depthWrite: false,
+      blending: THREE.AdditiveBlending, side: THREE.DoubleSide }));
+    tip.position.y = 0.06;
+    root.add(tip);
+
+    function applyLen(len) {
+      LEN = len;
+      // 軌道沿 +X 鋪設，從尾(-)到頭：以 scale 拉伸長度、平移使頭端落在 len*0.5 附近。
+      trail.scale.set(len, 1, 1);
+      trail.position.set(0, 0.02, 0);
+      tip.position.x = len * 0.5;
+    }
+    applyLen(LEN);
+
+    return {
+      root,
+      get visible() { return root.visible; },
+      set visible(v) { root.visible = v; },
+      position: root.position,                          // 直接沿用 Group.position（呼叫端 .position.set 即可）
+      setDirection(dirVec) {
+        // dirVec 為世界 XZ 方向（呼叫端已 normalize）；轉成繞 Y 的角度（+X 前方）。
+        root.rotation.y = Math.atan2(-dirVec.z, dirVec.x);
+      },
+      setLength(len /*, headLen, headWidth */) { applyLen(len); },
+      // 流動動畫：雪佛龍沿 [-0.5,+0.4]*LEN 區間循環前移，並用 sin 做亮度脈動。
+      update(elapsed) {
+        if (!root.visible) return;
+        const span = LEN * 0.9, back = -LEN * 0.5;
+        const speed = 0.9;                              // 流速（每秒循環比例）
+        for (let i = 0; i < chevs.length; i++) {
+          let f = ((elapsed * speed) + i / chevs.length) % 1;   // 0..1 相位
+          chevs[i].position.x = back + f * span;
+          // 越接近頭端越亮、進出兩端淡入淡出，營造流動湧向前方的感覺。
+          const fade = Math.sin(f * Math.PI);
+          chevs[i].material.opacity = 0.25 + 0.65 * fade;
+          chevs[i].scale.setScalar(0.7 + 0.5 * f);
+        }
+        // 箭頭尖端輕微呼吸脈動。
+        tip.material.opacity = 0.78 + 0.22 * Math.sin(elapsed * 4);
+      }
+    };
+  }
+
   S.buildUnits = function () {
     const eng = S.engine;
     _units = [];
@@ -175,10 +285,9 @@ window.SEKI = window.SEKI || {};
 
       eng.scene.add(group);
 
-      // 移動方向箭頭（世界座標）
-      const arrow = new THREE.ArrowHelper(new THREE.Vector3(1,0,0), new THREE.Vector3(),
-        8, color, 3, 2);
-      arrow.visible = false; eng.scene.add(arrow);
+      // 移動方向箭頭（世界座標）：精緻流動雪佛龍，沿用 u.arrow 介面
+      const arrow = makeMoveArrow(color);
+      arrow.visible = false; eng.scene.add(arrow.root);
 
       const u = { data:a, group, flag, fmat, ring, pole, hit, el, body, fadeMats,
         yoff: (MODERN && a.kind === 'aircraft') ? 26 : 0,                 // 飛機飛行高度
@@ -218,6 +327,7 @@ window.SEKI = window.SEKI || {};
       }
     }
     // 3) 套用
+    const elapsed = (eng.clock ? eng.clock.getElapsedTime() : t);   // 流動箭頭動畫時鐘
     for (const u of _units) {
       // 空降部隊落地前(spawnAt)隱藏整個單位（含 CSS2D 名牌），由空降動畫呈現其空投過程；落地後才現身
       const spawned = u.data.spawnAt == null || t >= u.data.spawnAt;
@@ -280,6 +390,8 @@ window.SEKI = window.SEKI || {};
         u.arrow.position.set(u.p.x, y + 1.5, u.p.z);
         u.arrow.setDirection(new THREE.Vector3(u.moveDir.dx, 0, u.moveDir.dz).normalize());
         u.arrow.setLength(9, 3, 2);
+        // 流動雪佛龍動畫：用全域 clock 連續驅動（靜止時隱藏不更新，零開銷）
+        if (u.arrow.update) u.arrow.update(elapsed);
       } else u.arrow.visible = false;
     }
   };

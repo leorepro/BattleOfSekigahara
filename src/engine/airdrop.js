@@ -44,8 +44,8 @@ window.SEKI = window.SEKI || {};
   const OVER_DZ  = { lng: DZ_LNG, lat: DZ_LAT };   // 空降區正上方
   const EXIT     = { lng: -0.945, lat: 49.470 };   // 飛離（往北、西偏）
 
-  const FLY_ALT = 95;             // 飛行高度（場景單位；機群巡航高度）
-  const EXIT_CLIMB = 40;          // 飛離時額外爬升量
+  const FLY_ALT = 62;             // 飛行高度（直接加在世界 Y；project 的高度引數被嚴重壓縮故改用世界偏移）
+  const EXIT_CLIMB = 16;          // 飛離時額外爬升量（世界 Y）
 
   const FORMATION_N = 4;          // 機數（3~5）。注意：已非剛性編隊，各機自飛。
   const FORMATION_DX = -7;        // （保留）粗略縱深參考
@@ -535,9 +535,11 @@ window.SEKI = window.SEKI || {};
 
     // --- 共用飛行路徑世界座標關鍵點（進場→空降→飛離） ---
     // 仍保留 _path 作為「空降區整體」參考（pathAt 用於落點概念與相容性）。
-    const p0 = eng.project(APPROACH.lng, APPROACH.lat, FLY_ALT);
-    const p1 = eng.project(OVER_DZ.lng, OVER_DZ.lat, FLY_ALT);
-    const p2 = eng.project(EXIT.lng, EXIT.lat, FLY_ALT + EXIT_CLIMB);
+    // project 高度引數被壓縮(95→僅+1.2)，改用地面投影再加「世界 Y 偏移」拉高機群，
+    // 讓運輸機真正高飛、傘兵有明顯的跳傘下降距離。
+    const p0 = eng.project(APPROACH.lng, APPROACH.lat, 0); p0.y += FLY_ALT;
+    const p1 = eng.project(OVER_DZ.lng, OVER_DZ.lat, 0); p1.y += FLY_ALT;
+    const p2 = eng.project(EXIT.lng, EXIT.lat, 0); p2.y += FLY_ALT + EXIT_CLIMB;
     _path = { p0, p1, p2 };
 
     // --- 運輸機群：每架有自己的進場/空降/飛離路線與相位（非剛性編隊） ---
