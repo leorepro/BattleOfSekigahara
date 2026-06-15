@@ -30,12 +30,18 @@ window.SEKI = window.SEKI || {};
     return g;
   }
   function aircraft(side,color){
-    const g=new THREE.Group();
-    const fus=new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.5,7,8),mat(side==='east'?0x556677:0x555a52,0.5));
-    fus.rotation.z=Math.PI/2; g.add(fus);
-    const wing=box(1.6,0.2,9,mat(side==='east'?0x44525f:0x4a4f47,0.5)); g.add(wing);
-    const tail=box(1.2,1.4,0.2,mat(STEEL,0.5)); tail.position.set(-3,0.6,0); g.add(tail);
-    g.scale.set(1.1,1.1,1.1);
+    const g=new THREE.Group();                                            // 四發重轟炸機(B-24 風格)，+X 為機首
+    const body=mat(side==='east'?0x4a5560:0x4d5247, 0.55);
+    const fus=new THREE.Mesh(new THREE.CylinderGeometry(0.7,0.5,10,10), body);
+    fus.rotation.z=Math.PI/2; g.add(fus);                                 // 機身沿 X
+    const nose=new THREE.Mesh(new THREE.SphereGeometry(0.7,10,8), body);
+    nose.position.x=5; nose.scale.x=1.5; g.add(nose);                     // 機首
+    const wing=box(2.6,0.25,16, mat(side==='east'?0x3f4954:0x454a40,0.55));
+    wing.position.set(-0.3,0.15,0); g.add(wing);                          // 主翼(展向 Z，翼展 16)
+    const hstab=box(1.6,0.2,7, body); hstab.position.set(-4.3,0.25,0); g.add(hstab);   // 平尾
+    for(const dz of [-3.4,3.4]){ const fin=box(1.4,1.9,0.25, body); fin.position.set(-4.3,1.0,dz); g.add(fin); } // 雙垂尾
+    for(const dz of [-5.2,-2.4,2.4,5.2]){ const nac=box(2.2,0.7,0.95, mat(0x32363a,0.5)); nac.position.set(0.5,-0.05,dz); g.add(nac); } // 4 引擎艙
+    g.userData.muzzles=[];
     return g;
   }
   function armor(side,color){

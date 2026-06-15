@@ -7,8 +7,8 @@ data 為列優先：index = row*cols + col；row 0 = latMin（南），col 0 = l
 """
 import json, time, urllib.request, urllib.parse, sys, os
 
-LNG_MIN, LNG_MAX = -1.010, -0.740     # 西:Pointe du Hoc   東:Colleville 以東
-LAT_MIN, LAT_MAX = 49.320, 49.460     # 南:內陸村落        北:外海艦隊區
+LNG_MIN, LNG_MAX = -1.085, -0.665     # 擴大：西含奧克角以西 東過 Colleville
+LAT_MIN, LAT_MAX = 49.265, 49.515     # 擴大：北含更多外海艦隊區 南含更多內陸
 COLS, ROWS = 161, 141                  # ~30m DEM、與桶狹間同級網格
 API = "https://api.opentopodata.org/v1/srtm30m"
 

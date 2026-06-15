@@ -238,7 +238,7 @@ window.SEKI = window.SEKI || {};
           case 'cavalry':   if (Math.random() < 0.7)  cavalryCharge(p.x, p.y, p.z, fx, fz); break;
           case 'matchlock': if (Math.random() < 0.3)  teppoVolley(p.x, p.y, p.z); break;
           case 'warship':
-            if (Math.random() < 0.10) {                         // 艦砲齊射射向岸上(前方為灘頭/崖)
+            if (Math.random() < 0.06) {                         // 艦砲齊射射向岸上(前方為灘頭/崖)；降頻以免畫面雜亂
               const reach = 22 + Math.random()*16;
               const tx = p.x + fx*reach, tz = p.z + fz*reach;
               const ty = S.terrain ? S.terrain.heightAt(tx, tz) : p.y;
@@ -258,8 +258,8 @@ window.SEKI = window.SEKI || {};
               dust.emit(p.x+fx*3+rnd(1.5), p.y+0.5, p.z+fz*3+rnd(1.5),
                 { vx:fx*6+rnd(2), vy:0.5+Math.random(), vz:fz*6+rnd(2), g:0.3, life:0.5, size0:1.4, size1:4, r:0.72,g:0.68,b:0.6 });
             if (Math.random() < 0.08) waterSplash(p.x+rnd(4), p.z+rnd(4)); break;
-          case 'aircraft':                                        // 空襲時段(約 06:00)投彈，落內陸；其餘時段僅飛越
-            if (t > 5.7 && t < 6.7 && Math.random() < 0.22) dropBomb(p.x, p.y, p.z, fx, fz); break;
+          case 'aircraft':                                        // 飛抵投彈點(track 標 attack=目標上空)才連續投下一串炸彈，落內陸
+            if (Math.random() < 0.5) dropBomb(p.x, p.y, p.z, fx, fz); break;
           default:          if (Math.random() < 0.12) teppoVolley(p.x, p.y, p.z);
         }
       }

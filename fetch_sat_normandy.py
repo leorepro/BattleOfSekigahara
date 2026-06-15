@@ -10,8 +10,8 @@ from concurrent.futures import ThreadPoolExecutor
 from PIL import Image
 
 # 與 fetch_dem_normandy.py 同範圍
-LNG_MIN, LNG_MAX = -1.010, -0.740
-LAT_MIN, LAT_MAX = 49.320, 49.460
+LNG_MIN, LNG_MAX = -1.085, -0.665     # 擴大：西含奧克角以西 東過 Colleville
+LAT_MIN, LAT_MAX = 49.265, 49.515     # 擴大：北含更多外海艦隊區 南含更多內陸
 Z = 15                                   # ~4.8 m/px
 TILE = 256
 MAX_W = 6144

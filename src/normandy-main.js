@@ -54,7 +54,7 @@
   /* ---------- 海空戰場煙幕粒子（搶灘後沿灘頭升起、隨風飄移） ---------- */
   let smoke = null;
   function initSmoke() {
-    const N = 900, SPAN = 175, BASE = 0, TOP = 60, RISE = 0.4;
+    const N = 280, SPAN = 165, BASE = 0, TOP = 14, RISE = 0.4;   // 貼地戰場低空煙(不再填滿天空)
     const pos = new Float32Array(N * 3);
     const puffs = [];
     for (let i = 0; i < N; i++)
@@ -67,8 +67,8 @@
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
     const mat = new THREE.PointsMaterial({
-      color: 0xc4c0b8, size: 9, sizeAttenuation: true,
-      transparent: true, opacity: 0, depthWrite: false,
+      map: S.softTexture, color: 0x9a958c, size: 17, sizeAttenuation: true,   // 柔邊圓煙(非硬方塊)
+      transparent: true, opacity: 0, depthWrite: false, blending: THREE.NormalBlending,
     });
     const mesh = new THREE.Points(geo, mat);
     mesh.frustumCulled = false;
@@ -86,7 +86,7 @@
   function updateSmoke(t, dt) {
     if (!smoke) return;
     const amt = smokeAmount(t);
-    smoke.mat.opacity = amt * 0.42;
+    smoke.mat.opacity = amt * 0.30;
     smoke.mesh.visible = amt > 0.01;
     if (!smoke.mesh.visible) return;
     const tgt = S.engine.controls.target, cx = tgt.x, cz = tgt.z;
@@ -107,6 +107,50 @@
     smoke.geo.attributes.position.needsUpdate = true;
   }
 
+  /* ---------- 奧克角攀崖突擊（2 遊騎兵營）：誇張化繩索 + 沿繩上攀的人形 ---------- */
+  let cliff = null;
+  function initCliffAssault() {
+    const eng = S.engine;
+    const base = eng.project(-1.005, 49.3985, 0);                 // 崖腳(海側)
+    const baseY = S.terrain ? S.terrain.heightAt(base.x, base.z) : 0;
+    const topY = baseY + 9;                                       // 誇張崖高，讓攀爬可見
+    const grp = new THREE.Group();
+    const ropeMat = new THREE.LineBasicMaterial({ color: 0x202020, transparent: true, opacity: 0.85 });
+    const ropes = [];
+    for (let i = 0; i < 6; i++) {
+      const ox = (i - 2.5) * 1.5;
+      const bx = base.x + ox, bz = base.z + 1.4;                  // 崖腳略偏海
+      const tx = base.x + ox * 0.7, tz = base.z - 0.6;           // 崖頂略偏陸
+      const geo = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(bx, baseY, bz), new THREE.Vector3(tx, topY, tz)]);
+      grp.add(new THREE.Line(geo, ropeMat));
+      ropes.push({ bx, bz, tx, tz });
+    }
+    const cmat = new THREE.MeshStandardMaterial({ color: 0x4d5a48, roughness: 0.9 });
+    const climbers = [];
+    for (let i = 0; i < 10; i++) {
+      const m = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.0, 0.5), cmat);
+      grp.add(m);
+      climbers.push({ mesh: m, rope: ropes[i % ropes.length], off: Math.random() });
+    }
+    grp.visible = false; eng.scene.add(grp);
+    cliff = { grp, climbers, baseY, topY };
+  }
+  function updateCliffAssault(t) {
+    if (!cliff) return;
+    const on = t > 6.6 && t < 11;                                 // 攀崖時段
+    cliff.grp.visible = on;
+    if (!on) return;
+    const prog = Math.max(0, Math.min(1, (t - 7.1) / 2.9));       // 整體攀爬進度
+    for (const c of cliff.climbers) {
+      const k = Math.max(0, Math.min(1, prog * 1.3 - c.off * 0.3)); // 各人錯開先後
+      const r = c.rope;
+      c.mesh.position.set(r.bx + (r.tx - r.bx) * k,
+        cliff.baseY + (cliff.topY - cliff.baseY) * k + 0.5,
+        r.bz + (r.tz - r.bz) * k);
+    }
+  }
+
   /* ---------- 啟動 ---------- */
   function boot() {
     const eng = S.engine.init();
@@ -119,6 +163,7 @@
     S.buildEngagements();
     S.initWeather();
     initSmoke();
+    initCliffAssault();
     S.initUI();
     S.setProgramMode(true);
 
@@ -149,6 +194,7 @@
       S.waveFlags(elapsed);
       S.updateWeather(t, elapsed);
       updateSmoke(t, dt);
+      updateCliffAssault(t);
       S.updateEffects(t, dt);
       S.updateEngagements(t, dt);
       S.updateEvents(t);
