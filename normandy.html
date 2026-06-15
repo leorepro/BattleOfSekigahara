@@ -162,9 +162,10 @@
            font-size:10px; font-weight:700; text-align:center; color:#16181c; }
   .k-cavalry{ background:#e6b84e; } .k-matchlock{ background:#bcc8d4; }
   .k-artillery{ background:#e8884a; } .k-command{ background:#dcd28e; } .k-infantry{ background:#a6c29c; }
-  /* 現代軍種徽章（諾曼第） */
-  .k-warship{ background:#7da0c4; } .k-landingcraft{ background:#c2b280; } .k-aircraft{ background:#9fb8cf; }
-  .k-armor{ background:#9aa06e; } .k-bunker{ background:#b08878; } .k-flak{ background:#cf8f5a; }
+  /* 現代軍種徽章（諾曼第）：依「軍種」上色——海軍=深藍、空軍=天藍、陸軍=橄欖綠；圖示再分細部兵種 */
+  .k-warship, .k-landingcraft{ background:#2f5e9e; color:#fff; }                   /* 海軍：艦砲/登陸艇 */
+  .k-aircraft{ background:#46a6e6; color:#0d1b26; }                                /* 空軍：航空兵 */
+  .k-armor, .k-bunker, .k-flak, .k-infantry, .k-artillery{ background:#6f8f4a; color:#fff; }  /* 陸軍：戰車/工事/高射砲/步兵/砲兵 */
   .lbl-unit.dim .kbadge{ display:none; }
 
   /* 史料面板 */
@@ -307,7 +308,7 @@
     <div class="lg-row"><span class="ic">⚓</span>艦隊<span class="ic">⌣</span>灘段<span class="ic">⌇</span>隘道</div>
     <div class="lg-row"><span class="ic">▣</span>據點碉堡<span class="ic">▲</span>崖<span class="ic">◉</span>村鎮</div>
 
-    <div class="lg-sec">軍　種</div>
+    <div class="lg-sec">軍　種<span style="opacity:.6;font-size:10px;font-weight:400;letter-spacing:1px;">（徽章底色：<span style="color:#6db0ec">海</span>·<span style="color:#7cc0f0">空</span>·<span style="color:#9fc27e">陸</span>）</span></div>
     <div class="lg-row"><span class="kbadge k-warship">艦</span>海軍艦砲<span class="kbadge k-landingcraft">登</span>登陸艇</div>
     <div class="lg-row"><span class="kbadge k-aircraft">機</span>航空兵<span class="kbadge k-armor">戰</span>DD戰車</div>
     <div class="lg-row"><span class="kbadge k-bunker">堡</span>岸防工事<span class="kbadge k-flak">砲</span>高射砲</div>
