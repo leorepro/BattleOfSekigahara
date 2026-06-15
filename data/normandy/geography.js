@@ -41,17 +41,20 @@ SEKI.geography = {
       note:"通往 Colleville-sur-Mer，受 WN62/WN61 直接俯瞰封鎖，打通最晚" },
 
     /* --- 德軍據點(bunker)：352師沿崖頂構築的抵抗巢 Widerstandsnest ------- */
-    { name_zh:"WN72 據點", name_ja:"Widerstandsnest 72", name_en:"WN72", type:"bunker", lng:-0.9040, lat:49.3745, h:18,
+    /* ※ 校正：WN 抵抗巢史實位於灘頭上方低崖/崖肩，須在灘線(lat≈49.370)或更南(內陸側，
+     *    lat 略小)。原 lat(49.374~49.376)比灘線更北(更高 lat)→ 落入外海。
+     *    下修至 49.368x 一線(灘線之陸側)，維持各 WN 對應灘段之 lng 與由西向東順序。 */
+    { name_zh:"WN72 據點", name_ja:"Widerstandsnest 72", name_en:"WN72", type:"bunker", lng:-0.9040, lat:49.3690, h:18,
       note:"扼守 D-1 Vierville 隘口西側，含 88mm 與 50mm 反戰車砲於混凝土砲廓內，沿灘側射，封鎖 Dog Green" },
-    { name_zh:"WN71 據點", name_ja:"Widerstandsnest 71", name_en:"WN71", type:"bunker", lng:-0.9010, lat:49.3748, h:20,
+    { name_zh:"WN71 據點", name_ja:"Widerstandsnest 71", name_en:"WN71", type:"bunker", lng:-0.9010, lat:49.3688, h:20,
       note:"Vierville 隘口東側高地火力點，與 WN72 構成交叉火網" },
-    { name_zh:"WN70 據點", name_ja:"Widerstandsnest 70", name_en:"WN70", type:"bunker", lng:-0.8730, lat:49.3752, h:22,
+    { name_zh:"WN70 據點", name_ja:"Widerstandsnest 70", name_en:"WN70", type:"bunker", lng:-0.8730, lat:49.3685, h:22,
       note:"Les Moulins 隘口上方崖頂火力點，俯瞰 Dog Red/Easy Green" },
-    { name_zh:"WN68 據點", name_ja:"Widerstandsnest 68", name_en:"WN68", type:"bunker", lng:-0.8600, lat:49.3755, h:22,
+    { name_zh:"WN68 據點", name_ja:"Widerstandsnest 68", name_en:"WN68", type:"bunker", lng:-0.8600, lat:49.3683, h:22,
       note:"St-Laurent E-1 隘口上方據點，封鎖 Easy Red 西側" },
-    { name_zh:"WN62 據點", name_ja:"Widerstandsnest 62", name_en:"WN62", type:"bunker", lng:-0.8460, lat:49.3760, h:30,
+    { name_zh:"WN62 據點", name_ja:"Widerstandsnest 62", name_en:"WN62", type:"bunker", lng:-0.8460, lat:49.3680, h:30,
       note:"奧馬哈最致命據點，Colleville 上方崖頂。兩座 75mm 砲與多挺 MG42，憑高俯瞰 Easy Red/Fox Green，造成最大量傷亡" },
-    { name_zh:"WN61 據點", name_ja:"Widerstandsnest 61", name_en:"WN61", type:"bunker", lng:-0.8430, lat:49.3758, h:28,
+    { name_zh:"WN61 據點", name_ja:"Widerstandsnest 61", name_en:"WN61", type:"bunker", lng:-0.8430, lat:49.3682, h:28,
       note:"WN62 東鄰，扼 E-3 Colleville 隘口東側，含 88mm 砲。被 DD 戰車與驅逐艦逐步壓制" },
 
     /* --- 海上(naval)：火力支援與運輸錨地（外海高 lat） ----------------- */

@@ -262,13 +262,35 @@ window.SEKI = window.SEKI || {};
     }
   };
 
-  S.firePoints = function () {
+  // 取「該攻擊單位當前交戰對象」的即時世界座標（供艦砲/空襲/戰車對齊真實目標）。
+  //   依 SEKI.engagements：找一筆 t 落在 [from,to]、且雙方仍存活、含本單位的交戰，
+  //   回傳對手單位的 group.position；找不到回 null（特效端退回原本朝前方落彈）。
+  function engagementTarget(u, t) {
+    const list = S.engagements;
+    if (!list || t == null) return null;
+    const id = u.data.id;
+    for (const e of list) {
+      if (e.a !== id && e.b !== id) continue;
+      if (t < e.from || t > e.to) continue;
+      const A = S.unitById(e.a), B = S.unitById(e.b);
+      if (!A || !B) continue;
+      const sA = A.cur ? A.cur.s : 0, sB = B.cur ? B.cur.s : 0;
+      if (sA <= 1 || sB <= 1) continue;             // 任一方潰滅則此交戰不成立
+      const foe = (e.a === id) ? B : A;             // 對手 = 交戰另一方
+      const p = foe.group.position;
+      return { x:p.x, y:p.y, z:p.z };
+    }
+    return null;
+  }
+
+  S.firePoints = function (t) {
     const out = [];
     for (const u of _units) {
       const st = u.cur && u.cur.st;
       if (st === 'attack' || st === 'breakthrough')
         out.push({ x:u.group.position.x, y:u.group.position.y, z:u.group.position.z,
-                   side:u.data.side, kind:u.data.kind || 'infantry', moveDir:u.moveDir });
+                   side:u.data.side, kind:u.data.kind || 'infantry', moveDir:u.moveDir,
+                   target: engagementTarget(u, t) });   // 交戰對象即時座標（無則 null）
     }
     return out;
   };

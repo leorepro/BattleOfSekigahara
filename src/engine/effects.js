@@ -164,12 +164,24 @@ window.SEKI = window.SEKI || {};
     sparks(x,y,z,5,0.8,power||6);
     dust.emit(x+fx,y,z+fz,{ vx:fx*3,vy:0.8,vz:fz*3,g:0.3, life:0.8, size0:2,size1:7, r:0.7,g:0.68,b:0.64 });
   }
-  // 空襲投彈：自飛機高度近乎垂直墜落、著地大爆炸（諾曼第空襲多落內陸 → 朝機首前方偏內陸）
-  function dropBomb(x,y,z,fx,fz){
+  // 空襲投彈：自飛機高度近乎垂直墜落、著地大爆炸
+  //   史實 B-24 因雲層遮蔽延遲投彈 → 炸彈越過灘頭工事、落入『灘後內陸』。
+  //   故落點偏內陸(本圖 lat 越低越內陸 = +z 方向)，並用 terrain 確認落在陸地而非海面；
+  //   若指定 target(交戰對象)則以其位置為基準向內陸再退一段。
+  function dropBomb(x,y,z,fx,fz,target){
     const s = shells.find(s => !s.active); if (!s) return;
-    const reach = 8 + Math.random()*12;
-    const tx = x + fx*reach + rnd(5), tz = z + fz*reach + rnd(5);
-    const ty = S.terrain ? S.terrain.heightAt(tx, tz) : 0;
+    let bx, bz;
+    if (target) { bx = target.x; bz = target.z; }          // 以據點為基準
+    else { const reach = 8 + Math.random()*12; bx = x + fx*reach; bz = z + fz*reach; }
+    // 嘗試數個偏內陸(+z)的落點，挑第一個落在陸地(高於海面)的；皆不行則取最高者
+    let tx = bx, tz = bz, ty = -1, bestY = -1e9, bx2 = bx, bz2 = bz;
+    for (let i = 0; i < 4; i++) {
+      const cx = bx + rnd(6), cz = bz + (12 + Math.random()*22);   // 往內陸推 12~34
+      const cy = S.terrain ? S.terrain.heightAt(cx, cz) : 0;
+      if (cy > bestY) { bestY = cy; bx2 = cx; bz2 = cz; }
+      if (cy > 1.0) { tx = cx; tz = cz; ty = cy; break; }          // 高於海面 → 確為陸地
+    }
+    if (ty < 0) { tx = bx2; tz = bz2; ty = Math.max(bestY, 0); }   // 退而求其次：最高(最不像海)的點
     s.active = true; s.age = 0;
     s.dur = 0.65 + Math.random()*0.3; s.peak = 0;        // peak=0 → 直線墜落、無拋物峰
     s.p0.set(x, y, z); s.p1.set(tx, ty, tz);
@@ -221,7 +233,7 @@ window.SEKI = window.SEKI || {};
     _acc += dt;
     if (_acc >= 0.06) {
       _acc = 0;
-      const pts = S.firePoints ? S.firePoints() : [];
+      const pts = S.firePoints ? S.firePoints(t) : [];
       for (const p of pts) {
         let fx = p.moveDir ? p.moveDir.dx : 0, fz = p.moveDir ? p.moveDir.dz : 0;
         let m = Math.hypot(fx, fz);
@@ -238,11 +250,18 @@ window.SEKI = window.SEKI || {};
           case 'cavalry':   if (Math.random() < 0.7)  cavalryCharge(p.x, p.y, p.z, fx, fz); break;
           case 'matchlock': if (Math.random() < 0.3)  teppoVolley(p.x, p.y, p.z); break;
           case 'warship':
-            if (Math.random() < 0.06) {                         // 艦砲齊射射向岸上(前方為灘頭/崖)；降頻以免畫面雜亂
-              const reach = 22 + Math.random()*16;
-              const tx = p.x + fx*reach, tz = p.z + fz*reach;
+            if (Math.random() < 0.06) {                         // 艦砲齊射射向岸上據點；降頻以免畫面雜亂
+              let tx, tz;
+              if (p.target) {                                   // 有交戰對象 → 直接命中其灘頭/崖頂據點(加小散佈)
+                tx = p.target.x + rnd(5); tz = p.target.z + rnd(5);
+              } else {                                          // 無交戰資料 → 退回朝前方落彈(舊行為)
+                const reach = 22 + Math.random()*16;
+                tx = p.x + fx*reach; tz = p.z + fz*reach;
+              }
               const ty = S.terrain ? S.terrain.heightAt(tx, tz) : p.y;
-              muzzleFlash(p.x, p.y+4, p.z, fx, fz, 9);
+              // 砲口方向對準落點(而非單純移動方向)，閃光才不會背對目標
+              let mfx = tx - p.x, mfz = tz - p.z; const mm = Math.hypot(mfx, mfz) || 1; mfx/=mm; mfz/=mm;
+              muzzleFlash(p.x, p.y+4, p.z, mfx, mfz, 9);
               launchShell(p.x, p.y+4, p.z, tx, ty, tz);
             } else if (Math.random() < 0.05) waterSplash(p.x+fx*(10+rnd(8)), p.z+fz*(10+rnd(8))); // 近岸落彈水柱
             break;
@@ -251,15 +270,21 @@ window.SEKI = window.SEKI || {};
           case 'flak':
             if (Math.random() < 0.5) flakBurst(p.x, p.y, p.z); break;
           case 'armor':
-            if (Math.random() < 0.18) { const reach=8+Math.random()*8, tx=p.x+fx*reach, tz=p.z+fz*reach;
-              const ty=S.terrain?S.terrain.heightAt(tx,tz):p.y; muzzleFlash(p.x,p.y+2,p.z,fx,fz,6); launchShell(p.x,p.y+2,p.z,tx,ty,tz); } break;
+            if (Math.random() < 0.18) {
+              let tx, tz;
+              if (p.target) { tx = p.target.x + rnd(4); tz = p.target.z + rnd(4); }   // 對準交戰據點
+              else { const reach=8+Math.random()*8; tx=p.x+fx*reach; tz=p.z+fz*reach; }
+              const ty=S.terrain?S.terrain.heightAt(tx,tz):p.y;
+              let mfx=tx-p.x, mfz=tz-p.z; const mm=Math.hypot(mfx,mfz)||1; mfx/=mm; mfz/=mm;
+              muzzleFlash(p.x,p.y+2,p.z,mfx,mfz,6); launchShell(p.x,p.y+2,p.z,tx,ty,tz);
+            } break;
           case 'landingcraft':
             if (Math.random() < 0.4)                              // 搶灘：跳板前方步兵衝出的塵土
               dust.emit(p.x+fx*3+rnd(1.5), p.y+0.5, p.z+fz*3+rnd(1.5),
                 { vx:fx*6+rnd(2), vy:0.5+Math.random(), vz:fz*6+rnd(2), g:0.3, life:0.5, size0:1.4, size1:4, r:0.72,g:0.68,b:0.6 });
             if (Math.random() < 0.08) waterSplash(p.x+rnd(4), p.z+rnd(4)); break;
           case 'aircraft':                                        // 飛抵投彈點(track 標 attack=目標上空)才連續投下一串炸彈，落內陸
-            if (Math.random() < 0.5) dropBomb(p.x, p.y, p.z, fx, fz); break;
+            if (Math.random() < 0.5) dropBomb(p.x, p.y, p.z, fx, fz, p.target); break;
           default:          if (Math.random() < 0.12) teppoVolley(p.x, p.y, p.z);
         }
       }

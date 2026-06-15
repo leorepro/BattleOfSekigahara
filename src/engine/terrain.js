@@ -29,6 +29,54 @@ window.SEKI = window.SEKI || {};
     return new THREE.Color(stops[stops.length - 1][1]);
   }
 
+  /* ---------- 外圍延伸地面（純視覺，海/陸大平面） ----------
+   * 在 DEM 小片四周補一圈遠大平面，消除地形孤立浮空的突兀感。
+   * 以世界座標 z 對應緯度判定海（北/外海）或陸（南/內陸）色，
+   * 過渡帶設在灘頭一線（config.shorelineLat，預設 49.37）。
+   * 整片置於 DEM 底面略下方，DEM 真實地形自然蓋於其上，只露出四周。
+   * 完全不參與 project()/heightAt()，不影響任何單位/標籤對位。 */
+  function addExtendedGround({ lngMin, lngMax, latMin, latMax, o, mPerDegLng, baseY }) {
+    const eng = S.engine;
+    const cfg = S.config || {};
+    const seaColor  = new THREE.Color(cfg.seaColor  != null ? cfg.seaColor  : 0x21425e);
+    const landColor = new THREE.Color(cfg.landColor != null ? cfg.landColor : 0x5d6a3a);
+    const shoreLat  = cfg.shorelineLat != null ? cfg.shorelineLat : 49.37;
+
+    // 平面尺寸：取 DEM 跨幅，再放大數倍向四周延伸
+    const SIZE = (cfg.extendGroundSize != null ? cfg.extendGroundSize : 3600);
+    const SEG = 48;
+    // DEM 中心的世界座標（沿用與 project 相同的對應，僅用於擺放，不改公式）
+    const cLng = (lngMin + lngMax) / 2, cLat = (latMin + latMax) / 2;
+    const cx = (cLng - o.lng) * mPerDegLng * WS;
+    const cz = -(cLat - o.lat) * M_PER_DEG_LAT * WS;
+    // 灘頭一線的世界 z（海/陸過渡）與每單位 z 對應的緯度跨度
+    const shoreZ = -(shoreLat - o.lat) * M_PER_DEG_LAT * WS;
+
+    const geo = new THREE.PlaneGeometry(SIZE, SIZE, SEG, SEG);
+    geo.rotateX(-Math.PI / 2);                       // 攤平於 XZ
+    const p = geo.attributes.position;
+    const col = new Float32Array(p.count * 3);
+    const c = new THREE.Color();
+    for (let i = 0; i < p.count; i++) {
+      const wz = cz + p.getZ(i);                     // 該頂點的世界 z
+      // wz < shoreZ → 偏北（外海）；wz > shoreZ → 偏南（內陸）
+      const t = Math.max(0, Math.min(1, (wz - shoreZ) / 26 + 0.5)); // 約 26 單位寬過渡
+      c.copy(seaColor).lerp(landColor, t);
+      col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b;
+    }
+    geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    geo.computeVertexNormals();
+    const mat = new THREE.MeshStandardMaterial({
+      vertexColors: true, roughness: 0.96, metalness: 0 });
+    const mesh = new THREE.Mesh(geo, mat);
+    // 置於 DEM 底面略下方，避免與真實地形 z-fighting；DEM 自然蓋住中央
+    mesh.position.set(cx, baseY - 0.8, cz);
+    mesh.receiveShadow = true;
+    mesh.renderOrder = -1;
+    eng.scene.add(mesh);
+    return mesh;
+  }
+
   /* ---------- 真實 DEM 版 ---------- */
   function buildFromDEM(hm) {
     const eng = S.engine;
@@ -91,6 +139,18 @@ window.SEKI = window.SEKI || {};
       mat.map = tex; mat.vertexColors = false; mat.color.set(0xffffff);
       mat.needsUpdate = true;
     });
+
+    // 外圍延伸面：在 DEM 小片四周補一圈大平面（海/陸），消除孤立浮空感。
+    // 預設於現代戰役（config.modern，即諾曼第）自動啟用；可由 config.extendGround
+    // 顯式覆寫（true/false）。關原/桶狹間無 modern 旗標，故不受影響。
+    // 不改 project()，純視覺；延伸面遠在 DEM 外、且略低，不擾動單位對位。
+    const wantGround = ('extendGround' in (S.config || {}))
+      ? S.config.extendGround : !!(S.config && S.config.modern);
+    if (wantGround) {
+      addExtendedGround({
+        lngMin, lngMax, latMin, latMax, o, mPerDegLng, baseY: sceneY(0),
+      });
+    }
 
     // 雙線性取樣高度
     function heightAt(sx, sz) {

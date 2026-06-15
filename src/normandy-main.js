@@ -38,9 +38,14 @@
     satelliteTexture: 'assets/terrain/normandy-sat.jpg',
   };
 
-  S.player = { time: 5.5, playing: true, speed: 0.4, program: true, T_START: 5.5, T_END: 18 };
+  S.player = { time: 1.3, playing: true, speed: 0.4, program: true, T_START: 1.3, T_END: 18 };
 
   function phase(t) {
+    if (t < 1.5)   return '★ 空降序幕 · 英6空降師滑翔機夜降奪橋';
+    if (t < 2.2)   return '★ 空降 · 82/101師夜降諾曼第內陸';
+    if (t < 3.2)   return '傘兵集結奪鎮 · 路口設障切斷公路';
+    if (t < 5.0)   return '★ 截斷德軍增援 · 炸橋遲滯裝甲推進';
+    if (t < 5.5)   return '增援被截於內陸 · 灘頭德軍孤立無援';
     if (t < 6.0)   return '★ 艦砲齊射 · 戰艦驅逐艦轟擊岸防';
     if (t < 6.5)   return '空襲 · 轟炸機掃射灘頭縱深';
     if (t < 7.0)   return '★ 搶灘 · 首波登陸艇放跳板';

@@ -239,11 +239,14 @@ window.SEKI = window.SEKI || {};
     if (pairs.length) {
       h += `<div class="rs-sec">⚔ 交戰中（誰打誰）</div>`;
       for (const p of pairs) {
-        h += `<div class="rs-pair"><span class="${sideOf(p.A)}">${p.A.data.name_zh} <span class="s">${nf(p.sA)}</span></span>` +
-             `<span class="vs">⚔</span><span class="${sideOf(p.B)}">${p.B.data.name_zh} <span class="s">${nf(p.sB)}</span></span></div>`;
-        const tot = Math.max(p.sA + p.sB, 1), aw = Math.round(p.sA / tot * 100);  // 拉鋸條:雙方兵力比例
-        h += `<div class="rs-cbar"><i class="${sideOf(p.A)}" style="width:${aw}%"></i>` +
-             `<i class="${sideOf(p.B)}" style="width:${100 - aw}%"></i></div>`;
+        // 統一左右：east/'e'（盟軍·藍）永遠在左、west/'w'（德軍·紅）永遠在右；engagement a/b 順序不保證
+        let L = p.A, R = p.B, sL = p.sA, sR = p.sB;
+        if (sideOf(p.A) === 'w') { L = p.B; R = p.A; sL = p.sB; sR = p.sA; }
+        h += `<div class="rs-pair"><span class="${sideOf(L)}">${L.data.name_zh} <span class="s">${nf(sL)}</span></span>` +
+             `<span class="vs">⚔</span><span class="${sideOf(R)}">${R.data.name_zh} <span class="s">${nf(sR)}</span></span></div>`;
+        const tot = Math.max(sL + sR, 1), aw = Math.round(sL / tot * 100);  // 拉鋸條:左(盟軍)佔比
+        h += `<div class="rs-cbar"><i class="${sideOf(L)}" style="width:${aw}%"></i>` +
+             `<i class="${sideOf(R)}" style="width:${100 - aw}%"></i></div>`;
       }
     }
     h += `<div class="rs-sec">全軍兵力（依多寡）</div>`;

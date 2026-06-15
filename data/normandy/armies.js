@@ -145,63 +145,63 @@ SEKI.armies = [
   /* ============================ 德軍（紅 · west） ============================ */
   { id:"wn62", name_zh:"WN62 據點", name_ja:"Widerstandsnest 62", name_en:"WN62", side:'west', kind:'bunker', crest:null,
     title:"德軍 352師 · 奧馬哈最致命據點(Colleville 上方)", troops:30,
-    track:[
-      { t:5.5, lng:-0.8460,lat:49.3760,s:30, st:'hold' },    // 砲擊中存活·工事完好
-      { t:6.5, lng:-0.8460,lat:49.3760,s:30, st:'attack' },  // 俯瞰 Easy Red/Fox Green 猛烈掃射
-      { t:9.5, lng:-0.8460,lat:49.3760,s:24, st:'attack' },  // 仍封鎖灘頭·造成最大傷亡
-      { t:11,  lng:-0.8460,lat:49.3760,s:14, st:'hold' },    // 遭驅逐艦直射壓制·彈藥漸竭
-      { t:13,  lng:-0.8460,lat:49.3760,s:0,  st:'rout' },    // 守軍撤離·WN62 失守
+    track:[ // lat 校正 49.3760→49.3680（原值落海，改至灘線陸側崖頂）
+      { t:5.5, lng:-0.8460,lat:49.3680,s:30, st:'hold' },    // 砲擊中存活·工事完好
+      { t:6.5, lng:-0.8460,lat:49.3680,s:30, st:'attack' },  // 俯瞰 Easy Red/Fox Green 猛烈掃射
+      { t:9.5, lng:-0.8460,lat:49.3680,s:24, st:'attack' },  // 仍封鎖灘頭·造成最大傷亡
+      { t:11,  lng:-0.8460,lat:49.3680,s:14, st:'hold' },    // 遭驅逐艦直射壓制·彈藥漸竭
+      { t:13,  lng:-0.8460,lat:49.3680,s:0,  st:'rout' },    // 守軍撤離·WN62 失守
     ]},
   { id:"wn61", name_zh:"WN61 據點", name_ja:"Widerstandsnest 61", name_en:"WN61", side:'west', kind:'bunker', crest:null,
     title:"德軍 · E-3 東側·88mm 反戰車砲", troops:25,
-    track:[
-      { t:5.5, lng:-0.8430,lat:49.3758,s:25, st:'hold' },
-      { t:6.5, lng:-0.8430,lat:49.3758,s:25, st:'attack' },  // 88mm 擊毀上灘 DD 戰車
-      { t:8.5, lng:-0.8430,lat:49.3758,s:20, st:'attack' },
-      { t:9.5, lng:-0.8430,lat:49.3758,s:8,  st:'hold' },    // 遭 DD 戰車與驅逐艦對射壓制
-      { t:11,  lng:-0.8430,lat:49.3758,s:0,  st:'rout' },    // 較早失守
+    track:[ // lat 校正 49.3758→49.3682（原值落海，改至灘線陸側崖頂）
+      { t:5.5, lng:-0.8430,lat:49.3682,s:25, st:'hold' },
+      { t:6.5, lng:-0.8430,lat:49.3682,s:25, st:'attack' },  // 88mm 擊毀上灘 DD 戰車
+      { t:8.5, lng:-0.8430,lat:49.3682,s:20, st:'attack' },
+      { t:9.5, lng:-0.8430,lat:49.3682,s:8,  st:'hold' },    // 遭 DD 戰車與驅逐艦對射壓制
+      { t:11,  lng:-0.8430,lat:49.3682,s:0,  st:'rout' },    // 較早失守
     ]},
   { id:"wn72", name_zh:"WN72 據點", name_ja:"Widerstandsnest 72", name_en:"WN72", side:'west', kind:'bunker', crest:null,
     title:"德軍 · 封鎖 D-1 Vierville 隘口·反戰車砲", troops:20,
-    track:[
-      { t:5.5, lng:-0.9040,lat:49.3745,s:20, st:'hold' },
-      { t:6.5, lng:-0.9040,lat:49.3745,s:20, st:'attack' },  // 砲廓側射屠殺 Dog Green 的116團A連
-      { t:9,   lng:-0.9040,lat:49.3745,s:18, st:'attack' },  // 死封 D-1 隘道
-      { t:12,  lng:-0.9040,lat:49.3745,s:6,  st:'hold' },    // 德州號主砲直擊砲廓
-      { t:13.5,lng:-0.9040,lat:49.3745,s:0,  st:'rout' },    // 隘口被打通
+    track:[ // lat 校正 49.3745→49.3690（原值落海，改至灘線陸側崖肩）
+      { t:5.5, lng:-0.9040,lat:49.3690,s:20, st:'hold' },
+      { t:6.5, lng:-0.9040,lat:49.3690,s:20, st:'attack' },  // 砲廓側射屠殺 Dog Green 的116團A連
+      { t:9,   lng:-0.9040,lat:49.3690,s:18, st:'attack' },  // 死封 D-1 隘道
+      { t:12,  lng:-0.9040,lat:49.3690,s:6,  st:'hold' },    // 德州號主砲直擊砲廓
+      { t:13.5,lng:-0.9040,lat:49.3690,s:0,  st:'rout' },    // 隘口被打通
     ]},
   { id:"wn71", name_zh:"WN71 據點", name_ja:"Widerstandsnest 71", name_en:"WN71", side:'west', kind:'bunker', crest:null,
     title:"德軍 · Vierville 隘口東側火力點", troops:18,
-    track:[
-      { t:5.5, lng:-0.9010,lat:49.3748,s:18, st:'hold' },
-      { t:6.5, lng:-0.9010,lat:49.3748,s:18, st:'attack' },  // 與 WN72 構成交叉火網
-      { t:11,  lng:-0.9010,lat:49.3748,s:10, st:'attack' },
-      { t:13.5,lng:-0.9010,lat:49.3748,s:0,  st:'rout' },
+    track:[ // lat 校正 49.3748→49.3688（原值落海，改至灘線陸側崖肩）
+      { t:5.5, lng:-0.9010,lat:49.3688,s:18, st:'hold' },
+      { t:6.5, lng:-0.9010,lat:49.3688,s:18, st:'attack' },  // 與 WN72 構成交叉火網
+      { t:11,  lng:-0.9010,lat:49.3688,s:10, st:'attack' },
+      { t:13.5,lng:-0.9010,lat:49.3688,s:0,  st:'rout' },
     ]},
   { id:"wn70", name_zh:"WN70 據點", name_ja:"Widerstandsnest 70", name_en:"WN70", side:'west', kind:'bunker', crest:null,
     title:"德軍 · Les Moulins 上方崖頂火力點", troops:18,
-    track:[
-      { t:5.5, lng:-0.8730,lat:49.3752,s:18, st:'hold' },
-      { t:6.5, lng:-0.8730,lat:49.3752,s:18, st:'attack' },  // 俯瞰 Dog Red/Easy Green
-      { t:11,  lng:-0.8730,lat:49.3752,s:9,  st:'hold' },
-      { t:13,  lng:-0.8730,lat:49.3752,s:0,  st:'rout' },
+    track:[ // lat 校正 49.3752→49.3685（原值落海，改至灘線陸側崖頂）
+      { t:5.5, lng:-0.8730,lat:49.3685,s:18, st:'hold' },
+      { t:6.5, lng:-0.8730,lat:49.3685,s:18, st:'attack' },  // 俯瞰 Dog Red/Easy Green
+      { t:11,  lng:-0.8730,lat:49.3685,s:9,  st:'hold' },
+      { t:13,  lng:-0.8730,lat:49.3685,s:0,  st:'rout' },
     ]},
   { id:"wn68", name_zh:"WN68 據點", name_ja:"Widerstandsnest 68", name_en:"WN68", side:'west', kind:'bunker', crest:null,
     title:"德軍 · St-Laurent E-1 上方據點", troops:16,
-    track:[
-      { t:5.5, lng:-0.8600,lat:49.3755,s:16, st:'hold' },
-      { t:6.5, lng:-0.8600,lat:49.3755,s:16, st:'attack' },  // 封鎖 Easy Red 西側
-      { t:11,  lng:-0.8600,lat:49.3755,s:7,  st:'hold' },
-      { t:12,  lng:-0.8600,lat:49.3755,s:0,  st:'rout' },    // E-1 最先被打通
+    track:[ // lat 校正 49.3755→49.3683（原值落海，改至灘線陸側崖頂）
+      { t:5.5, lng:-0.8600,lat:49.3683,s:16, st:'hold' },
+      { t:6.5, lng:-0.8600,lat:49.3683,s:16, st:'attack' },  // 封鎖 Easy Red 西側
+      { t:11,  lng:-0.8600,lat:49.3683,s:7,  st:'hold' },
+      { t:12,  lng:-0.8600,lat:49.3683,s:0,  st:'rout' },    // E-1 最先被打通
     ]},
   { id:"flak_colleville", name_zh:"科勒維爾高射砲", name_ja:"Colleville Flak Battery", name_en:"Colleville Flak", side:'west', kind:'flak', crest:null,
     title:"德軍 · 崖頂高射砲·對空兼平射", troops:12,
-    track:[
-      { t:5.5, lng:-0.8480,lat:49.3800,s:12, st:'hold' },
-      { t:6.0, lng:-0.8480,lat:49.3800,s:12, st:'attack' },  // 對掠過的 B-24 機群射擊
-      { t:9,   lng:-0.8480,lat:49.3800,s:10, st:'attack' },  // 轉平射支援 WN62
-      { t:13,  lng:-0.8480,lat:49.3800,s:4,  st:'hold' },
-      { t:15,  lng:-0.8480,lat:49.3800,s:0,  st:'rout' },
+    track:[ // lat 校正 49.3800→49.3670（原值落海；改至 WN62 後方崖頂內陸側）
+      { t:5.5, lng:-0.8480,lat:49.3670,s:12, st:'hold' },
+      { t:6.0, lng:-0.8480,lat:49.3670,s:12, st:'attack' },  // 對掠過的 B-24 機群射擊
+      { t:9,   lng:-0.8480,lat:49.3670,s:10, st:'attack' },  // 轉平射支援 WN62
+      { t:13,  lng:-0.8480,lat:49.3670,s:4,  st:'hold' },
+      { t:15,  lng:-0.8480,lat:49.3670,s:0,  st:'rout' },
     ]},
   { id:"inf_352", name_zh:"352師反擊隊", name_ja:"352. Infanterie-Division", name_en:"352nd Infantry", side:'west', kind:'infantry', crest:null,
     title:"德軍 預備隊 · 自內陸前推反擊（情報誤判其存在）", troops:1500,
@@ -240,5 +240,36 @@ SEKI.armies = [
       { t:7.0, lng:-0.9150,lat:49.3380,s:35, st:'attack' },   // 改道試探·遭傘兵反戰車火力打擊
       { t:12,  lng:-0.9180,lat:49.3500,s:20, st:'hold' },     // 遲滯整日·錯失突入灘頭的時機
       { t:18,  lng:-0.9200,lat:49.3650,s:12, st:'rout' },     // 後撤
+    ]},
+
+  /* ============================ 盟軍 搶灘重型武器（藍 · east · t6.5~t12 登陸/支援） ============================
+   *   ※ 首波步兵慘重後，後續波次將戰車、半履帶與兩棲卡車送上灘頭，提供直射火力與機動，
+   *      於卵石堤、出灘口逐步壓制 WN 據點。座標：高 lat(外海換乘區)→ lat≈49.37(灘頭)→ 內陸。 */
+  { id:"sherman_743", name_zh:"743戰車營 M4雪曼", name_ja:"743rd Tank Bn (M4 Sherman)", name_en:"743rd Tank Bn", side:'east', kind:'armor', crest:null,
+    title:"盟軍 後續波戰車 · 由 LCT 直接搶灘·Dog White 直射火力支援", troops:48,
+    track:[
+      { t:6.8, lng:-0.8950,lat:49.4050,s:48, st:'march' },   // 自換乘區由 LCT 搭載向灘前進
+      { t:7.3, lng:-0.8950,lat:49.3820,s:46, st:'march' },   // 涉水搶灘·部分中彈
+      { t:7.6, lng:-0.8960,lat:49.3720,s:40, st:'attack' },  // 上灘以 75mm 直射壓制 Dog White 據點
+      { t:9.5, lng:-0.8980,lat:49.3735,s:36, st:'attack' },  // 沿卵石堤掩護工兵爆破·拔除火力點
+      { t:12,  lng:-0.9000,lat:49.3780,s:34, st:'attack' },  // 隨步兵向 D-1 隘口推進
+    ]},
+  { id:"howitzer_111", name_zh:"111野戰砲營 105榴彈砲", name_ja:"111th FA Bn (105mm M2A1)", name_en:"111th Field Artillery", side:'east', kind:'artillery', crest:null,
+    title:"盟軍 灘頭支援砲兵 · DUKW 載運上灘·建立首批岸轟火力", troops:12,
+    track:[
+      { t:8.0, lng:-0.8700,lat:49.4000,s:12, st:'march' },   // 105mm 砲多隨 DUKW 沉沒·殘存砲組換乘上灘
+      { t:9.0, lng:-0.8700,lat:49.3800,s:8,  st:'march' },   // 於 Easy Red 段搶灘·搶建砲位
+      { t:10,  lng:-0.8720,lat:49.3725,s:6,  st:'hold' },    // 在堤後架砲·校正彈著
+      { t:11,  lng:-0.8740,lat:49.3735,s:6,  st:'attack' },  // 對崖頂工事與內陸縱深射擊支援
+      { t:14,  lng:-0.8760,lat:49.3770,s:6,  st:'attack' },  // 隨步兵前移·延伸火力
+    ]},
+  { id:"dukw_amph", name_zh:"DUKW 兩棲卡車隊", name_ja:"DUKW Amphibious Truck Co.", name_en:"DUKW Amphibious Trucks", side:'east', kind:'armor', crest:null,
+    title:"盟軍 兩棲補給 · 運彈藥/傷員·灘頭與外海間穿梭", troops:20,
+    track:[
+      { t:7.0, lng:-0.8600,lat:49.4100,s:20, st:'march' },   // 自運輸艦放下·搭載砲彈與補給浮渡
+      { t:7.8, lng:-0.8600,lat:49.3850,s:18, st:'march' },   // 湧浪中向灘頭浮渡·數輛進水
+      { t:8.5, lng:-0.8620,lat:49.3730,s:16, st:'hold' },    // 涉上灘頭卸載彈藥·後送傷員
+      { t:10,  lng:-0.8640,lat:49.3760,s:15, st:'march' },   // 往返外海換乘區持續補給
+      { t:12,  lng:-0.8660,lat:49.3800,s:14, st:'march' },   // 隨灘頭擴展前移補給點
     ]},
 ];

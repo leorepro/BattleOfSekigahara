@@ -29,8 +29,9 @@ window.SEKI = window.SEKI || {};
     const wall2=wall.clone(); wall2.position.z=-1.2; g.add(wall2);
     return g;
   }
-  function aircraft(side,color){
-    const g=new THREE.Group();                                            // 四發重轟炸機(B-24 風格)，+X 為機首
+  // 單架四發重轟炸機(B-24 風格)，+X 為機首；整機縮放後供編隊複製
+  function oneBomber(side){
+    const g=new THREE.Group();
     const body=mat(side==='east'?0x4a5560:0x4d5247, 0.55);
     const fus=new THREE.Mesh(new THREE.CylinderGeometry(0.7,0.5,10,10), body);
     fus.rotation.z=Math.PI/2; g.add(fus);                                 // 機身沿 X
@@ -41,6 +42,27 @@ window.SEKI = window.SEKI || {};
     const hstab=box(1.6,0.2,7, body); hstab.position.set(-4.3,0.25,0); g.add(hstab);   // 平尾
     for(const dz of [-3.4,3.4]){ const fin=box(1.4,1.9,0.25, body); fin.position.set(-4.3,1.0,dz); g.add(fin); } // 雙垂尾
     for(const dz of [-5.2,-2.4,2.4,5.2]){ const nac=box(2.2,0.7,0.95, mat(0x32363a,0.5)); nac.position.set(0.5,-0.05,dz); g.add(nac); } // 4 引擎艙
+    return g;
+  }
+  function aircraft(side,color){
+    const g=new THREE.Group();                                            // 一個轟炸機編隊群組(以一個單位表示)，+X 為機首
+    // 7 架排成 V 形/箭頭，沿飛行方向(+X)展開：長機居前(+X 尖端)，兩翼各 3 架「明顯往後(-X)」並左右分開(±Z)
+    // [dx(前後), dz(左右), dy(高低)]；單機翼展 16、縮 0.5 後≈8，前後間距須大於左右間距才像箭頭、不像橫排
+    const slots=[
+      [ 24,   0,  0.0 ],   // 長機(編隊尖端，最前 +X)
+      [ 10,  -8,  1.2 ],   // 左一(後、外、略高)
+      [ 10,   8, -1.2 ],   // 右一(後、外、略低)
+      [ -4, -16,  2.4 ],   // 左二(更後更外更高)
+      [ -4,  16, -2.4 ],   // 右二
+      [-18, -24,  0.6 ],   // 左三(梯隊末端)
+      [-18,  24, -0.6 ],   // 右三
+    ];
+    for(const [dx,dz,dy] of slots){
+      const plane=oneBomber(side);
+      plane.scale.setScalar(0.5);                                         // 縮小避免整體過大
+      plane.position.set(dx, dy, dz);
+      g.add(plane);
+    }
     g.userData.muzzles=[];
     return g;
   }

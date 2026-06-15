@@ -7,6 +7,12 @@
 window.SEKI = window.SEKI || {};
 
 SEKI.engagements = [
+  /* ---- 凌晨空降·截斷德軍增援（t≈1.5~14，先於搶灘） ---- */
+  { a:'us_82',  b:'reinf_352',   from:3.0, to:14 },   // 82空降師設路障·截停352師增援縱隊
+  { a:'us_101', b:'reinf_352',   from:5.0, to:11 },   // 101空降師扼守路口·夾擊352師增援
+  { a:'uk_6',   b:'reinf_panzer',from:4.0, to:12 },   // 英6空降師炸橋·遲滯德軍裝甲推進
+  { a:'us_82',  b:'reinf_panzer',from:7.0, to:12 },   // 傘兵反戰車火力阻擊改道之裝甲
+
   { a:'wn72',    b:'co_a_116', from:6.5, to:13.5 },  // WN72 交叉火網屠殺 Dog Green 的116團A連
   { a:'wn71',    b:'co_a_116', from:6.5, to:7.5  },  // WN71 一同封鎖 Dog Green
   { a:'wn62',    b:'inf_16th', from:6.5, to:13   },  // WN62 俯瞰 Easy Red/Fox Green·16團最致命交戰

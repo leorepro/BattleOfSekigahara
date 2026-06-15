@@ -7,6 +7,25 @@
 window.SEKI = window.SEKI || {};
 
 SEKI.storyboard = [
+  /* ---- 凌晨空降序幕（t≈1.3~4.0；內陸地名為示意，真實空降區在本圖之外） ---- */
+  { t:1.3, hold:14, cam:{lng:-0.9300, lat:49.3100, dist:420, az:0, el:34, orbit:0.35},
+    dateLabel:"1944/6/6 · 01:18 · 諾曼第內陸", title_zh:"★ 夜降諾曼第 · 空降序幕",
+    title_en:"Night Drop — The Airborne Assault",
+    narration_zh:"搶灘之前數小時，盟軍已先發制人。01:18，英軍第6空降師滑翔機奇襲奪橋；緊接著美軍 82、101 空降師的傘兵自 C-47 機群躍入黑暗。高射砲火與雲層使機群分散，傘兵散落於廣闊鄉野——他們以金屬『蟋蟀器』的蛙鳴聲在暗夜中相認集結。（畫面為示意：真實空降區在本奧馬哈地圖範圍之外。）",
+    commanders:[{zh:"李奇威/泰勒",en:"Gen. Ridgway / Gen. Taylor"}], focus:["us_82","us_101","uk_6"], side:"east" },
+
+  { t:2.4, hold:13, cam:{lng:-0.9450, lat:49.3250, dist:300, az:30, el:26, orbit:0.50},
+    dateLabel:"02:24 · 內陸鎮口（示意）", title_zh:"奪鎮設障 · 截斷增援",
+    title_en:"Seizing the Crossroads",
+    narration_zh:"82 空降師逐屋巷戰，奪取通往灘頭的內陸要鎮（示意聖梅爾埃格利斯），在路口架設路障、埋設反戰車地雷，並切斷德軍電話線癱瘓其指揮。當德軍 352 師增援縱隊自內陸南下馳援灘頭，迎面撞上的卻是已扼住公路網的傘兵——馳援的腳步，在天亮之前就被釘死在內陸。",
+    commanders:[{zh:"82空降師",en:"82nd Airborne"}], focus:["us_82","reinf_352"], side:"east" },
+
+  { t:3.5, hold:13, cam:{lng:-0.9150, lat:49.3300, dist:280, az:200, el:30, orbit:0.55},
+    dateLabel:"03:30 · 河橋（示意）", title_zh:"★ 炸橋 · 遲滯裝甲",
+    title_en:"Blowing the Bridges",
+    narration_zh:"德軍裝甲集結，欲沿橋路直插盟軍登陸場。英軍第6空降師搶先炸毀河上橋樑，傘兵伏擊德軍車隊、焚車塞路。裝甲縱隊在斷橋前被迫改道繞行，又遭傘兵反戰車火力打擊——這一夜的遲滯，讓灘頭德軍在天明後只能各自為戰、孤立無援。",
+    commanders:[{zh:"英軍第6空降師",en:"British 6th Airborne"}], focus:["uk_6","reinf_panzer"], side:"east" },
+
   { t:5.6, hold:13, cam:{lng:-0.8700, lat:49.4200, dist:520, az:0, el:30, orbit:0.30},
     dateLabel:"1944/6/6 · 05:36 · 英吉利海峽", title_zh:"入侵艦隊全景",
     title_en:"The Invasion Fleet at Dawn",

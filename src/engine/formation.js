@@ -10,6 +10,7 @@ window.SEKI = window.SEKI || {};
   const ARMOR_E = 0x2e3a5e, ARMOR_W = 0x5e2e2e;   // 軍裝暗色
   const FLAG_E = 0x3a78ff,  FLAG_W = 0xff3b3b;     // 背旗亮色（陣營）
   const SP = 0.9, BODY_H = 1.5;
+  const SEA_Y = 0.5;   // 海平面門檻：地形高度低於此視為水域（與 units.js 一致）
   const _m = new THREE.Matrix4(), _q = new THREE.Quaternion(),
         _p = new THREE.Vector3(), _s = new THREE.Vector3(1, 1, 1), _up = new THREE.Vector3(0, 1, 0);
   let _forms = [];
@@ -47,8 +48,13 @@ window.SEKI = window.SEKI || {};
     const eng = S.engine;
     _forms = [];
     const sGeo = soldierGeo(), fGeo = sashimonoGeo();
+    // 現代戰役（諾曼第 config.modern）：只有步兵在陸上才以士兵方陣呈現；
+    // 海上/空中/載具（warship/landingcraft/aircraft/flak/bunker/armor）只顯示自身 3D 模型，
+    // 不再額外渲染漂浮的士兵 box / sashimono 背旗（即「空中白色小方塊」之來源）。
+    const modern = !!(S.config && S.config.modern);
     for (const a of S.armies) {
       const east = a.side === 'east';
+      const showSoldiers = !modern || a.kind === 'infantry';
       const max = maxSoldiersFor(a.troops);
       const cols = Math.max(5, Math.round(Math.sqrt(max * 1.8)));
       const rows = Math.ceil(max / cols);
@@ -66,14 +72,18 @@ window.SEKI = window.SEKI || {};
         body.setMatrixAt(i, _m); sashi.setMatrixAt(i, _m);
       }
       body.instanceMatrix.needsUpdate = true; sashi.instanceMatrix.needsUpdate = true;
+      // 非步兵的現代單位：隱藏方陣並把實例數歸零（避免空中/海上漂浮方塊）
+      if (!showSoldiers) { body.visible = false; sashi.visible = false; body.count = 0; sashi.count = 0; }
       eng.scene.add(body); eng.scene.add(sashi);
-      _forms.push({ data: a, body, sashi, max, facing: 0, strengthPer: a.troops / max });
+      _forms.push({ data: a, body, sashi, max, facing: 0, strengthPer: a.troops / max, showSoldiers });
     }
     return _forms;
   };
 
   S.updateFormations = function (t) {
+    const modern = !!(S.config && S.config.modern);
     for (const f of _forms) {
+      if (!f.showSoldiers) continue;   // 非步兵的現代單位不更新方陣（保持隱藏、count=0）
       const u = S.unitById(f.data.id); if (!u) continue;
       const gp = u.group.position;
       let dx = u.moveDir ? u.moveDir.dx : 0, dz = u.moveDir ? u.moveDir.dz : 0;
@@ -81,7 +91,14 @@ window.SEKI = window.SEKI || {};
       const want = Math.atan2(dx, dz);
       f.facing += ((want - f.facing + Math.PI*3) % (Math.PI*2) - Math.PI) * 0.1;
       const s = u.cur ? u.cur.s : f.data.troops;
-      const n = Math.max(0, Math.min(f.max, Math.round(s / f.strengthPer)));
+      let n = Math.max(0, Math.min(f.max, Math.round(s / f.strengthPer)));
+      // 現代戰役（諾曼第）：搶灘步兵在海上時概念上仍在登陸艇內，不顯示士兵方陣；
+      // 只有踏上灘頭／陸地（地形高度 > 海平面）才浮現方陣，呈現上岸效果。
+      // 非現代戰役（關原／桶狹間）維持原本一律顯示，不套用此限制。
+      if (modern) {
+        const onLand = !S.terrain || S.terrain.heightAt(gp.x, gp.z) > SEA_Y;
+        if (!onLand) n = 0;
+      }
       for (const mesh of [f.body, f.sashi]) {
         mesh.position.set(gp.x, gp.y, gp.z);
         mesh.rotation.y = f.facing;
@@ -98,5 +115,10 @@ window.SEKI = window.SEKI || {};
     }
   };
 
-  S.setFormationsVisible = function (v) { for (const f of _forms) { f.body.visible = v; f.sashi.visible = v; } };
+  S.setFormationsVisible = function (v) {
+    for (const f of _forms) {
+      const vis = v && f.showSoldiers;   // 非步兵的現代單位永遠不顯示士兵方陣
+      f.body.visible = vis; f.sashi.visible = vis;
+    }
+  };
 })(window.SEKI);

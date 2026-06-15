@@ -42,7 +42,11 @@ window.SEKI = window.SEKI || {};
       // --- scene + 晨間天色霧氣 -------------------------------------
       const scene = new THREE.Scene();
       scene.background = new THREE.Color(0x9fb0bd);     // 晨霧灰藍
-      scene.fog = new THREE.Fog(0x9fb0bd, 120, 360);    // 朝霧（M4 會動態化）
+      // 霧遠裁面：擴大地圖的戰役（現代/諾曼第）拉更遠，避免外圍延伸面被霧吃掉；
+      // 可由 config.fogFar 顯式覆寫。關原/桶狹間維持原值 360。
+      const fogFar = (S.config && S.config.fogFar)
+        || (S.config && S.config.modern ? 1400 : 360);
+      scene.fog = new THREE.Fog(0x9fb0bd, 120, fogFar); // 朝霧（M4 會動態化）
 
       // --- camera ---------------------------------------------------
       const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 4000);
@@ -76,7 +80,10 @@ window.SEKI = window.SEKI || {};
       controls.dampingFactor = 0.06;
       controls.maxPolarAngle = Math.PI * 0.49;   // 不穿到地底
       controls.minDistance = 5;                   // 可貼近看細節
-      controls.maxDistance = 600;
+      // 可拉遠距離：擴大地圖的戰役（現代/諾曼第）可拉更遠看全景；
+      // 可由 config.maxDistance 顯式覆寫。關原/桶狹間維持原值 600。
+      controls.maxDistance = (S.config && S.config.maxDistance)
+        || (S.config && S.config.modern ? 1600 : 600);
       controls.target.set(0, 0, 0);
 
       this.scene = scene; this.camera = camera; this.renderer = renderer;
