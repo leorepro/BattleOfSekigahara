@@ -214,12 +214,12 @@ SEKI.armies = [
     ]},
   { id:"mortar_352", name_zh:"352師迫擊砲", name_ja:"352nd Mortar Battery", name_en:"352nd Mortars", side:'west', kind:'artillery', crest:null,
     title:"德軍 · 預先標定灘頭·拋射壓制", troops:60,
-    track:[
-      { t:5.5, lng:-0.8600,lat:49.3900,s:60, st:'hold' },
-      { t:6.5, lng:-0.8600,lat:49.3900,s:60, st:'attack' },  // 對預先標定的灘頭潮間帶拋射
-      { t:9,   lng:-0.8600,lat:49.3900,s:50, st:'attack' },
-      { t:13,  lng:-0.8600,lat:49.3900,s:20, st:'hold' },    // 觀測所失守·火力減弱
-      { t:16,  lng:-0.8630,lat:49.3950,s:0,  st:'rout' },
+    track:[ // lat 校正 49.3900→49.3665（原值落深海；改至崖後內陸拋射陣地，往內陸後撤）
+      { t:5.5, lng:-0.8600,lat:49.3665,s:60, st:'hold' },
+      { t:6.5, lng:-0.8600,lat:49.3665,s:60, st:'attack' },  // 對預先標定的灘頭潮間帶拋射
+      { t:9,   lng:-0.8600,lat:49.3665,s:50, st:'attack' },
+      { t:13,  lng:-0.8600,lat:49.3665,s:20, st:'hold' },    // 觀測所失守·火力減弱
+      { t:16,  lng:-0.8630,lat:49.3655,s:0,  st:'rout' },    // 往內陸(更低 lat)後撤
     ]},
 
   /* ---- 德軍內陸增援（被空降師截斷/遲滯；示意位置同空降單位，往灘頭推進） ---- */
