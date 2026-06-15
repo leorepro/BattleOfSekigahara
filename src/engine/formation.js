@@ -139,7 +139,7 @@ window.SEKI = window.SEKI || {};
             const fi = k % cw, ri = Math.floor(k / cw);
             const lx = cx + (fi - (cw - 1) / 2) * sp + (Math.sin(idx * 12.9) + 0.6 * Math.sin(idx * 3.7)) * 0.13 * tight;
             const lz = cz + ((cd - 1) / 2 - ri) * sp + (Math.cos(idx * 7.7) + 0.6 * Math.cos(idx * 2.3)) * 0.13 * tight;  // ri=0 前(+Z)
-            const yaw = (Math.sin(idx * 4.1) + 0.5 * Math.sin(idx * 1.7)) * (east ? 0.5 : 0.14);
+            const yaw = (Math.sin(idx * 4.1) + 0.5 * Math.sin(idx * 1.7)) * (east ? 0.13 : 0.07);  // 朝向只微抖，矛尖整齊指敵
             base.push({ x: lx, z: lz, yaw });
             _m.compose(_p.set(lx, 0, lz), _q.setFromAxisAngle(_up, yaw), _s);
             pbody.setMatrixAt(idx, _m);
