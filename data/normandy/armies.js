@@ -15,15 +15,54 @@
 window.SEKI = window.SEKI || {};
 
 SEKI.armies = [
+  /* ============================ 空降師（藍 · east · 凌晨先於搶灘） ============================
+   *   ※ 史實空降區在本奧馬哈地圖 bbox 之外（聖梅爾埃格利斯 lng≈-1.32、卡宏唐 lng≈-1.25、
+   *      英軍奧恩河 lng≈-0.27 皆超出 DEM/衛星圖範圍）。此處為「示意性」配置：將空降單位
+   *      放在地圖『內陸—偏西邊緣』(lng -0.92~-0.95、lat 49.30~49.34)，代表奧馬哈後方
+   *      通往 Vierville/Saint-Laurent 出灘口、並往 Isigny/Carentan 的公路網，藉以演出
+   *      『傘兵 01:30 夜降→佔領道路節點→截斷德軍增援』的時間線。座標非真實落點。
+   *   ※ 空降約 01:30(t≈1.5) 開始，早於 H 時(06:30=t6.5)。 */
+  { id:"us_101", name_zh:"101空降師·呼嘯山鷹", name_ja:"101st Airborne Division", name_en:"101st Airborne 'Screaming Eagles'", side:'east', kind:'infantry', crest:null,
+    title:"盟軍 空降 · 奪內陸出灘口·掩護奧馬哈/猶他灘後方（示意位置）", troops:6600,
+    track:[
+      { t:1.4, lng:-0.9300,lat:49.3050,s:1500,st:'march' },   // 01:24 首批傘兵夜降·散落廣闊（示意內陸偏西）
+      { t:1.8, lng:-0.9350,lat:49.3150,s:3000,st:'march' },   // 黑暗中以蟋蟀器集結·向道路節點靠攏
+      { t:3.0, lng:-0.9400,lat:49.3250,s:5000,st:'attack' },  // 奪取通往出灘口的堤道與路口
+      { t:5.0, lng:-0.9350,lat:49.3300,s:5500,st:'hold' },    // H時前已扼守奧馬哈後方公路網
+      { t:9.0, lng:-0.9300,lat:49.3380,s:5500,st:'attack' },  // 牽制·阻德軍經內陸道路增援灘頭
+      { t:14,  lng:-0.9250,lat:49.3500,s:5300,st:'attack' },  // 與出灘部隊向縱深會合
+      { t:18,  lng:-0.9200,lat:49.3600,s:5200,st:'hold' },    // 鞏固內陸聯絡線
+    ]},
+  { id:"us_82", name_zh:"82空降師·全美師", name_ja:"82nd Airborne Division", name_en:"82nd Airborne 'All American'", side:'east', kind:'infantry', crest:null,
+    title:"盟軍 空降 · 聖梅爾埃格利斯·截斷德軍橫向增援（示意位置）", troops:7400,
+    track:[
+      { t:1.5, lng:-0.9450,lat:49.3100,s:1800,st:'march' },   // 01:30 夜降·部分落入泛濫沼澤
+      { t:2.2, lng:-0.9480,lat:49.3200,s:3500,st:'attack' },  // 奪內陸鎮（示意聖梅爾埃格利斯）·切斷公路
+      { t:4.0, lng:-0.9450,lat:49.3300,s:5200,st:'hold' },    // 設路障·扼守通往灘頭的要道
+      { t:6.0, lng:-0.9420,lat:49.3320,s:5500,st:'attack' },  // H時前後正面阻擊德軍增援縱隊
+      { t:11,  lng:-0.9400,lat:49.3400,s:5200,st:'attack' },  // 持續遲滯352/91師往奧馬哈集結
+      { t:18,  lng:-0.9380,lat:49.3520,s:5000,st:'hold' },    // 守住內陸鎮·待灘頭部隊接應
+    ]},
+  { id:"uk_6", name_zh:"英軍第6空降師", name_ja:"6th Airborne Division (UK)", name_en:"British 6th Airborne", side:'east', kind:'infantry', crest:null,
+    title:"盟軍 空降 · 奪橋與炸橋·屏障東翼遲滯裝甲（示意位置）", troops:5000,
+    track:[
+      { t:1.3, lng:-0.9200,lat:49.3000,s:1200,st:'attack' },  // 01:18 滑翔機奇襲奪橋（示意佩加索斯橋）
+      { t:2.0, lng:-0.9180,lat:49.3100,s:2500,st:'hold' },    // 控制橋樑·建立東翼屏障
+      { t:3.5, lng:-0.9150,lat:49.3180,s:3800,st:'attack' },  // 炸毀河上橋樑·遲滯德軍裝甲反擊
+      { t:6.0, lng:-0.9120,lat:49.3220,s:4200,st:'hold' },    // H時前已扼守東翼渡口
+      { t:12,  lng:-0.9100,lat:49.3320,s:4000,st:'hold' },    // 頂住德軍裝甲試探·屏障側翼
+      { t:18,  lng:-0.9080,lat:49.3420,s:3800,st:'hold' },
+    ]},
+
   /* ============================ 盟軍（藍 · east） ============================ */
   { id:"usstexas", name_zh:"戰艦德州號", name_ja:"USS Texas (BB-35)", name_en:"USS Texas", side:'east', kind:'warship', crest:null,
-    title:"盟軍 火力支援 · 14吋主砲 · 外海西段", troops:1,
+    title:"盟軍 火力支援 · 14吋主砲 · 外海西段", troops:80,
     track:[
-      { t:5.5, lng:-0.9000,lat:49.4350,s:1, st:'attack' },   // H時前艦砲準備射擊
-      { t:6.4, lng:-0.9000,lat:49.4350,s:1, st:'attack' },   // 持續壓制岸防
-      { t:8.5, lng:-0.9050,lat:49.4250,s:1, st:'attack' },   // 抵近以延伸主砲射程
-      { t:12,  lng:-0.9050,lat:49.4250,s:1, st:'attack' },   // 轟擊 Vierville 隘口工事
-      { t:18,  lng:-0.9000,lat:49.4350,s:1, st:'hold' },     // 傍晚火力支援漸歇
+      { t:5.5, lng:-0.9000,lat:49.4350,s:80, st:'attack' },   // H時前艦砲準備射擊
+      { t:6.4, lng:-0.9000,lat:49.4350,s:80, st:'attack' },   // 持續壓制岸防
+      { t:8.5, lng:-0.9050,lat:49.4250,s:80, st:'attack' },   // 抵近以延伸主砲射程
+      { t:12,  lng:-0.9050,lat:49.4250,s:80, st:'attack' },   // 轟擊 Vierville 隘口工事
+      { t:18,  lng:-0.9000,lat:49.4350,s:80, st:'hold' },     // 傍晚火力支援漸歇
     ]},
   { id:"destroyers", name_zh:"驅逐艦群", name_ja:"Destroyer Squadron", name_en:"Destroyers", side:'east', kind:'warship', crest:null,
     title:"盟軍 抵近直射 · 冒擱淺險近岸轟擊據點", troops:9,
@@ -35,12 +74,12 @@ SEKI.armies = [
       { t:16,  lng:-0.8600,lat:49.3950,s:9, st:'hold' },
     ]},
   { id:"bombers", name_zh:"B-24 轟炸機群", name_ja:"B-24 Liberator", name_en:"Heavy Bombers", side:'east', kind:'aircraft', crest:null,
-    title:"盟軍 第八航空隊 · H時前地毯轟炸（炸偏內陸）", troops:1,
+    title:"盟軍 第八航空隊 · H時前地毯轟炸（炸偏內陸）", troops:36,
     track:[
-      { t:5.9, lng:-0.8800,lat:49.4200,s:1, st:'march' },    // 自海上進場
-      { t:6.0, lng:-0.8700,lat:49.3800,s:1, st:'attack' },   // 雲層遮蔽·延遲投彈
-      { t:6.2, lng:-0.8650,lat:49.3950,s:1, st:'attack' },   // 炸彈落入內陸·灘頭工事完好
-      { t:6.5, lng:-0.8500,lat:49.4200,s:1, st:'march' },    // 脫離
+      { t:5.9, lng:-0.8800,lat:49.4200,s:36, st:'march' },    // 自海上進場
+      { t:6.0, lng:-0.8700,lat:49.3800,s:36, st:'attack' },   // 雲層遮蔽·延遲投彈
+      { t:6.2, lng:-0.8650,lat:49.3950,s:36, st:'attack' },   // 炸彈落入內陸·灘頭工事完好
+      { t:6.5, lng:-0.8500,lat:49.4200,s:36, st:'march' },    // 脫離
     ]},
   { id:"lcvp_1", name_zh:"登陸艇 首波（西）", name_ja:"LCVP 1st Wave (West)", name_en:"LCVP Wave 1", side:'east', kind:'landingcraft', crest:null,
     title:"盟軍 希金斯艇 · Dog/Easy 首波", troops:36,
@@ -181,5 +220,25 @@ SEKI.armies = [
       { t:9,   lng:-0.8600,lat:49.3900,s:50, st:'attack' },
       { t:13,  lng:-0.8600,lat:49.3900,s:20, st:'hold' },    // 觀測所失守·火力減弱
       { t:16,  lng:-0.8630,lat:49.3950,s:0,  st:'rout' },
+    ]},
+
+  /* ---- 德軍內陸增援（被空降師截斷/遲滯；示意位置同空降單位，往灘頭推進） ---- */
+  { id:"reinf_352", name_zh:"352師增援縱隊", name_ja:"352. Div. Reinforcement Column", name_en:"352nd Reinf. Column", side:'west', kind:'infantry', crest:null,
+    title:"德軍 增援 · 自內陸沿公路馳援灘頭·遭傘兵路障阻截（示意位置）", troops:1200,
+    track:[
+      { t:2.0, lng:-0.9450,lat:49.3700,s:1200,st:'march' },   // 凌晨接報·縱隊自內陸南下增援
+      { t:3.5, lng:-0.9450,lat:49.3500,s:1200,st:'march' },   // 行軍途中遭82師路障阻擊
+      { t:5.0, lng:-0.9430,lat:49.3380,s:900, st:'hold' },    // H時前被截停於內陸·無法及時抵灘
+      { t:9.0, lng:-0.9420,lat:49.3360,s:700, st:'attack' },  // 與傘兵反覆爭奪路口
+      { t:14,  lng:-0.9450,lat:49.3550,s:400, st:'rout' },    // 縱隊潰散·終未能解灘頭之圍
+    ]},
+  { id:"reinf_panzer", name_zh:"裝甲反擊推進", name_ja:"Panzer Counter-thrust", name_en:"Panzer Counter-thrust", side:'west', kind:'armor', crest:null,
+    title:"德軍 裝甲 · 內陸裝甲試圖直插登陸場·遭炸橋遲滯（示意位置）", troops:40,
+    track:[
+      { t:3.0, lng:-0.9100,lat:49.3650,s:40, st:'march' },    // 凌晨裝甲集結·欲沿橋路直插灘頭
+      { t:4.0, lng:-0.9120,lat:49.3450,s:40, st:'hold' },     // ★ 橋樑被英6空降師炸毀·推進受阻
+      { t:7.0, lng:-0.9150,lat:49.3380,s:35, st:'attack' },   // 改道試探·遭傘兵反戰車火力打擊
+      { t:12,  lng:-0.9180,lat:49.3500,s:20, st:'hold' },     // 遲滯整日·錯失突入灘頭的時機
+      { t:18,  lng:-0.9200,lat:49.3650,s:12, st:'rout' },     // 後撤
     ]},
 ];
