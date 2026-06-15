@@ -18,20 +18,20 @@ window.SEKI = window.SEKI || {};
 
 SEKI.storyboard = [
   /* ---------------- 布陣階段（會戰前） ---------------- */
-  { t:-6, hold:14, cam:{lng:22.5380, lat:38.7958, dist:520, az:35, el:38, orbit:0.20, fov:46}, cam2:{az:80, dist:560},
+  { t:-6, hold:14, cam:{lng:22.5380, lat:38.7958, dist:240, az:35, el:38, orbit:0.20, fov:46}, cam2:{az:80, dist:280},
     dateLabel:"公元前 480 年 · 仲夏 · 溫泉關", title_zh:"天險全景 · 一邊是海，一邊是山",
     title_en:"The Hot Gates — Sea on One Side, Mountain on the Other",
     narration_zh:"溫泉關（Θερμοπύλαι，意為『熱泉之門』）是希臘中部通往南方的咽喉。北面是馬利亞灣的鹹水沼澤，南面是卡利德羅莫山的峭壁，中間僅餘一條狹窄的海岸通道——最窄處不過容一輛馬車。希臘聯軍選定此地，正是要以地形抵消波斯的兵力優勢。鏡頭掃過峽谷：左手是海，右手是山，狹道如一道天然的閘門。",
     commanders:[{zh:"列奧尼達一世",en:"King Leonidas I"}], focus:["leonidas","thespiae","thebes"], side:"west" },
 
-  { t:-3, hold:13, cam:{lng:22.5340, lat:38.7952, dist:300, az:60, el:34, orbit:0.30, fov:42}, cam2:{az:110},
+  { t:-3, hold:13, cam:{lng:22.5340, lat:38.7952, dist:200, az:60, el:34, orbit:0.30, fov:42}, cam2:{az:110},
     dateLabel:"前 480 年 · 福基斯牆", title_zh:"重修福基斯牆 · 列奧尼達布防",
     title_en:"Rebuilding the Phocian Wall",
     narration_zh:"列奧尼達率三百斯巴達精銳，連同賽斯比、底比斯、佛西斯等城邦之軍，總數約七千人扼守中門。他們重修了古老的福基斯牆，作為退守的支點，並在狹道前列陣。斯巴達人從容地梳理長髮、操練體格——對斯巴達戰士而言，整飾儀容是赴死的禮節。",
     commanders:[{zh:"列奧尼達一世",en:"King Leonidas I"}], focus:["leonidas","phocis","arcadia"], side:"west" },
 
   /* ---------------- 第一日（t 0~8） ---------------- */
-  { t:1, hold:14, cam:{lng:22.5050, lat:38.8200, dist:600, az:200, el:30, orbit:0.18, fov:50}, cam2:{az:235, dist:660}, span:0.5,
+  { t:1, hold:14, cam:{lng:22.5050, lat:38.8200, dist:260, az:200, el:30, orbit:0.18, fov:50}, cam2:{az:235, dist:300}, span:0.5,
     dateLabel:"第一日 · 拂曉 · 特拉基斯平原", title_zh:"波斯人海 · 薛西斯駐蹕",
     title_en:"The Persian Multitude — Xerxes Arrives",
     narration_zh:"薛西斯一世親率波斯帝國大軍抵達，於特拉基斯平原紮營，營帳綿延至天際。希羅多德號稱波斯陸海軍合計達數百萬（後世學者多估實際戰鬥兵力約十餘萬至三十萬）。薛西斯坐於高處俯瞰狹道，遣使勸降，要希臘人『交出武器』；列奧尼達回以一句『μολὼν λαβέ』——『你來取吧』。",
@@ -68,14 +68,14 @@ SEKI.storyboard = [
     narration_zh:"當地人厄菲阿爾特（Ἐφιάλτης）為求重賞，向薛西斯獻出一條祕密——安諾派亞山徑（Anopaia）。這條繞過溫泉關、穿越卡利德羅莫山脊的小路，可讓波斯軍迂迴到希臘聯軍背後。薛西斯大喜，當夜便派出不死軍，由厄菲阿爾特帶路，趁夜摸上山徑。",
     commanders:[{zh:"薛西斯一世",en:"King Xerxes I"},{zh:"厄菲阿爾特",en:"Ephialtes"}], focus:["xerxes","immortals"], side:"east" },
 
-  { t:13.5, hold:13, cam:{lng:22.5900, lat:38.7800, dist:300, az:120, el:42, orbit:0.30, fov:48}, cam2:{az:170, dist:260}, span:0.6,
+  { t:13.5, hold:13, cam:{lng:22.5900, lat:38.7800, dist:210, az:120, el:42, orbit:0.30, fov:48}, cam2:{az:170, dist:185}, span:0.6,
     dateLabel:"第二日 · 深夜 · 安諾派亞山徑", title_zh:"佛西斯守軍潰散 · 後路被抄",
     title_en:"The Phocian Guard Scattered",
     narration_zh:"列奧尼達早料到山徑之危，派了一千佛西斯人守在山脊隘口。然而當不死軍踏著落葉摸上山時，佛西斯人誤以為敵軍主攻自己，慌忙退上高處列陣。波斯人不予理會，徑直越過——希臘聯軍的後路，就此被抄。天一亮，背腹受敵的命運已成定局。",
     commanders:[{zh:"佛西斯軍",en:"The Phocian Guard"}], focus:["phocis","immortals"], side:"both" },
 
   /* ---------------- 第三日（t 16~24） ---------------- */
-  { t:16.5, hold:14, cam:{lng:22.5700, lat:38.7820, dist:560, az:110, el:50, orbit:0.16, fov:54}, cam2:{az:160, dist:620}, span:0.5,
+  { t:16.5, hold:14, cam:{lng:22.5700, lat:38.7820, dist:280, az:110, el:50, orbit:0.16, fov:54}, cam2:{az:160, dist:310}, span:0.5,
     dateLabel:"第三日 · 拂曉 · 卡利德羅莫山脊", title_zh:"山徑迂迴俯瞰 · 不死軍下山",
     title_en:"Flanking March — The Immortals Descend",
     narration_zh:"第三日破曉，俯瞰整片山脊：不死軍循安諾派亞山徑翻過卡利德羅莫山，正自東面高地蜿蜒而下，直插溫泉關背後。狹道中的希臘聯軍將被前後夾擊。逃亡的山民連夜下山，把噩耗帶到列奧尼達的營中——這一日，將是最後一日。",
@@ -113,13 +113,13 @@ SEKI.storyboard = [
     commanders:[{zh:"斯巴達·賽斯比殘部",en:"Last Spartans & Thespians"}], focusUnit:"leonidas", meleeKey:"kolonos", focus:["leonidas","thespiae"], side:"both" },
 
   /* ---------------- 尾聲（t ≥ 24） ---------------- */
-  { t:24.5, hold:14, cam:{lng:22.5450, lat:38.7990, dist:520, az:180, el:40, orbit:0.18, fov:50}, cam2:{dist:640, az:140}, span:0.4,
+  { t:24.5, hold:14, cam:{lng:22.5450, lat:38.7990, dist:250, az:180, el:40, orbit:0.18, fov:50}, cam2:{dist:300, az:140}, span:0.4,
     dateLabel:"尾聲 · 溫泉關 · Aftermath", title_zh:"門已洞開 · 然斯巴達永誌",
     title_en:"The Gate is Open — Yet Sparta Endures",
     narration_zh:"溫泉關終究失守，波斯大軍湧入希臘中部，南下焚毀了雅典。然而這三日的死戰，為希臘聯軍贏得了寶貴的時間與意志：同年九月薩拉米斯海戰、次年普拉提亞之役，希臘人終將波斯逐出。後世於科洛諾斯小丘立碑，刻下西摩尼德斯的銘文。三百人的犧牲，化作西方文明對抗暴政、守護自由的不朽象徵。",
     commanders:[{zh:"希臘聯軍",en:"The Hellenic League"}], focus:["leonidas","thespiae","xerxes"], side:"west" },
 
-  { t:26, hold:14, cam:{lng:22.5380, lat:38.7958, dist:700, az:60, el:46, orbit:0.14, fov:54}, cam2:{dist:820, az:20}, span:0.3,
+  { t:26, hold:14, cam:{lng:22.5380, lat:38.7958, dist:300, az:60, el:46, orbit:0.14, fov:54}, cam2:{dist:360, az:20}, span:0.3,
     dateLabel:"尾聲 · 全局拉遠", title_zh:"天險全局 · 三日不朽",
     title_en:"The Hot Gates — Immortalized",
     narration_zh:"鏡頭緩緩拉遠，溫泉關的全貌重新展開：一邊是馬利亞灣的粼粼海光，一邊是卡利德羅莫山的蒼莽峰巒，狹道靜臥其間。兩千五百年來，海岸線早已因泥沙淤積而後退數公里，當年的天險已成內陸平原。但那道盾牆、那聲『你來取吧』、那塊獅碑，永遠鐫刻在人類的記憶之中。",

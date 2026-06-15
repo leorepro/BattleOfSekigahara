@@ -41,12 +41,17 @@ window.SEKI = window.SEKI || {};
 
       // --- scene + 晨間天色霧氣 -------------------------------------
       const scene = new THREE.Scene();
-      scene.background = new THREE.Color(0x9fb0bd);     // 晨霧灰藍
-      // 霧遠裁面：擴大地圖的戰役（現代/諾曼第）拉更遠，避免外圍延伸面被霧吃掉；
+      // 天色/霧色/霧近裁面可由 config 覆寫（如溫泉關用通透的愛琴海夏日天色）；
+      // 未設則維持原「晨霧灰藍」，前三場零影響。
+      const skyColor = (S.config && S.config.skyColor != null) ? S.config.skyColor : 0x9fb0bd;
+      const fogColor = (S.config && S.config.fogColor != null) ? S.config.fogColor : skyColor;
+      const fogNear  = (S.config && S.config.fogNear  != null) ? S.config.fogNear  : 120;
+      scene.background = new THREE.Color(skyColor);
+      // 霧遠裁面：擴大地圖的戰役（現代/諾曼第/溫泉關）拉更遠，避免遠處地形被霧吃成灰白；
       // 可由 config.fogFar 顯式覆寫。關原/桶狹間維持原值 360。
       const fogFar = (S.config && S.config.fogFar)
         || (S.config && S.config.modern ? 1400 : 360);
-      scene.fog = new THREE.Fog(0x9fb0bd, 120, fogFar); // 朝霧（M4 會動態化）
+      scene.fog = new THREE.Fog(fogColor, fogNear, fogFar);
 
       // --- camera ---------------------------------------------------
       const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 4000);

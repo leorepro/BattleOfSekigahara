@@ -40,14 +40,17 @@
     exag: 2.8,
     // 古海岸線：seaLevel 以下低地夾平為古海面（重建窄道），terrain.js 讀此鍵
     ancientCoast: { seaLevel: 15 },
-    seaColor: 0x1a4a6e,   // 愛琴海深藍
-    // 海拔色階（seaLevel 以上）：出水窄灘沙黃 → 乾草綠 → 山坡土黃 → 高坡灰褐 → 裸岩灰
+    seaColor: 0x1d5a86,   // 愛琴海藍（提亮）
+    // 海拔色階（seaLevel 以上）：出水沙灘 → 乾草 → 橄欖綠低坡 → 土黃 → 灰褐岩 → 高坡裸岩
     elevStops: [
-      [15, 0xcdb88c], [60, 0x8a9a55], [200, 0x7d7048],
-      [450, 0x8a7d63], [760, 0x9a958a],
+      [15, 0xc9b483], [45, 0xb0a85c], [110, 0x7e8a48],
+      [260, 0x97844e], [520, 0x8f8470], [800, 0x9c9384], [1041, 0xa99f8e],
     ],
     // 純海拔著色（無衛星圖：今日地貌含現代公路/農田，與古戰場不符）
     satelliteTexture: null,
+    // 大地圖：霧拉遠避免遠山被吃成灰白 + 鏡頭可拉遠看全景 + 通透愛琴海夏日天色
+    fogNear: 320, fogFar: 1600, maxDistance: 1500,
+    skyColor: 0xaecadb, fogColor: 0xbcd4df,
     // 希臘方陣：士兵以 hoplite 盾牆密集排列（formation.js 走 phalanx 分支）
     formationStyle: 'phalanx',
   };
