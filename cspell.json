@@ -1,0 +1,22 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "words": [
+    "Sekigahara",
+    "Okehazama",
+    "Normandy",
+    "Omaha",
+    "SEKI",
+    "Songti",
+    "Narr",
+    "nums",
+    "cbar",
+    "kbadge",
+    "tlabel",
+    "titlecard",
+    "scrubwrap"
+  ],
+  "ignorePaths": [
+    "node_modules/**"
+  ]
+}
