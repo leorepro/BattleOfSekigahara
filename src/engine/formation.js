@@ -105,16 +105,12 @@ window.SEKI = window.SEKI || {};
       if (phalanx) {
         // LOD：希臘照真實人數(上限360)精細；波斯精銳精細、人海(≥25000人)用低面數簡模可上千
         const mass = east && a.troops >= 25000;
-        let variant, count;
-        if (east) {
-          variant = mass ? 'persian-lite' : 'persian';
-          count = mass ? Math.min(2200, Math.round(a.troops / 22))
-                       : Math.min(900,  Math.round(a.troops / 14));
-        } else {
-          variant = (a.faction === 'sparta') ? 'spartan' : 'ally';
-          count = Math.min(360, a.troops);            // 希臘幾乎照真實人數（298斯巴達=298人）
-        }
-        count = Math.max(24, count);
+        const variant = east ? (mass ? 'persian-lite' : 'persian')
+                             : (a.faction === 'sparta' ? 'spartan' : 'ally');
+        // 視覺人數與真實兵力「成比例」(統一每約18人顯示1兵)，讓雙方懸殊看得出來：
+        // 少數希臘小隊(下限40可辨識) vs 波斯人海(上限控效能 main40000→2222 / archers8000→444)。
+        const cap = mass ? 2600 : (east ? 1400 : 320);
+        const count = Math.max(40, Math.min(cap, Math.round(a.troops / 18)));
         const cloak = (a.factionColor != null) ? a.factionColor : undefined;
         const pgeo = S.buildHopliteGeo(variant, { cloak, crest: cloak });
         const pbody = new THREE.InstancedMesh(pgeo,
