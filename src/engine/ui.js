@@ -42,7 +42,7 @@ window.SEKI = window.SEKI || {};
     const ids = ['caption','evDate','evTitle','evTitleEn','evNarr','evCmd','btnPlay','scrub','spd','btnMode',
       'tlabel','barEast','barWest','valEast','valWest','balLabel','card','cardBody','cardClose','btnAudio','bgm',
       'btnNotes','notes','notesBody','notesClose','roster','btnRoster','toast','markers',
-      'cwrap','casEast','casWest','casValEast','casValWest','casTrack'];   // 累積陣亡條
+      'cwrap','casEast','casWest','casValEast','casValWest','casTrack','casTotal'];   // 累積陣亡條
     ids.forEach(id => el[id] = document.getElementById(id));
 
     const init = S.sideStrength();
@@ -316,13 +316,18 @@ window.SEKI = window.SEKI || {};
     // 累積陣亡條：隨時間單調攀升，東(左)/西(右)各自陣亡向兩側填充，彰顯傷亡的毀滅性
     if (el.casEast && S.sideCasualties) {
       const cs = S.sideCasualties();
-      // 各方填充比例 = 該方陣亡 / 該方初始總兵力（佔比越高=傷亡越慘重）
-      const pe = cs.eastInit > 0 ? Math.min(100, cs.east / cs.eastInit * 100) : 0;
-      const pw = cs.westInit > 0 ? Math.min(100, cs.west / cs.westInit * 100) : 0;
+      // 條長用「同一把尺」：整體填充(雙方合計陣亡/參考上限，隨傷亡累積成長) × 各方占比。
+      //   → 死得多的一方條就長(修正先前用各自初始兵力當分母導致「死多反短」)。
+      const tot = cs.east + cs.west;
+      const CAP = 5000;                                   // 參考上限：雙方合計達此即填滿
+      const fill = Math.min(1, tot / CAP);
+      const pe = tot > 0 ? fill * (cs.east / tot) * 100 : 0;
+      const pw = tot > 0 ? fill * (cs.west / tot) * 100 : 0;
       el.casEast.style.width = pe + '%';
       el.casWest.style.width = pw + '%';
       if (el.casValEast) el.casValEast.textContent = nf(cs.east);
       if (el.casValWest) el.casValWest.textContent = nf(cs.west);
+      if (el.casTotal) el.casTotal.textContent = '傷亡累計 ' + nf(tot);
       // 傷亡攀升 → highlight＋震動：某方每累積一定陣亡就脈動一次數字，並抖動整條
       if (_casPrev) {
         let surged = false;
