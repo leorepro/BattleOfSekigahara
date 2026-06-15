@@ -111,9 +111,18 @@ window.SEKI = window.SEKI || {};
   };
 
   /* ---------- 每幀更新 ---------- */
-  let _burstAcc = 0;
+  let _burstAcc = 0, _lastT = -1e9;
   S.updateMelee = function (t, dt) {
     if (!bodyMesh) return;
+    // 時間倒退(拖曳時間軸/節目循環) → 清空屍堆與飛箭、重置傷亡基準，
+    // 避免回到布陣/開頭時戰場仍殘留滿地白色屍體與箭。
+    if (t < _lastT - 0.4) {
+      bodyCount = 0; bodyHead = 0; bodyOverflow = false; bodyMesh.count = 0;
+      for (const k in _prevS) delete _prevS[k];
+      for (const k in _deadAcc) delete _deadAcc[k];
+      if (arrows) { for (let i = 0; i < arrowState.length; i++) { arrowState[i].active = false; hideArrow(i); } arrows.instanceMatrix.needsUpdate = true; }
+    }
+    _lastT = t;
 
     // (1) 陣亡 → 倒地堆屍（按 cur.s 下降量累積，達門檻生成一具屍體）
     for (const a of (S.armies || [])) {
