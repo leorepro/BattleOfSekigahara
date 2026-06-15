@@ -101,29 +101,41 @@ window.SEKI = window.SEKI || {};
     for (const a of S.armies) {
       const east = a.side === 'east';
 
-      /* ---- 希臘方陣分支（hoplite 盾牆 / 波斯兵） ---- */
+      /* ---- 希臘方陣 / 波斯人海分支（LOD + 高兵數） ---- */
       if (phalanx) {
-        // 變體：east=波斯（柳條盾） / west=希臘（hoplite）。陣營專屬色於 Phase 3 由 a.faction 帶入。
-        const variant = east ? 'persian' : (a.faction === 'sparta' ? 'spartan' : 'ally');
+        // LOD：希臘照真實人數(上限360)精細；波斯精銳精細、人海(≥25000人)用低面數簡模可上千
+        const mass = east && a.troops >= 25000;
+        let variant, count;
+        if (east) {
+          variant = mass ? 'persian-lite' : 'persian';
+          count = mass ? Math.min(2200, Math.round(a.troops / 22))
+                       : Math.min(900,  Math.round(a.troops / 14));
+        } else {
+          variant = (a.faction === 'sparta') ? 'spartan' : 'ally';
+          count = Math.min(360, a.troops);            // 希臘幾乎照真實人數（298斯巴達=298人）
+        }
+        count = Math.max(24, count);
         const cloak = (a.factionColor != null) ? a.factionColor : undefined;
         const pgeo = S.buildHopliteGeo(variant, { cloak, crest: cloak });
-        const maxP = maxSoldiersFor(a.troops);
-        const P = S.PHALANX, depth = Math.max(1, Math.min(P.depth, maxP));
-        const files = Math.ceil(maxP / depth);
+        // 陣型：希臘=深列盾牆(7~10深、密)；波斯=寬深人海塊(近正方)
+        const depth = east ? Math.max(6, Math.round(Math.sqrt(count * 0.7)))
+                           : Math.min(10, Math.max(7, Math.round(count / 30)));
+        const files = Math.ceil(count / depth);
+        const fsp = east ? 0.72 : 0.56, rsp = east ? 0.82 : 0.7;
         const pbody = new THREE.InstancedMesh(pgeo,
-          new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.62, metalness: 0.18 }), maxP);
+          new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.62, metalness: mass ? 0.05 : 0.16 }), count);
         pbody.castShadow = true; pbody.frustumCulled = false;
-        for (let i = 0; i < maxP; i++) {
+        for (let i = 0; i < count; i++) {
           const fi = i % files, ri = Math.floor(i / files);          // 檔 fi、列 ri（0=前排）
-          const x = (fi - (files - 1) / 2) * P.fileSpacing + Math.sin(i * 12.9) * P.jitterPos;
-          const z = ((depth - 1) / 2 - ri) * P.rankSpacing + Math.cos(i * 7.7) * P.jitterPos;  // ri=0 → 前(+Z)
-          _m.compose(_p.set(x, 0, z), _q.setFromAxisAngle(_up, Math.sin(i * 4.1) * 0.08), _s);
+          const x = (fi - (files - 1) / 2) * fsp + Math.sin(i * 12.9) * 0.06;
+          const z = ((depth - 1) / 2 - ri) * rsp + Math.cos(i * 7.7) * 0.06;  // ri=0 → 前(+Z)
+          _m.compose(_p.set(x, 0, z), _q.setFromAxisAngle(_up, Math.sin(i * 4.1) * 0.07), _s);
           pbody.setMatrixAt(i, _m);
         }
         pbody.instanceMatrix.needsUpdate = true;
         eng.scene.add(pbody);
-        _forms.push({ data: a, body: pbody, sashi: null, max: maxP, facing: 0,
-          strengthPer: a.troops / maxP, showSoldiers: true, phalanx: true });
+        _forms.push({ data: a, body: pbody, sashi: null, max: count, facing: 0,
+          strengthPer: a.troops / count, showSoldiers: true, phalanx: true });
         continue;
       }
 

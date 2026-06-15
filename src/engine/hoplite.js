@@ -138,9 +138,36 @@ window.SEKI = window.SEKI || {};
     return merge(parts);
   }
 
+  /* ---------- 波斯人海簡模（低面數，供 LOD 大量 instance） ---------- */
+  function persianLiteGeo(opts) {
+    const robe = opts.cloak != null ? opts.cloak : C.robe;
+    return merge([
+      { geo: box(0.34, 1.0, 0.26, 0, 0.5, 0), color: robe },          // 軀幹+腿合一
+      { geo: box(0.2, 0.2, 0.2, 0, 1.18, 0.01), color: C.skin },      // 頭
+      { geo: box(0.24, 0.18, 0.24, 0, 1.32, 0), color: C.cap },       // 布帽
+      { geo: box(0.42, 0.6, 0.05, -0.18, 0.85, 0.18), color: C.wicker }, // 柳盾
+      { geo: box(0.04, 0.04, 1.3, 0.18, 0.95, 0.2), color: C.wood },  // 短矛
+    ]);
+  }
+  /* ---------- 希臘簡模（後排用，低面數） ---------- */
+  function hopliteLiteGeo(opts) {
+    const cloak = opts.cloak != null ? opts.cloak : C.crimson;
+    return merge([
+      { geo: box(0.32, 1.0, 0.26, 0, 0.5, 0), color: C.bronze },      // 軀幹+腿
+      { geo: box(0.46, 0.7, 0.05, 0, 0.78, -0.16), color: cloak },    // 披風
+      { geo: box(0.2, 0.2, 0.2, 0, 1.18, 0.01), color: C.skin },      // 頭
+      { geo: box(0.24, 0.22, 0.25, 0, 1.34, 0), color: C.bronze },    // 盔
+      { geo: box(0.06, 0.16, 0.3, 0, 1.5, -0.04), color: cloak },     // 盔冠
+      { geo: disc(0.42, 0.05, -0.15, 0.95, 0.22), color: C.bronze },  // 圓盾
+      { geo: box(0.045, 0.045, 2.2, 0.18, 1.0, 0.3), color: C.wood }, // 長矛
+    ]);
+  }
+
   // variant 幾何工廠
   S.buildHopliteGeo = function (variant, opts) {
     opts = opts || {};
+    if (variant === 'persian-lite') return persianLiteGeo(opts);
+    if (variant === 'greek-lite')   return hopliteLiteGeo(opts);
     if (variant === 'persian') return persianGeo(opts);
     return hopliteGeo(opts);   // spartan / ally（差異由 opts.cloak/crest 陣營色帶入）
   };
