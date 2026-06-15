@@ -121,6 +121,7 @@
     S.initEffects();
     S.buildEngagements();
     if (S.initMelee) S.initMelee();   // 近戰：倒地堆屍 + 箭雨
+    if (S.initTriremes) S.initTriremes();   // 波斯艦隊（馬利亞灣）
     S.initWeather();
     initRain();
     S.initUI();
@@ -158,6 +159,7 @@
       S.updateEffects(t, cdt);
       S.updateEngagements(t, cdt);
       if (S.updateMelee) S.updateMelee(t, cdt);
+      if (S.updateTriremes) S.updateTriremes(t);
       S.updateEvents(t);
       S.updateUI(t);
 
