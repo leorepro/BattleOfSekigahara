@@ -214,8 +214,9 @@
          background:rgba(10,4,4,.7); border:1px solid rgba(150,60,55,.5);
          box-shadow:inset 0 1px 4px rgba(0,0,0,.7); }
   /* 兩側皆向中央填充（east 自左、west 自右），陣亡量越大越逼近中線 */
-  #casEast{ background:linear-gradient(90deg,#c81e1e,#7a1212 72%,#4a0e0e); transition:width .5s; }
-  #casWest{ background:linear-gradient(270deg,#c81e1e,#7a1212 72%,#4a0e0e); transition:width .5s;
+  /* 東(盟軍)藍、西(德軍)紅，與現存兵力條同色系，方便一眼比較兩軍陣亡長度 */
+  #casEast{ background:linear-gradient(90deg,#3f72e0,#1f3f88 72%,#15294f); transition:width .5s; }
+  #casWest{ background:linear-gradient(270deg,#e0382c,#7a1212 72%,#4a0e0e); transition:width .5s;
          margin-left:auto; }
   /* 陣亡跳動：數字放大發光＋整條紅光抖動（由 ui.js 在傷亡攀升時觸發） */
   @keyframes casNumSurge{ 0%{transform:scale(1) translateX(0);}

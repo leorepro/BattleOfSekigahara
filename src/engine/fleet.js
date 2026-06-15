@@ -84,7 +84,7 @@ window.SEKI = window.SEKI || {};
 
   // 移動登陸艇搶灘推進時段
   const T_LC_MOVE0 = 6.0;
-  const T_LC_MOVE1 = 13.0;
+  const T_LC_MOVE1 = 42.0;   // 登陸艇持續往返靠岸卸載（D-Day 至 D+1，呈現船隻陸續靠岸）
 
   /* ---------- 模組狀態 ---------- */
   let _inited = false;
@@ -383,13 +383,14 @@ window.SEKI = window.SEKI || {};
 
     const elapsed = (S.engine && S.engine.clock) ? S.engine.clock.getElapsedTime() : 0;
 
-    /* ---------- 1. 運輸船：靜止微晃(起伏 + 輕搖) ---------- */
+    /* ---------- 1. 運輸船：靜止微晃(起伏 + 輕搖)；D+1 陸續往岸靠近卸載 ---------- */
+    const shoreDrift = t > 18 ? Math.min(40, (t - 18) * 2.2) : 0;    // 第一天告一段落後漸往岸(世界 +z)
     for (let i = 0; i < _trData.length; i++) {
       const d = _trData[i];
       const bob = Math.sin(elapsed * 0.6 + d.phase) * 0.18;          // 垂直起伏
       const roll = Math.sin(elapsed * 0.5 + d.phase * 1.3) * 0.025;  // 橫搖
       const pitch = Math.cos(elapsed * 0.4 + d.phase) * 0.015;       // 縱搖
-      setInstance(_transport, i, d.x, SHIP_BASE_Y + bob, d.z, d.yaw, pitch, roll);
+      setInstance(_transport, i, d.x, SHIP_BASE_Y + bob, d.z + shoreDrift, d.yaw, pitch, roll);
     }
     _transport.instanceMatrix.needsUpdate = true;
 

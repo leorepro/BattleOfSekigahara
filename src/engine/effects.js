@@ -286,9 +286,9 @@ window.SEKI = window.SEKI || {};
               let tx, tz;
               if (p.target) {                                   // 有交戰對象 → 直接命中其灘頭/崖頂據點(加小散佈)
                 tx = p.target.x + rnd(5); tz = p.target.z + rnd(5);
-              } else {                                          // 無交戰資料 → 退回朝前方落彈(舊行為)
-                const reach = 22 + Math.random()*16;
-                tx = p.x + fx*reach; tz = p.z + fz*reach;
+              } else {                                          // 無交戰對象 → 一律朝岸/灘頭內陸開火，絕不朝外海亂射
+                const shore = S.engine.project(-0.895 + Math.random()*0.085, 49.372 - Math.random()*0.012, 0);
+                tx = shore.x; tz = shore.z;
               }
               const ty = S.terrain ? S.terrain.heightAt(tx, tz) : p.y;
               // 砲口方向對準落點(而非單純移動方向)，閃光才不會背對目標
