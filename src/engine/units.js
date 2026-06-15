@@ -162,9 +162,13 @@ window.SEKI = window.SEKI || {};
       // 戰國（關原/桶狹間）維持文字 fallback，避免無 CSS 的 SVG 破圖。
       const useSvg = !!(S.config && S.config.modern);
       const kmark = (useSvg && KSVG[a.kind]) || (KICON[a.kind] || '槍');
+      // 名牌直接標出「軍種·兵種」文字，讓觀看者一眼看懂(如遊騎兵=陸·步兵)；僅現代戰役
+      const ARMTAG = { warship:'海·艦砲', landingcraft:'海·登陸艇', aircraft:'空·航空兵',
+        armor:'陸·戰車', bunker:'陸·岸防', flak:'陸·高射砲', infantry:'陸·步兵', artillery:'陸·砲兵' };
+      const armtag = (useSvg && ARMTAG[a.kind]) ? ` <span class="armtag">${ARMTAG[a.kind]}</span>` : '';
       el.innerHTML =
         `<div><span class="kbadge k-${a.kind}" title="${a.kind}">${kmark}</span>` +
-        `${a.name_zh}<span class="ja"> ${a.name_ja}</span></div>` +
+        `${a.name_zh}<span class="ja"> ${a.name_ja}</span>${armtag}</div>` +
         `<div class="hp"><i></i></div><div class="troops"></div>`;
       const tag = new THREE.CSS2DObject(el);
       tag.position.set(0, POLE_H + 2.5 + (_units.length % 4) * 3.6, 0); group.add(tag); // 錯開避免重疊
