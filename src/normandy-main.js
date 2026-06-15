@@ -165,6 +165,7 @@
     S.buildFormations();
     S.buildRoutes();
     S.initEffects();
+    if (S.initSectors) S.initSectors();     // 灘段不規則閃光框（隨運鏡標出當前焦點灘段）
     S.buildEngagements();
     S.initWeather();
     initSmoke();
@@ -200,6 +201,7 @@
       S.updateWeather(t, elapsed);
       updateSmoke(t, dt);
       updateCliffAssault(t);
+      if (S.updateSectors) S.updateSectors(t);   // 灘段閃光框脈動 + 焦點切換
       S.updateEffects(t, dt);
       S.updateEngagements(t, dt);
       S.updateEvents(t);

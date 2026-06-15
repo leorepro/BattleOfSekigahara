@@ -11,7 +11,13 @@ window.SEKI = window.SEKI || {};
 
   function warship(side,color){
     const g=new THREE.Group();
-    const hull=box(26,3,6,mat(HULL_ALLY,0.6)); hull.position.y=1.5; g.add(hull);     // 艦體
+    const hull=box(26,3,6,mat(HULL_ALLY,0.6)); hull.position.y=1.5; g.add(hull);     // 艦體（長軸沿 X，艏在 +X）
+    // 艦艏（尖端，+X）：以四角錐做出前傾艦艏，讓船頭方向一目了然
+    const bow=new THREE.Mesh(new THREE.ConeGeometry(3.0,5,4), mat(HULL_ALLY,0.6));
+    bow.castShadow=true; bow.rotation.z=-Math.PI/2; bow.rotation.x=Math.PI/4;          // 尖端朝 +X
+    bow.scale.set(1,1,0.6); bow.position.set(15,1.6,0); g.add(bow);
+    // 艦艉（-X）：方艉收尾，與尖艏形成明確前後差異
+    const stern=box(2,2.6,5.6,mat(HULL_ALLY,0.6)); stern.position.set(-13.3,1.5,0); g.add(stern);
     const deck=box(20,1,5,mat(STEEL,0.6)); deck.position.y=3.4; g.add(deck);
     const bridge=box(4,3,3.4,mat(STEEL,0.55)); bridge.position.set(-1,5,0); g.add(bridge);
     const funnel=box(1.6,3,1.6,mat(DKSTEEL,0.5)); funnel.position.set(-5,5.5,0); g.add(funnel);
@@ -23,10 +29,13 @@ window.SEKI = window.SEKI || {};
   }
   function landingcraft(side,color){
     const g=new THREE.Group();
-    const hull=box(5,1.6,2.6,mat(KHAKI,0.7)); hull.position.y=0.8; g.add(hull);
-    const ramp=box(0.3,1.4,2.4,mat(DKSTEEL,0.6)); ramp.position.set(2.6,0.9,0); ramp.name='ramp'; g.add(ramp); // 前跳板
+    const hull=box(5,1.6,2.6,mat(KHAKI,0.7)); hull.position.y=0.8; g.add(hull);     // 艇體（長軸沿 X，艏在 +X）
+    const ramp=box(0.3,1.4,2.4,mat(DKSTEEL,0.6)); ramp.position.set(2.6,0.9,0); ramp.name='ramp'; g.add(ramp); // 前跳板（船頭 +X，搶灘放下）
     const wall=box(4.6,0.6,0.2,mat(KHAKI,0.7)); wall.position.set(0,1.5,1.2); g.add(wall);
     const wall2=wall.clone(); wall2.position.z=-1.2; g.add(wall2);
+    // 艉樓 + 舵手台（-X）：與前跳板形成明確前後差異，避免看起來倒退
+    const stern=box(0.9,1.2,2.4,mat(KHAKI,0.7)); stern.position.set(-2.4,1.4,0); g.add(stern);
+    const cox=box(0.7,0.7,0.9,mat(DKSTEEL,0.6)); cox.position.set(-2.4,2.2,0.6); g.add(cox); // 舵手台
     return g;
   }
   // 單架四發重轟炸機(B-24 風格)，+X 為機首；整機縮放後供編隊複製
