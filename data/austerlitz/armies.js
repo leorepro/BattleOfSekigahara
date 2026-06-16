@@ -73,7 +73,8 @@ SEKI.armies = [
   { id:"murat", name_zh:"騎兵預備軍", name_ja:"Cavalry Reserve · Murat", side:'east', faction:'french_cav', factionColor:0x3a5ab0, kind:'cavalry',
     title:"繆拉親王 · 7,400 騎(含胸甲騎兵) · ★北線騎兵衝鋒、追擊潰兵", troops:7400,
     track:[
-      { t:-8, lng:16.700,lat:49.150,s:7400, st:'march' },
+      { t:-8, lng:16.668,lat:49.150,s:7400, st:'march' },   // 自西側遠方開進(避免憑空出現)
+      { t:-4, lng:16.698,lat:49.150,s:7400, st:'march' },
       { t:-1, lng:16.716,lat:49.148,s:7400, st:'hold' },
       { t:1.5,lng:16.730,lat:49.150,s:7400, st:'charge' },  // ★衝鋒北線
       { t:3,  lng:16.748,lat:49.150,s:7100, st:'charge' },
@@ -126,7 +127,8 @@ SEKI.armies = [
   { id:"kienmayer", name_zh:"左翼前鋒", name_ja:"Advance Guard · Kienmayer", side:'west', faction:'austrian_cav', factionColor:0xb9c0cc, kind:'cavalry',
     title:"基恩米亞將軍 · 6,880(步騎) · 南線首攻塔爾尼茲", troops:6880,
     track:[
-      { t:-8, lng:16.830,lat:49.082,s:6880, st:'march' },
+      { t:-8, lng:16.900,lat:49.078,s:6880, st:'march' },   // 自東南遠方開進
+      { t:-4, lng:16.838,lat:49.082,s:6880, st:'march' },
       { t:-1, lng:16.770,lat:49.086,s:6880, st:'march' },
       { t:-0.5,lng:16.740,lat:49.087,s:6880,st:'attack' },// 最先進攻塔爾尼茲
       { t:3,  lng:16.736,lat:49.088,s:6000, st:'attack' },
@@ -146,7 +148,8 @@ SEKI.armies = [
   { id:"liechtenstein", name_zh:"第五縱隊", name_ja:"V Column · Liechtenstein", side:'west', faction:'austrian_cav', factionColor:0xb9c0cc, kind:'cavalry',
     title:"列支敦斯登親王約翰一世 · 4,600 奧地利騎兵 · 中央接合部、北線騎兵對衝", troops:4600,
     track:[
-      { t:-8, lng:16.840,lat:49.140,s:4600, st:'march' },
+      { t:-8, lng:16.900,lat:49.140,s:4600, st:'march' },   // 自東側(奧洛穆茨方向)遠方開進
+      { t:-4, lng:16.846,lat:49.141,s:4600, st:'march' },
       { t:-1, lng:16.800,lat:49.142,s:4600, st:'hold' },
       { t:1.5,lng:16.770,lat:49.146,s:4600, st:'charge' }, // ★與繆拉騎兵對衝
       { t:3,  lng:16.758,lat:49.146,s:4000, st:'charge' },
