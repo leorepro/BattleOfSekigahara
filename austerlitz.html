@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>3D 關原之戰 — 電視級歷史節目</title>
+<title>3D 奧斯特利茨之戰 — 電視級歷史節目</title>
 <style>
   :root{
-    --east:#1c46d2;   /* 東軍 德川 藍（加深 + 高彩度） */
-    --west:#d11418;   /* 西軍 石田 紅（加深 + 高彩度） */
+    --east:#1c46d2;   /* 法蘭西帝國 藍（east 色彩通道，勝方藍） */
+    --west:#d11418;   /* 俄奧聯軍 紅 accent（west；軍服另為俄綠/奧白） */
     --ink:#e9e4d4;
   }
   *{ box-sizing:border-box; margin:0; padding:0; }
@@ -39,9 +39,6 @@
   .side-east .hp i{ background:#2a54d6; } .side-west .hp i{ background:#d12a2a; }
   .lbl-unit .hp i.low{ background:#d8a838; }
   .lbl-unit.dim .hp{ display:none; }
-  /* 倒戈後改投東軍：名字與血條轉藍 */
-  .lbl-unit.defected{ color:#9cc0ff; }
-  .lbl-unit.defected .hp i{ background:#2a54d6; }
   .side-east{ color:#9cc0ff; } .side-west{ color:#ff9c9c; }
 
   /* 交戰標記 A ⚔ B */
@@ -59,7 +56,7 @@
   #titlecard h1{ font-size:30px; letter-spacing:6px; text-shadow:0 2px 12px #000; }
   #titlecard p{ margin-top:6px; font-size:14px; opacity:.8; letter-spacing:2px; }
 
-  /* HUD：時刻 / 操作提示 — 和風精緻版 */
+  /* HUD：時刻 / 操作提示 */
   #hud{ position:fixed; top:14px; left:16px; font-size:12px; line-height:1.65; letter-spacing:1px;
         background:linear-gradient(180deg, rgba(24,20,16,.90), rgba(15,13,11,.86));
         border:1px solid rgba(232,200,122,.26); border-radius:9px; padding:7px 14px 8px;
@@ -70,7 +67,7 @@
   #hud .hint{ font-size:10px; opacity:.6; letter-spacing:.5px; white-space:nowrap; margin-top:3px; padding-top:3px;
         border-top:1px solid rgba(232,200,122,.14); }
 
-  /* 戰役切換（關原 ⇄ 桶狹間） */
+  /* 戰役切換 */
   #campaign-switch{ position:fixed; top:84px; left:16px; z-index:9; display:flex;
         border:1px solid rgba(201,168,106,.42); border-radius:8px; overflow:hidden; font-size:12px;
         letter-spacing:1px; box-shadow:0 2px 10px rgba(0,0,0,.5); }
@@ -81,6 +78,9 @@
   #campaign-switch .cs-item:hover{ background:rgba(44,52,64,.95); color:#fff; }
   #campaign-switch .cs-item.active{ background:#e8c87a; color:#16181c; font-weight:700; cursor:default; }
   #campaign-switch .cs-item.active:hover{ background:#e8c87a; }
+  .tc-est{ color:#ffd76a; font-weight:700; }
+  .tc-sep{ opacity:.45; margin:0 5px; font-weight:400; }
+  .tc-claim{ font-size:11px; opacity:.6; font-weight:400; font-style:italic; }
 
   #loading{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
             background:#0a0d12; z-index:10; transition:opacity .8s; font-size:15px; letter-spacing:3px; }
@@ -97,7 +97,6 @@
   /* 事件卡（旁白） */
   #caption{ position:fixed; left:50%; transform:translateX(-50%); bottom:104px; width:min(820px,86vw);
             text-align:center; pointer-events:none; transition:opacity .5s; z-index:2; }
-  /* 旁白文字：黑色描邊（outline）+ 柔光，無底板，亮底圖上仍清楚 */
   #evDate{ font-size:13px; letter-spacing:4px; color:#e8c87a;
            text-shadow:-1px -1px 1px #000,1px -1px 1px #000,-1px 1px 1px #000,1px 1px 1px #000,0 0 6px rgba(0,0,0,.9); }
   #evTitle{ font-size:27px; font-weight:700; letter-spacing:3px; margin-top:4px;
@@ -116,7 +115,7 @@
   #evCmd .chip .en{ opacity:.6; font-size:10px; }
   #caption.hot #evTitle{ color:#ffd24a; text-shadow:0 0 18px rgba(255,160,0,.85),0 2px 8px #000; }
 
-  /* 符號圖例（凡例）— 和風精緻版 */
+  /* 符號圖例 */
   #legend{ position:fixed; top:14px; right:16px; width:224px;
            background:linear-gradient(180deg, rgba(24,20,16,.93), rgba(15,13,11,.91));
            border:1px solid rgba(232,200,122,.30); border-radius:10px;
@@ -132,7 +131,7 @@
   #legend .ic{ display:inline-block; width:16px; text-align:center; flex:0 0 auto; opacity:.92; }
   #legend .kbadge{ margin:0; flex:0 0 auto; }
 
-  /* 軍隊清單面板（可收合，置於左側） */
+  /* 軍隊清單面板 */
   #roster{ position:fixed; left:14px; top:124px; width:236px; max-height:64vh; overflow-y:auto;
            background:rgba(16,12,8,.84); border:1px solid rgba(201,168,106,.34); border-radius:9px;
            padding:9px 11px; font-size:11.5px; letter-spacing:.4px; line-height:1.45;
@@ -147,13 +146,11 @@
   #roster .rs-pair .vs{ color:#ffd24a; }
   #roster .s{ opacity:.85; }
   #roster .e{ color:#9cc0ff; } #roster .w{ color:#ff9c9c; }
-  /* 兵力長條（東軍藍 / 西軍紅，長度對應兵力差距） */
   #roster .rs-nb{ margin:5px 0 0; }
   #roster .rs-bar{ height:5px; background:rgba(255,255,255,.07); border-radius:3px; overflow:hidden; margin:2px 0 1px; }
   #roster .rs-bar i{ display:block; height:100%; border-radius:3px; transition:width .25s linear; }
   #roster .rs-bar i.e{ background:linear-gradient(90deg,#2a54d6,#5b86f5); }
   #roster .rs-bar i.w{ background:linear-gradient(90deg,#d12a2a,#f2615f); }
-  /* 交戰拉鋸條：左右兩方兵力比例對撞 */
   #roster .rs-cbar{ display:flex; height:5px; border-radius:3px; overflow:hidden; margin:2px 0 7px;
                     box-shadow:0 0 0 1px rgba(0,0,0,.3) inset; }
   #roster .rs-cbar i{ height:100%; }
@@ -214,15 +211,13 @@
   .mk-dot{ display:block; width:7px; height:7px; background:#e8c87a; border:1px solid #14161c;
            transform:rotate(45deg); box-shadow:0 0 3px rgba(0,0,0,.6); }
   .mk.hot .mk-dot{ background:#ffd24a; }
-  .mk.conj .mk-dot{ background:#6f7682; border-color:#2a2f38; opacity:.7; }   /* 史料較弱/軍記:暗灰菱點 */
-  .mk.conj .mk-lbl::after{ content:" ※軍記/演繹"; opacity:.6; font-size:10px; }
   .mk-lbl{ position:absolute; bottom:15px; left:50%; transform:translateX(-50%); white-space:nowrap;
            font-size:11px; color:#f0ead2; background:rgba(10,12,16,.92); border:1px solid rgba(201,168,106,.42);
            padding:2px 8px; border-radius:5px; opacity:0; transition:opacity .15s; pointer-events:none;
            letter-spacing:1px; }
   .mk:hover .mk-lbl{ opacity:1; }
   .mk:hover .mk-dot{ background:#ffe6a8; transform:rotate(45deg) scale(1.35); }
-  #tlabel{ min-width:108px; font-weight:700; letter-spacing:2px; }
+  #tlabel{ min-width:118px; font-weight:700; letter-spacing:2px; }
   #spd{ background:rgba(28,22,15,.92); color:var(--ink); border:1px solid rgba(201,168,106,.34); border-radius:7px; padding:7px;
         font-family:inherit; }
 
@@ -238,13 +233,13 @@
   #card .card-row b{ font-size:15px; }
   #cardClose{ position:absolute; top:10px; right:12px; cursor:pointer; opacity:.6; }
 
-  /* 手機 / 窄螢幕響應式（橫向觀看體驗最佳） */
+  /* 手機 / 窄螢幕響應式 */
   @media (max-width: 760px){
     #hud{ font-size:10px; top:8px; left:10px; padding:5px 9px 6px; }
     #campaign-switch{ top:52px; left:10px; font-size:10px; }
     #campaign-switch .cs-item{ padding:4px 9px; }
     #bars{ width:132px; font-size:10px; top:8px; right:8px; }
-    #legend{ width:148px; font-size:9px; line-height:1.4; top:58px; right:8px; padding:7px 8px; }
+    #legend{ width:150px; font-size:9px; line-height:1.4; top:58px; right:8px; padding:7px 8px; }
     #legend .lg-hr{ margin:5px 0; }
     #caption{ bottom:88px; width:93vw; }
     #evDate{ font-size:11px; letter-spacing:2px; }
@@ -267,62 +262,60 @@
   <div id="labels"></div>
 
   <div id="titlecard">
-    <h1>關 原 之 戰</h1>
-    <p>慶長五年九月十五日 · 1600 — <span style="color:var(--east)">東軍</span> 對 <span style="color:var(--west)">西軍</span></p>
+    <h1>奧 斯 特 利 茨 之 戰</h1>
+    <p>1805 年 12 月 2 日 · 三皇會戰 — <span style="color:var(--east)">法蘭西帝國</span>（拿破崙一世） 對 <span style="color:var(--west)">俄奧聯軍</span></p>
   </div>
 
   <div id="hud">
-    <div class="clk"><b id="clock">辰刻 08:00</b> <span id="phase" style="opacity:.85"></span></div>
+    <div class="clk"><b id="clock">12月2日 · 拂曉 06:00</b> <span id="phase" style="opacity:.85"></span></div>
     <div class="hint">拖曳 = 運鏡　·　滾輪 = 縮放　·　右鍵 = 平移</div>
   </div>
 
-  <!-- 戰役切換 -->
+  <!-- 戰役切換（年代排序） -->
   <nav id="campaign-switch" aria-label="切換戰役">
     <a class="cs-item" href="thermopylae.html">溫泉關之戰<small>-480</small></a>
     <a class="cs-item" href="okehazama.html">桶狹間之戰<small>1560</small></a>
-    <span class="cs-item active">關原之戰<small>1600</small></span>
-    <a class="cs-item" href="austerlitz.html">奧斯特利茨<small>1805</small></a>
+    <a class="cs-item" href="index.html">關原之戰<small>1600</small></a>
+    <span class="cs-item active">奧斯特利茨<small>1805</small></span>
     <a class="cs-item" href="normandy.html">諾曼第登陸<small>1944</small></a>
   </nav>
 
-  <!-- 符號圖例（常駐右上） -->
+  <!-- 符號圖例 -->
   <div id="legend">
     <div class="lg-title">圖 例</div>
 
     <div class="lg-sec">陣　營</div>
-    <div class="lg-row"><span class="sw" style="background:var(--east)"></span>東軍（德川）</div>
-    <div class="lg-row"><span class="sw" style="background:var(--west)"></span>西軍（石田）</div>
+    <div class="lg-row"><span class="sw" style="background:var(--east)"></span>法蘭西帝國（拿破崙）</div>
+    <div class="lg-row"><span class="sw" style="background:var(--west)"></span>俄奧聯軍（庫圖佐夫）</div>
 
     <div class="lg-sec">圖　示</div>
-    <div class="lg-row"><span class="ic">⚑</span>武將本陣（軍旗・家紋）</div>
+    <div class="lg-row"><span class="ic">⚑</span>主帥本陣（軍旗）</div>
     <div class="lg-row"><span class="ic">➤</span>行軍・進攻方向</div>
-    <div class="lg-row"><span class="ic">▲</span>山<span class="ic">🏯</span>城<span class="ic">⚔</span>古戰場</div>
-    <div class="lg-row"><span class="ic">🔥</span>鉄砲齊射・砲擊<span class="ic">⛓</span>潰滅</div>
+    <div class="lg-row"><span class="ic">▲</span>高地<span class="ic">🏯</span>城鎮<span class="ic">〜</span>冰湖/溪</div>
 
     <div class="lg-sec">兵　種</div>
-    <div class="lg-row"><span class="kbadge k-command">本</span>本陣・旗本</div>
-    <div class="lg-row"><span class="kbadge k-cavalry">騎</span>騎馬隊</div>
-    <div class="lg-row"><span class="kbadge k-matchlock">銃</span>鉄砲（火縄銃）</div>
-    <div class="lg-row"><span class="kbadge k-artillery">砲</span>大筒</div>
-    <div class="lg-row"><span class="kbadge k-infantry">槍</span>足軽・長槍</div>
+    <div class="lg-row"><span class="kbadge k-command">帥</span>主帥・本陣</div>
+    <div class="lg-row"><span class="kbadge k-infantry">步</span>線列步兵・排槍</div>
+    <div class="lg-row"><span class="kbadge k-cavalry">騎</span>騎兵・衝鋒</div>
+    <div class="lg-row"><span class="kbadge k-artillery">砲</span>野戰砲兵</div>
   </div>
 
-  <!-- 軍隊清單面板（右側） -->
+  <!-- 軍隊清單面板 -->
   <div id="roster"></div>
 
-  <!-- 史料面板（按鈕開啟） -->
+  <!-- 史料面板 -->
   <div id="notes">
     <span id="notesClose">✕</span>
     <h2>史料說明 · Notes &amp; Sources</h2>
     <div id="notesBody"></div>
   </div>
 
-  <!-- 抗衡戰力條（頂部中央，藍紅拉鋸） -->
+  <!-- 抗衡戰力條（藍紅拉鋸） -->
   <div id="bars">
     <div class="bal-head">
-      <span class="side-east">⚔ 德川家康 <b id="valEast">0</b></span>
+      <span class="side-east">⚔ 拿破崙一世 <b id="valEast">0</b></span>
       <span class="bh-mid" id="balLabel">抗衡</span>
-      <span class="side-west"><b id="valWest">0</b> 石田三成 ⚔</span>
+      <span class="side-west"><b id="valWest">0</b> 庫圖佐夫 ⚔</span>
     </div>
     <div class="bal-track"><i id="barEast"></i><i id="barWest"></i></div>
   </div>
@@ -345,7 +338,7 @@
   <!-- 控制列 -->
   <div id="controls">
     <button id="btnPlay">⏸</button>
-    <span id="tlabel">辰刻 08:00</span>
+    <span id="tlabel">12月2日 · 拂曉 06:00</span>
     <span id="scrubwrap">
       <input type="range" id="scrub" min="0" max="1000" step="1" value="0">
       <div id="markers"></div>
@@ -370,29 +363,33 @@
   <script src="lib/three/OrbitControls.js"></script>
   <script src="lib/three/CSS2DRenderer.js"></script>
 
-  <!-- 資料 -->
-  <script src="data/geography.js"></script>
-  <script src="data/heightmap.js"></script>
-  <script src="data/armies.js"></script>
-  <script src="data/weather.js"></script>
-  <script src="data/storyboard.js"></script>
-  <script src="data/sources.js"></script>
-  <script src="data/engagements.js"></script>
-  <script src="data/events.js"></script>
+  <!-- 資料（奧斯特利茨） -->
+  <script src="data/austerlitz/geography.js"></script>
+  <script src="data/austerlitz/heightmap.js"></script>
+  <script src="data/austerlitz/armies.js"></script>
+  <script src="data/austerlitz/weather.js"></script>
+  <script src="data/austerlitz/storyboard.js"></script>
+  <script src="data/austerlitz/sources.js"></script>
+  <script src="data/austerlitz/engagements.js"></script>
+  <script src="data/austerlitz/events.js"></script>
 
-  <!-- 引擎（依序載入，掛到全域 SEKI 命名空間） -->
+  <!-- 引擎（共用引擎，依序載入掛到全域 SEKI 命名空間） -->
   <script src="src/engine/scene.js"></script>
   <script src="src/engine/terrain.js"></script>
   <script src="src/engine/labels.js"></script>
   <script src="src/engine/crest.js"></script>
   <script src="src/engine/units.js"></script>
   <script src="src/engine/formation.js"></script>
+  <script src="src/engine/napoleonic.js"></script>
+  <script src="src/engine/maneuver.js"></script>
   <script src="src/engine/routes.js"></script>
   <script src="src/engine/effects.js"></script>
+  <script src="src/engine/volley.js"></script>
+  <script src="src/engine/melee.js"></script>
   <script src="src/engine/engage.js"></script>
   <script src="src/engine/weather.js"></script>
   <script src="src/engine/storyboard.js"></script>
   <script src="src/engine/ui.js"></script>
-  <script src="src/main.js"></script>
+  <script src="src/austerlitz-main.js"></script>
 </body>
 </html>
