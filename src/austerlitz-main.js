@@ -203,6 +203,7 @@
       updateSnow(t, dt);
       // 子彈時間：storyboard 把慢動作係數寫到 S.player.cinemaScale，乘入動畫/特效的 dt
       const cdt = dt * ((S.player.cinemaScale != null) ? S.player.cinemaScale : 1);
+      if (S.tickAnim) S.tickAnim(cdt);   // 單兵肢體動畫時間(乘子彈時間)
       updateIce(t, cdt);
       S.updateEffects(t, cdt);
       S.updateEngagements(t, cdt);

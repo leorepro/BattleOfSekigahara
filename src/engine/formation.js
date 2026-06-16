@@ -205,9 +205,16 @@ window.SEKI = window.SEKI || {};
         const count = Math.max(mounted ? 12 : (isCannon ? 4 : 24), Math.min(cap, Math.round(a.troops / per)));
         const coat = (a.factionColor != null) ? a.factionColor : undefined;
         const ngeo = S.buildNapoleonicGeo(variant, { coat });
-        const nbody = new THREE.InstancedMesh(ngeo,
-          new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.7, metalness: mounted ? 0.12 : 0.06 }), count);
+        // 著色器骨架動畫材質（行軍擺腿/開槍/奔馳）；無 anim.js 時退回靜態標準材質
+        const nmat = S.makeAnimatedMaterial
+          ? S.makeAnimatedMaterial({ roughness: 0.7, metalness: mounted ? 0.12 : 0.06 })
+          : new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.7, metalness: mounted ? 0.12 : 0.06 });
+        const nbody = new THREE.InstancedMesh(ngeo, nmat, count);
         nbody.castShadow = true; nbody.frustumCulled = false;
+        // 每兵隨機相位 → 四肢動畫不同步
+        const phase = new Float32Array(count);
+        for (let i = 0; i < count; i++) phase[i] = Math.random();
+        ngeo.setAttribute('aPhase', new THREE.InstancedBufferAttribute(phase, 1));
         const base = [];                              // 每兵本地座標（橫隊基準，formMode 再縮放）
         const NP = S.NAPOLEONIC || { fileSpacing:0.66, rankSpacing:0.80, jitterPos:0.05 };
         const fileSp = (mounted ? 1.7 : isCannon ? 2.4 : 1.0) * NP.fileSpacing;
@@ -226,7 +233,7 @@ window.SEKI = window.SEKI || {};
         nbody.instanceMatrix.needsUpdate = true;
         eng.scene.add(nbody);
         _forms.push({ data: a, body: nbody, sashi: null, max: count, facing: 0,
-          strengthPer: a.troops / count, showSoldiers: true, napo: true, east,
+          strengthPer: a.troops / count, showSoldiers: true, napo: true, east, mounted,
           base, lastX: 1e9, lastZ: 1e9, lastFacing: 1e9, lastN: -1, lastMode: '', conformed: false });
         continue;
       }
@@ -326,6 +333,9 @@ window.SEKI = window.SEKI || {};
       // 拿破崙時代：逐兵貼地形 + 依 formMode(line/column/square/charge/rout) 縮放 base
       if (f.napo && S.terrain && f.base) {
         const mode = _formMode[f.data.id] || napoMode(u.cur ? u.cur.st : 'hold');
+        // 著色器動畫模式（每幀更新；行軍/開槍/奔馳/駐立）
+        const uM = f.body.material.userData && f.body.material.userData.uMode;
+        if (uM && S.animModeFor) uM.value = S.animModeFor(mode, f.mounted);
         const dirty = !f.conformed || n !== f.lastN || mode !== f.lastMode
           || Math.abs(gp.x - f.lastX) > 0.04 || Math.abs(gp.z - f.lastZ) > 0.04
           || Math.abs(f.facing - f.lastFacing) > 0.008;
