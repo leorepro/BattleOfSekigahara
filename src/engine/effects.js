@@ -467,6 +467,11 @@ window.SEKI = window.SEKI || {};
   // 兩軍接觸點交戰：亮火花（給 engage.js 呼叫）
   S.combatBurst = function (x, y, z) { sparks(x, y, z, 5, 2, 5); if (Math.random()<0.35) lightSmoke(x,y,z,1); };
 
+  // 公開薄包裝：供 volley.js（拿破崙排槍/砲兵/騎兵衝擊）直接發射火光/煙塵粒子，
+  //   沿用本檔粒子系統的逐粒生命/大小/顏色與每幀 update。o 同 fire.emit 之 {vx,vy,vz,g,life,size0,size1,r,g,b}。
+  S.emitFire = function (x, y, z, o) { if (fire) fire.emit(x, y, z, o); };
+  S.emitDust = function (x, y, z, o) { if (dust) dust.emit(x, y, z, o); };
+
   S.updateEffects = function (t, dt) {
     if (!fire) return;
     _clock += dt;
