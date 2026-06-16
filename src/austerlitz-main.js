@@ -53,6 +53,8 @@
     boundedOrbit: true, orbitSpan: 32,
     // 敵對雙方火線間距：線列步兵/砲兵隔開互轟、不互相穿插覆蓋（衝鋒/突破/潰逃者貼身接戰除外）
     standoff: 20,
+    // 時間軸節點用運鏡章節(9 鏡,每點都會切換鏡頭呈現)而非全部 53 事件(避免大量無鏡頭的點)
+    timelineMarkers: 'storyboard',
   };
 
   S.player = { time: -8, playing: true, speed: 0.35, program: true, T_START: -8, T_END: 12 };

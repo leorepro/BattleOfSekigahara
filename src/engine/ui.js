@@ -147,14 +147,19 @@ window.SEKI = window.SEKI || {};
   }
 
   function buildMarkers() {
-    if (!el.markers || !S.events) return;
-    // 時間軸節點 = 全部關鍵事件;懸停看說明、點擊跳到該時刻(節目模式運鏡帶過去)
-    el.markers.innerHTML = S.events.map((e) => {
+    if (!el.markers) return;
+    // 時間軸節點來源：config.timelineMarkers==='storyboard' → 用運鏡章節(每點都會實際切換鏡頭呈現，
+    // 避免一堆事件點卻無對應鏡頭)；否則(預設)用全部關鍵事件。
+    const useSb = (S.config && S.config.timelineMarkers === 'storyboard') && S.storyboard && S.storyboard.length;
+    const marks = useSb ? S.storyboard : S.events;
+    if (!marks) return;
+    el.markers.innerHTML = marks.map((e) => {
       const pct = timeToPos(e.t) * 100;       // 非線性:決戰節點自然散開
       if (pct < -0.5 || pct > 100.5) return '';
-      const hot = /★/.test(e.zh) ? ' hot' : '';
+      const label = String(useSb ? (e.title_zh || '') : e.zh);
+      const hot = (useSb || /★/.test(label)) ? ' hot' : '';   // 章節皆為重點節點
       const conj = e.conj ? ' conj' : '';     // 史料較弱/軍記:暗色節點
-      const title = e.zh.replace('★', '').trim();
+      const title = label.replace('★', '').trim();
       const left = Math.max(0, Math.min(100, pct));
       return `<div class="mk${hot}${conj}" data-t="${e.t}" style="left:${left}%">` +
              `<span class="mk-dot"></span><span class="mk-lbl">${title}</span></div>`;
