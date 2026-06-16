@@ -163,4 +163,26 @@ SEKI.armies = [
       { t:6,  lng:16.790,lat:49.126,s:5500,  st:'rout' },  // 被貝西埃爾近衛軍＋貝爾納多特擊退
       { t:9,  lng:16.820,lat:49.130,s:4000,  st:'march' },
     ]},
+
+  /* ===================== 野戰砲兵（雙方，拋物線砲彈互轟） ===================== */
+  { id:"fr_battery", name_zh:"法軍砲兵群", name_ja:"Grand Battery", side:'east', faction:'french_arty', factionColor:0x24407a, kind:'artillery',
+    title:"法軍野戰砲兵 · 戈德巴赫西岸側射 → 突破後上普拉欽居高轟擊", troops:2600,
+    track:[
+      { t:-8, lng:16.700,lat:49.120,s:2600, st:'march' },
+      { t:-1, lng:16.726,lat:49.122,s:2600, st:'hold' },
+      { t:0.5,lng:16.732,lat:49.118,s:2600, st:'attack' },  // 側射封鎖聯軍渡溪
+      { t:4,  lng:16.756,lat:49.117,s:2600, st:'attack' },  // 隨突破上普拉欽
+      { t:9,  lng:16.768,lat:49.108,s:2500, st:'attack' },  // 居高轟南線潰兵/冰湖方向
+      { t:12, lng:16.770,lat:49.106,s:2400, st:'hold' },
+    ]},
+  { id:"allied_battery", name_zh:"聯軍砲兵", name_ja:"Allied Battery", side:'west', faction:'russian_line', factionColor:0x3a6a44, kind:'artillery',
+    title:"俄奧野戰砲兵 · 普拉欽高地砲列(42門) → 中央失守後撤", troops:2200,
+    track:[
+      { t:-8, lng:16.840,lat:49.120,s:2200, st:'march' },
+      { t:-1, lng:16.778,lat:49.116,s:2200, st:'hold' },    // 普拉欽砲列
+      { t:0.5,lng:16.774,lat:49.114,s:2200, st:'attack' },
+      { t:3.5,lng:16.776,lat:49.116,s:1800, st:'attack' },  // 中央突破後被壓制
+      { t:6,  lng:16.792,lat:49.112,s:900,  st:'rout' },
+      { t:9,  lng:16.806,lat:49.108,s:600,  st:'rout' },
+    ]},
 ];

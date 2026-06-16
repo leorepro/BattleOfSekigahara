@@ -257,6 +257,14 @@ window.SEKI = window.SEKI || {};
         flag.castShadow = true;
         flag.position.set(FW / 2 + 0.2, POLE_H - FH / 2 - 0.5, 0);
         flag.userData.base = Float32Array.from(fgeo.attributes.position.array);
+        // 主帥本陣大旗：拿破崙(法軍 command)用金色加大旗，凸顯統帥位置。
+        if (S.config && S.config.formationStyle === 'napoleonic' && a.kind === 'command') {
+          const isFr = a.side === 'east';
+          const sc = isFr ? 1.7 : 1.3;
+          flag.scale.set(sc, sc, 1);
+          flag.position.x = FW * sc / 2 + 0.2;
+          if (isFr) { fmat.color.setHex(0xd4b24a); if (fmat.emissive) { fmat.emissive.setHex(0xd4b24a); fmat.emissiveIntensity = 0.35; } }
+        }
         group.add(flag);
         fadeMats = [fmat, pole.material];
       }

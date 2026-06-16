@@ -471,6 +471,8 @@ window.SEKI = window.SEKI || {};
   //   沿用本檔粒子系統的逐粒生命/大小/顏色與每幀 update。o 同 fire.emit 之 {vx,vy,vz,g,life,size0,size1,r,g,b}。
   S.emitFire = function (x, y, z, o) { if (fire) fire.emit(x, y, z, o); };
   S.emitDust = function (x, y, z, o) { if (dust) dust.emit(x, y, z, o); };
+  // 公開拋物線砲彈（含白色彈道拖尾 + 砲口閃光/煙）— 供 volley.js 野戰砲兵齊射使用。
+  S.launchShell = function (x0, y0, z0, x1, y1, z1) { launchShell(x0, y0, z0, x1, y1, z1); };
 
   S.updateEffects = function (t, dt) {
     if (!fire) return;

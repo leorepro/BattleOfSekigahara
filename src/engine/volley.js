@@ -11,10 +11,22 @@ window.SEKI = window.SEKI || {};
 
 (function (S) {
   const _timer = {};            // 各單位開火節律累加器
+  const _vol = {};              // 各單位齊射計數（用於排槍輪番換排）
   function rnd(a) { return (Math.random() * 2 - 1) * a; }
   function norm(dx, dz) { const m = Math.hypot(dx, dz) || 1; return [dx / m, dz / m]; }
+  // 最近的敵方單位世界座標（供砲兵瞄準）
+  function nearestEnemy(a, p) {
+    let best = null, bd = 1e18;
+    for (const b of S.armies) {
+      if (b.side === a.side) continue;
+      const u = S.unitById(b.id); if (!u || !u.cur || u.cur.s <= 1) continue;
+      const q = u.group.position, d = (q.x - p.x) * (q.x - p.x) + (q.z - p.z) * (q.z - p.z);
+      if (d < bd) { bd = d; best = q; }
+    }
+    return best;
+  }
 
-  S.initVolley = function () { for (const k in _timer) delete _timer[k]; };
+  S.initVolley = function () { for (const k in _timer) delete _timer[k]; for (const k in _vol) delete _vol[k]; };
 
   // 槍口火光（亮橙白短命）+ 硝煙（灰白上升）
   function musketFlash(x, y, z, fx, fz) {
@@ -59,20 +71,31 @@ window.SEKI = window.SEKI || {};
       _timer[id] = (_timer[id] || 0) + dt;
 
       if (a.kind === 'infantry' || a.kind === 'command') {
-        // 排槍：交戰/突破時沿正面一排排錯落齊射
-        if ((st === 'attack' || st === 'breakthrough') && _timer[id] >= 0.42) {
+        // 排槍輪番：每次齊射由「站到前緣的一排」開火，射畢退後、下一排上前(countermarch)。
+        if ((st === 'attack' || st === 'breakthrough') && _timer[id] >= 0.7) {
           _timer[id] = 0;
-          const front = 6;
-          for (let i = 0; i < 3; i++) {
-            const lat = (Math.random() * 2 - 1) * 7.5;     // 沿陣面散布 → 錯落不全齊
-            musketFlash(p.x + fx * front + px * lat, p.y + 1.4, p.z + fz * front + pz * lat, fx, fz);
+          const vc = (_vol[id] = (_vol[id] || 0) + 1);
+          const rank = vc % 4;                              // 0..3 輪番換排
+          const front = 7.5 - rank * 1.5;                   // 該排站到前緣齊射,其餘排在後
+          for (let i = 0; i < 5; i++) {                     // 沿陣面一整排齊射
+            const lat = (i - 2) * 3.2 + rnd(0.8);
+            musketFlash(p.x + fx * front + px * lat, p.y + 1.5, p.z + fz * front + pz * lat, fx, fz);
           }
         }
       } else if (a.kind === 'artillery') {
-        // 野戰砲兵：較疏的齊射（含彈著塵爆）
-        if ((st === 'attack' || st === 'breakthrough') && _timer[id] >= 2.4) {
+        // 野戰砲兵：拋物線砲彈(含白色彈道拖尾)轟向最近敵軍 + 砲口火光煙
+        if ((st === 'attack' || st === 'breakthrough') && _timer[id] >= 1.8) {
           _timer[id] = 0;
-          cannonBlast(p.x + fx * 4, p.y + 1.0, p.z + fz * 4, fx, fz);
+          const tgt = nearestEnemy(a, p);
+          for (let i = 0; i < 3; i++) {                     // 一輪數門齊射
+            const lat = (Math.random() * 2 - 1) * 8;
+            const gx = p.x + fx * 3 + px * lat, gy = p.y + 0.8, gz = p.z + fz * 3 + pz * lat;
+            if (tgt && S.launchShell) {
+              const sx = tgt.x + rnd(7), sz = tgt.z + rnd(7);
+              const sy = S.terrain ? S.terrain.heightAt(sx, sz) : 0;
+              S.launchShell(gx, gy, gz, sx, sy, sz);
+            } else cannonBlast(gx, gy, gz, fx, fz);
+          }
         }
       } else if (a.kind === 'cavalry') {
         // 騎兵衝鋒：馬群後方拖塵（強度吃 chargeIntensity）
