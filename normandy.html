@@ -67,17 +67,17 @@
   #hud .hint{ font-size:10px; opacity:.6; letter-spacing:.5px; white-space:nowrap; margin-top:3px; padding-top:3px;
         border-top:1px solid rgba(232,200,122,.14); }
 
-  /* 戰役切換（關原 ⇄ 桶狹間） */
-  #campaign-switch{ position:fixed; top:84px; left:16px; z-index:9; display:flex;
-        border:1px solid rgba(201,168,106,.42); border-radius:8px; overflow:hidden; font-size:12px;
-        letter-spacing:1px; box-shadow:0 2px 10px rgba(0,0,0,.5); }
-  #campaign-switch .cs-item{ padding:6px 13px; background:rgba(20,15,10,.85); color:#cdd4de;
-        text-decoration:none; cursor:pointer; transition:background .15s,color .15s; white-space:nowrap; }
-  #campaign-switch .cs-item small{ opacity:.6; font-size:9px; margin-left:4px; }
-  #campaign-switch .cs-item + .cs-item{ border-left:1px solid rgba(201,168,106,.42); }
-  #campaign-switch .cs-item:hover{ background:rgba(44,52,64,.95); color:#fff; }
-  #campaign-switch .cs-item.active{ background:#e8c87a; color:#16181c; font-weight:700; cursor:default; }
-  #campaign-switch .cs-item.active:hover{ background:#e8c87a; }
+  /* 戰役切換下拉選單（🏛 + 金字 + ▼ 提示可下拉；與其他戰役頁一致） */
+  #campaign-switch{ position:fixed; top:84px; left:16px; z-index:9; display:flex; align-items:center; gap:6px;
+        padding:5px 11px; background:linear-gradient(180deg,rgba(40,32,18,.93),rgba(22,17,10,.9));
+        border:1px solid rgba(232,200,122,.5); border-radius:8px; box-shadow:0 2px 12px rgba(0,0,0,.55); }
+  #campaign-switch:hover{ border-color:#e8c87a; box-shadow:0 2px 14px rgba(232,200,122,.3); }
+  #campaign-switch .cs-ic{ font-size:13px; opacity:.92; }
+  #campaign-switch #cs-select{ appearance:none; -webkit-appearance:none; -moz-appearance:none;
+        background:transparent; border:none; color:#f0d488; font-family:inherit; font-size:13px;
+        font-weight:700; letter-spacing:1px; cursor:pointer; padding:2px; outline:none; }
+  #campaign-switch #cs-select option{ background:#1a1410; color:#ece3cf; font-weight:400; }
+  #campaign-switch .cs-caret{ color:#e8c87a; font-size:10px; pointer-events:none; }
 
   #loading{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
             background:#0a0d12; z-index:10; transition:opacity .8s; font-size:15px; letter-spacing:3px; }
@@ -309,13 +309,19 @@
   </div>
 
   <!-- 戰役切換 -->
-  <nav id="campaign-switch" aria-label="切換戰役">
-    <a class="cs-item" href="thermopylae.html">溫泉關之戰<small>-480</small></a>
-    <a class="cs-item" href="okehazama.html">桶狹間之戰<small>1560</small></a>
-    <a class="cs-item" href="index.html">關原之戰<small>1600</small></a>
-    <a class="cs-item" href="austerlitz.html">奧斯特利茨<small>1805</small></a>
-    <span class="cs-item active">諾曼第登陸<small>1944</small></span>
-  </nav>
+  <!-- 戰役切換（下拉選單；年代排序） -->
+  <div id="campaign-switch">
+    <span class="cs-ic">🏛</span>
+    <select id="cs-select" aria-label="切換戰役" title="切換其他戰役"
+            onchange="if(this.value){location.href=this.value;}">
+      <option value="thermopylae.html">溫泉關之戰 −480</option>
+      <option value="okehazama.html">桶狹間之戰 1560</option>
+      <option value="index.html">關原之戰 1600</option>
+      <option value="austerlitz.html">奧斯特利茨之戰 1805</option>
+      <option value="normandy.html" selected>諾曼第登陸 1944</option>
+    </select>
+    <span class="cs-caret">▼</span>
+  </div>
 
   <!-- 符號圖例（常駐右上） -->
   <div id="legend">

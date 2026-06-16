@@ -9,10 +9,11 @@
 """
 import json, time, urllib.request, urllib.parse, sys
 
-# bbox：涵蓋會戰核心(普拉欽/桑頓/兩村/冰湖)與雙方行軍走廊(法軍西/聯軍東·奧洛穆茨方向)
-LNG_MIN, LNG_MAX = 16.680, 16.900    # 西:法軍來向   東:奧斯特利茨城堡/聯軍來向
-LAT_MIN, LAT_MAX = 49.050, 49.200    # 南:Telnitz/扎錢湖   北:桑頓/拿破崙本陣
-COLS, ROWS = 161, 121                  # 約 150m 解析度
+# bbox：放大 3 倍範圍(面積 9 倍)——戰場周圍保留充足摩拉維亞景觀,鏡頭拉開不再是浮空小塊。
+#   戰場核心仍居中(普拉欽/桑頓/兩村/冰湖/Žuráň/奧斯特利茨城堡)。
+LNG_MIN, LNG_MAX = 16.460, 17.120    # 西:法軍/布爾諾來向   東:奧洛穆茨方向(聯軍來向)
+LAT_MIN, LAT_MAX = 48.900, 49.350    # 南:扎錢湖以南   北:桑頓/本陣以北
+COLS, ROWS = 251, 201                  # 約 200m 解析度(放大範圍下兼顧細節與下載時間)
 API = "https://api.opentopodata.org/v1/srtm30m"
 
 # 由南到北(row 0 = LAT_MIN)、由西到東(col 0 = LNG_MIN)建格點

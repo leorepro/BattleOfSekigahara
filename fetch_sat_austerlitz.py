@@ -8,13 +8,14 @@ ESRI World Imagery 為 Web Mercator(EPSG:3857)XYZ 圖磚；DEM 為等距經緯(E
 import math, io, sys, time, urllib.request, os
 from concurrent.futures import ThreadPoolExecutor
 from PIL import Image
+Image.MAX_IMAGE_PIXELS = None             # 放大範圍鑲嵌圖較大,解除 PIL 解壓炸彈防護(來源為自家拼接,非攻擊)
 
-# 與 fetch_dem_austerlitz.py 同範圍
-LNG_MIN, LNG_MAX = 16.680, 16.900
-LAT_MIN, LAT_MAX = 49.050, 49.200
-Z = 14                                   # ~9.5 m/px
+# 與 fetch_dem_austerlitz.py 同範圍（放大 3 倍 bbox）
+LNG_MIN, LNG_MAX = 16.460, 17.120
+LAT_MIN, LAT_MAX = 48.900, 49.350
+Z = 14                                   # 放大 3 倍 bbox 下,Z15 鑲嵌圖達 2.4 億像素過大;Z14 原生≈7690px 已足
 TILE = 256
-MAX_W = 6144
+MAX_W = 8192
 URL = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
 FILL = (150, 160, 140)                    # 缺磚填色（摩拉維亞農地灰綠）
 

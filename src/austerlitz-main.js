@@ -53,7 +53,7 @@
       [205, 0xcfe0e6], [230, 0x9aa48c], [280, 0x8e9a82], [340, 0xa8a890],
       [420, 0xb8b6a4], [520, 0xcfcdc2],
     ],
-    satelliteTexture: 'assets/terrain/austerlitz-sat.jpg',
+    satelliteTexture: 'assets/terrain/austerlitz-sat.jpg?v=3x',
     // 有界公轉：每段只掃固定小角度
     boundedOrbit: true, orbitSpan: 32,
     // 敵對雙方火線間距：線列步兵/砲兵隔開互轟、不互相穿插覆蓋（衝鋒/突破/潰逃者貼身接戰除外）
@@ -132,19 +132,20 @@
     if (!S.engine || !S.engine.project) return;
     const c = S.engine.project(POND.lng, POND.lat, 0);
     const cy = (S.terrain ? S.terrain.heightAt(c.x, c.z) : 0);
-    const y = cy + 0.24;
-    // 冰面：貼合地形的低窪冰湖(半透冰藍、微反光)，逐頂點貼地避免懸空白塊。隨 worldScale ×2 放大。
-    const W = 68, H = 52, SX = 24, SZ = 18;
-    const geo = new THREE.PlaneGeometry(W, H, SX, SZ);
-    geo.rotateX(-Math.PI / 2);
-    const pos = geo.attributes.position;
-    for (let i = 0; i < pos.count; i++) {
-      const lx = pos.getX(i), lz = pos.getZ(i);
-      const h = S.terrain ? S.terrain.heightAt(c.x + lx, c.z + lz) : cy;
-      // 只在「低於周邊」的窪地視為水面(其餘抬到地表以下→被地形蓋住,不露白塊)
-      pos.setY(i, (h - cy) + (h <= cy + 2.4 ? 0.24 : -6));
+    const y = cy + 0.5;                       // 湖面水位(略高於窪底);岸邊由地形自然遮擋成有機湖岸
+    // 自然不規則湖形(非方塊!)：橢圓基底 + 多頻半徑雜訊生成有機外輪廓,水平湖面。
+    const RX = 48, RZ = 31, SEG = 56;
+    const shape = new THREE.Shape();
+    for (let i = 0; i <= SEG; i++) {
+      const a = i / SEG * Math.PI * 2;
+      const nz = 1 + 0.20 * Math.sin(a * 3 + 0.6) + 0.13 * Math.sin(a * 5 + 1.7)
+                   + 0.07 * Math.sin(a * 8 + 0.3) - 0.05 * Math.cos(a * 2 + 2.1);
+      const px = Math.cos(a) * RX * nz, pz = Math.sin(a) * RZ * nz;
+      if (i === 0) shape.moveTo(px, pz); else shape.lineTo(px, pz);
     }
-    pos.needsUpdate = true; geo.computeVertexNormals();
+    const geo = new THREE.ShapeGeometry(shape);
+    geo.rotateX(-Math.PI / 2);                // XY → XZ 水平湖面
+    geo.computeVertexNormals();
     const mat = new THREE.MeshStandardMaterial({ color: 0xbcd2dc, roughness: 0.18, metalness: 0.25,
       transparent: true, opacity: 0.5, depthWrite: false });
     const mesh = new THREE.Mesh(geo, mat);
@@ -215,7 +216,7 @@
         if (S.cannonadePond) S.cannonadePond(ice.c.x + ox, ice.y, ice.c.z + oz);
         // 命中處浮現破冰孔(輪替孔洞池),從無到有長成 open water
         const h = ice.holes[ice.holeIdx]; ice.holeIdx = (ice.holeIdx + 1) % ice.holes.length;
-        const hy = (S.terrain ? S.terrain.heightAt(ice.c.x + ox, ice.c.z + oz) : ice.y) + 0.18;
+        const hy = ice.y + 0.06;             // 緊貼冰面(破冰見水)
         h.mesh.position.set(ice.c.x + ox, hy, ice.c.z + oz);
         h.mesh.visible = true; h.age = 0; h.rMax = 4 + Math.random() * 6;
       }
