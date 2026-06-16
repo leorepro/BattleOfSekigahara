@@ -199,10 +199,11 @@ window.SEKI = window.SEKI || {};
         const variant = napoVariant(a);
         const mounted = S.variantIsMounted(variant);
         const isCannon = variant === 'cannon';
-        // 比例制人數（雙方兵力差可見）；騎兵/砲較少、步兵較多，cap 控效能
-        const cap = mounted ? 300 : (a.kind === 'command' ? 90 : (isCannon ? 28 : 700));
-        const per = isCannon ? 500 : (mounted ? 26 : 18);
-        const count = Math.max(mounted ? 12 : (isCannon ? 4 : 24), Math.min(cap, Math.round(a.troops / per)));
+        // 比例制人數（雙方兵力差可見）；騎兵/砲較少、步兵較多。
+        // cap 大幅下修控效能：精細模型(數百頂點)×上千實例×著色器動畫會壓垮 FPS。
+        const cap = mounted ? 130 : (a.kind === 'command' ? 70 : (isCannon ? 16 : 300));
+        const per = isCannon ? 400 : (mounted ? 40 : 42);
+        const count = Math.max(mounted ? 12 : (isCannon ? 4 : 20), Math.min(cap, Math.round(a.troops / per)));
         // 提亮軍服：冬日陰天光照偏暗，把陣營色微混白提亮 → 法軍藍/俄綠/奧白一眼分明
         const coat = (a.factionColor != null)
           ? new THREE.Color(a.factionColor).lerp(new THREE.Color(0xffffff), 0.20).getHex()
@@ -213,7 +214,8 @@ window.SEKI = window.SEKI || {};
           ? S.makeAnimatedMaterial({ roughness: 0.7, metalness: mounted ? 0.12 : 0.06 })
           : new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.7, metalness: mounted ? 0.12 : 0.06 });
         const nbody = new THREE.InstancedMesh(ngeo, nmat, count);
-        nbody.castShadow = true; nbody.frustumCulled = false;
+        // 不投陰影：陰影pass會把上千實例的頂點再算一遍(含著色器動畫),是 FPS 殺手。
+        nbody.castShadow = false; nbody.frustumCulled = false;
         // 每兵隨機相位 → 四肢動畫不同步
         const phase = new Float32Array(count);
         for (let i = 0; i < count; i++) phase[i] = Math.random();

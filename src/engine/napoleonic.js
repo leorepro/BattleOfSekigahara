@@ -47,14 +47,15 @@ window.SEKI = window.SEKI || {};
     return out;
   }
   const box = (w,h,d,x,y,z) => { const g = new THREE.BoxGeometry(w,h,d); g.translate(x,y,z); return g; };
+  // 低面數圓柱/球（效能：上千實例 × 著色器動畫，段數壓低以保 FPS；視覺上仍圓潤）
   function cyl(rt, rb, h, x, y, z, axis) {            // 預設沿 Y；axis 'z'/'x' 轉向
-    const g = new THREE.CylinderGeometry(rt, rb, h, 10);
+    const g = new THREE.CylinderGeometry(rt, rb, h, 6);           // 6 段(省面數)
     if (axis === 'z') g.rotateX(Math.PI/2); else if (axis === 'x') g.rotateZ(Math.PI/2);
     g.translate(x,y,z); return g;
   }
-  const sph = (r,x,y,z) => { const g = new THREE.SphereGeometry(r,10,8); g.translate(x,y,z); return g; };
+  const sph = (r,x,y,z) => { const g = new THREE.SphereGeometry(r,6,4); g.translate(x,y,z); return g; };
   function wheel(r, thick, x, y, z) {                 // 砲車輪：盤面朝 ±X
-    const g = new THREE.CylinderGeometry(r, r, thick, 16); g.rotateZ(Math.PI/2); g.translate(x,y,z); return g;
+    const g = new THREE.CylinderGeometry(r, r, thick, 10); g.rotateZ(Math.PI/2); g.translate(x,y,z); return g;
   }
 
   /* ---------- 步兵（精細：圓化四肢 + shako/熊皮帽 + 燧發槍）---------- */

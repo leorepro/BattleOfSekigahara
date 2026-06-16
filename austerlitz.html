@@ -58,12 +58,13 @@
 
   /* HUD：時刻 / 操作提示 */
   #hud{ position:fixed; top:14px; left:16px; font-size:12px; line-height:1.65; letter-spacing:1px;
+        max-width:340px;     /* 限寬:長階段文字換行,不延伸到中央兵力儀表下(避免資訊互蓋) */
         background:linear-gradient(180deg, rgba(24,20,16,.90), rgba(15,13,11,.86));
         border:1px solid rgba(232,200,122,.26); border-radius:9px; padding:7px 14px 8px;
         color:#ece3cf; box-shadow:0 5px 18px rgba(0,0,0,.45); }
-  #hud .clk{ font-size:12.5px; letter-spacing:1.5px; white-space:nowrap; }
-  #hud b{ color:#e8c87a; font-weight:700; }
-  #hud #phase{ color:#d8ccb0; }
+  #hud .clk{ font-size:12.5px; letter-spacing:1.5px; }
+  #hud b{ color:#e8c87a; font-weight:700; white-space:nowrap; }
+  #hud #phase{ color:#d8ccb0; display:block; margin-top:2px; }   /* 階段另起一行,不與時刻同列擠寬 */
   #hud .hint{ font-size:10px; opacity:.6; letter-spacing:.5px; white-space:nowrap; margin-top:3px; padding-top:3px;
         border-top:1px solid rgba(232,200,122,.14); }
 
