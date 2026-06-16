@@ -15,6 +15,45 @@ window.SEKI = window.SEKI || {};
         _p = new THREE.Vector3(), _s = new THREE.Vector3(1, 1, 1), _up = new THREE.Vector3(0, 1, 0);
   let _forms = [];
 
+  /* ---- 拿破崙時代陣型形態（formMode → base 的 x/z 縮放） ----
+     line 橫隊(寬扁) / column 行軍縱隊(窄長) / square 抗騎方陣(Phase4 真空心) /
+     charge 騎兵衝鋒(楔形) / rout 潰散(鬆) / hold 駐守。 */
+  const NAPO_SCALE = {
+    line:   { x:1.40, z:0.80 }, column: { x:0.50, z:1.70 },
+    square: { x:1.05, z:1.05 }, charge: { x:0.85, z:1.25 },
+    rout:   { x:1.35, z:1.35 }, hold:   { x:1.20, z:0.88 },
+  };
+  function napoMode(st) {
+    switch (st) {
+      case 'march':        return 'column';
+      case 'attack':       return 'line';
+      case 'breakthrough': return 'charge';
+      case 'charge':       return 'charge';
+      case 'square':       return 'square';
+      case 'rout':         return 'rout';
+      default:             return 'hold';   // hold / 其他
+    }
+  }
+  // 形態覆寫（maneuver.js 可呼叫 S.setFormMode 指定單位形態，優先於 st 推導）
+  const _formMode = {};
+  S.setFormMode = function (id, mode) { if (mode == null) delete _formMode[id]; else _formMode[id] = mode; };
+  // 依 faction/kind 決定拿破崙單兵 variant
+  function napoVariant(a) {
+    const f = a.faction || '';
+    if (a.kind === 'cavalry') {
+      if (f.indexOf('austrian') >= 0) return 'austrian-cav';
+      if (f.indexOf('russian')  >= 0) return 'russian-guard-cav';
+      return 'cuirassier';
+    }
+    if (a.kind === 'artillery') return 'cannon';
+    if (a.kind === 'command')   return a.side === 'east' ? 'french-guard' : 'russian-line';
+    if (f.indexOf('guard')     >= 0) return 'french-guard';
+    if (f.indexOf('grenadier') >= 0) return 'french-grenadier';
+    if (f.indexOf('russian')   >= 0) return 'russian-line';
+    if (f.indexOf('austrian')  >= 0) return 'austrian-line';
+    return 'french-line';
+  }
+
   // 合併多個 box geometry 成一個 BufferGeometry
   function mergeBoxes(boxes) {
     let vc = 0; boxes.forEach(g => vc += g.attributes.position.count);
@@ -95,6 +134,8 @@ window.SEKI = window.SEKI || {};
     // 溫泉關：希臘方陣（hoplite 盾牆）。formationStyle==='phalanx' 時走專屬排列；
     // 前三場無此 config → phalanx=false，維持原行為。
     const phalanx = !!(S.config && S.config.formationStyle === 'phalanx');
+    // 奧斯特利茨：拿破崙時代步/騎/砲分兵種幾何（napoleonic.js）
+    const napo = !!(S.config && S.config.formationStyle === 'napoleonic');
     // 依時代決定士兵幾何：現代＝鋼盔步兵（無背旗）；戰國＝足軽＋sashimono 背旗。
     const sGeo = modern ? modernSoldierGeo() : soldierGeo();
     const fGeo = modern ? null : sashimonoGeo();
@@ -150,6 +191,43 @@ window.SEKI = window.SEKI || {};
         _forms.push({ data: a, body: pbody, sashi: null, max: count, facing: 0,
           strengthPer: a.troops / count, showSoldiers: true, phalanx: true, east,
           base, lastX: 1e9, lastZ: 1e9, lastFacing: 1e9, lastN: -1, conformed: false });
+        continue;
+      }
+
+      /* ---- 拿破崙時代分支：步/騎/砲分兵種，line/column/square 動態形態 ---- */
+      if (napo) {
+        const variant = napoVariant(a);
+        const mounted = S.variantIsMounted(variant);
+        const isCannon = variant === 'cannon';
+        // 比例制人數（雙方兵力差可見）；騎兵/砲較少、步兵較多，cap 控效能
+        const cap = mounted ? 300 : (a.kind === 'command' ? 90 : (isCannon ? 28 : 700));
+        const per = isCannon ? 500 : (mounted ? 26 : 18);
+        const count = Math.max(mounted ? 12 : (isCannon ? 4 : 24), Math.min(cap, Math.round(a.troops / per)));
+        const coat = (a.factionColor != null) ? a.factionColor : undefined;
+        const ngeo = S.buildNapoleonicGeo(variant, { coat });
+        const nbody = new THREE.InstancedMesh(ngeo,
+          new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.7, metalness: mounted ? 0.12 : 0.06 }), count);
+        nbody.castShadow = true; nbody.frustumCulled = false;
+        const base = [];                              // 每兵本地座標（橫隊基準，formMode 再縮放）
+        const NP = S.NAPOLEONIC || { fileSpacing:0.66, rankSpacing:0.80, jitterPos:0.05 };
+        const fileSp = (mounted ? 1.7 : isCannon ? 2.4 : 1.0) * NP.fileSpacing;
+        const rankSp = (mounted ? 1.9 : isCannon ? 2.4 : 1.0) * NP.rankSpacing;
+        const cols = Math.max(4, Math.round(Math.sqrt(count * 2.4)));   // 寬扁(橫隊基準)
+        const rows = Math.ceil(count / cols);
+        for (let i = 0; i < count; i++) {
+          const c = i % cols, r = Math.floor(i / cols);
+          const lx = (c - (cols-1)/2) * fileSp + Math.sin(i*12.9) * NP.jitterPos;
+          const lz = ((rows-1)/2 - r) * rankSp + Math.cos(i*7.7) * NP.jitterPos;   // r=0 前(+Z)
+          const yaw = Math.sin(i*4.1) * 0.05;
+          base.push({ x: lx, z: lz, yaw });
+          _m.compose(_p.set(lx, 0, lz), _q.setFromAxisAngle(_up, yaw), _s);
+          nbody.setMatrixAt(i, _m);
+        }
+        nbody.instanceMatrix.needsUpdate = true;
+        eng.scene.add(nbody);
+        _forms.push({ data: a, body: nbody, sashi: null, max: count, facing: 0,
+          strengthPer: a.troops / count, showSoldiers: true, napo: true, east,
+          base, lastX: 1e9, lastZ: 1e9, lastFacing: 1e9, lastN: -1, lastMode: '', conformed: false });
         continue;
       }
 
@@ -245,6 +323,33 @@ window.SEKI = window.SEKI || {};
           f.lastX = gp.x; f.lastZ = gp.z; f.lastFacing = f.facing; f.lastN = n; f.conformed = true;
         }
       }
+      // 拿破崙時代：逐兵貼地形 + 依 formMode(line/column/square/charge/rout) 縮放 base
+      if (f.napo && S.terrain && f.base) {
+        const mode = _formMode[f.data.id] || napoMode(u.cur ? u.cur.st : 'hold');
+        const dirty = !f.conformed || n !== f.lastN || mode !== f.lastMode
+          || Math.abs(gp.x - f.lastX) > 0.04 || Math.abs(gp.z - f.lastZ) > 0.04
+          || Math.abs(f.facing - f.lastFacing) > 0.008;
+        if (dirty) {
+          const sc = NAPO_SCALE[mode] || NAPO_SCALE.line;
+          const cos = Math.cos(f.facing), sin = Math.sin(f.facing), B = f.base;
+          const maxD = 2.4;   // 不上山/不落水：超過高度差沿陣面拉回
+          for (let i = 0; i < n; i++) {
+            const b = B[i];
+            let bx = b.x * sc.x, bz = b.z * sc.z;
+            let wx = gp.x + bx * cos + bz * sin, wz = gp.z - bx * sin + bz * cos;
+            let ty = S.terrain.heightAt(wx, wz);
+            if (Math.abs(ty - gp.y) > maxD) {
+              const k = maxD / Math.abs(ty - gp.y); bx *= k; bz *= k;
+              wx = gp.x + bx * cos + bz * sin; wz = gp.z - bx * sin + bz * cos;
+              ty = S.terrain.heightAt(wx, wz);
+            }
+            _m.compose(_p.set(bx, ty - gp.y, bz), _q.setFromAxisAngle(_up, b.yaw), _s);
+            f.body.setMatrixAt(i, _m);
+          }
+          f.body.instanceMatrix.needsUpdate = true;
+          f.lastX = gp.x; f.lastZ = gp.z; f.lastFacing = f.facing; f.lastN = n; f.lastMode = mode; f.conformed = true;
+        }
+      }
       // 現代戰役無 sashi（f.sashi 為 null），僅更新 body
       const meshes = f.sashi ? [f.body, f.sashi] : [f.body];
       for (const mesh of meshes) {
@@ -252,8 +357,8 @@ window.SEKI = window.SEKI || {};
         mesh.rotation.y = f.facing;
         mesh.count = n;
       }
-      // 倒戈後改投東軍 → 兵團（與背旗，若有）轉藍。phalanx 用頂點色（陣營專屬），不整體重染。
-      if (f.phalanx) continue;
+      // 倒戈後改投東軍 → 兵團（與背旗，若有）轉藍。phalanx/napo 用頂點色（陣營專屬），不整體重染。
+      if (f.phalanx || f.napo) continue;
       const eastNow = (f.data.side === 'east') || (f.data.defectAt != null && t >= f.data.defectAt);
       if (eastNow !== f.eastNow) {
         f.eastNow = eastNow;

@@ -242,9 +242,9 @@ window.SEKI = window.SEKI || {};
         pole.position.y = POLE_H / 2; pole.castShadow = true; group.add(pole);
 
         const fgeo = new THREE.PlaneGeometry(FW, FH, 14, 2);
-        // phalanx（溫泉關）：希臘/波斯不用日式家紋——改陣營專屬色純色軍旗（無 crest 貼圖）。
+        // phalanx（溫泉關）/ napoleonic（奧斯特利茨）：不用日式家紋——改陣營專屬色純色軍旗（無 crest 貼圖）。
         // 前三場無 formationStyle → 仍走家紋幟旗，零影響。
-        const PHALANX = !!(S.config && S.config.formationStyle === 'phalanx');
+        const PHALANX = !!(S.config && (S.config.formationStyle === 'phalanx' || S.config.formationStyle === 'napoleonic'));
         fmat = PHALANX
           ? new THREE.MeshStandardMaterial({
               color: (a.factionColor != null) ? a.factionColor : (a.side === 'east' ? EAST : WEST),
@@ -309,7 +309,7 @@ window.SEKI = window.SEKI || {};
     return _units;
   };
 
-  const ST_LABEL = { hold:'布陣', march:'行軍', attack:'交戰', rout:'潰走', breakthrough:'突破' };
+  const ST_LABEL = { hold:'布陣', march:'行軍', attack:'交戰', rout:'潰走', breakthrough:'突破', charge:'衝鋒', square:'方陣' };
 
   S.updateUnits = function (t) {
     const eng = S.engine;
@@ -391,7 +391,7 @@ window.SEKI = window.SEKI || {};
       }
 
       // 箭頭：行軍/交戰/突破且確有位移時顯示
-      const moving = !dead && (s.st === 'march' || s.st === 'attack' || s.st === 'breakthrough');
+      const moving = !dead && (s.st === 'march' || s.st === 'attack' || s.st === 'breakthrough' || s.st === 'charge' || s.st === 'rout');
       const mag = Math.hypot(u.moveDir.dx, u.moveDir.dz);
       if (moving && mag > 1e-5) {
         u.arrow.visible = true;
@@ -442,7 +442,7 @@ window.SEKI = window.SEKI || {};
     const out = [];
     for (const u of _units) {
       const st = u.cur && u.cur.st;
-      if (st === 'attack' || st === 'breakthrough')
+      if (st === 'attack' || st === 'breakthrough' || st === 'charge')
         out.push({ x:u.group.position.x, y:u.group.position.y, z:u.group.position.z,
                    side:u.data.side, kind:u.data.kind || 'infantry', moveDir:u.moveDir,
                    target: engagementTarget(u, t) });   // 交戰對象即時座標（無則 null）
