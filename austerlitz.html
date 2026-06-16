@@ -70,7 +70,7 @@
 
   /* 戰役切換 */
   /* 戰役切換下拉選單（🏛 + 金字 + ▼ 提示可下拉） */
-  #campaign-switch{ position:fixed; top:84px; left:16px; z-index:9; display:flex; align-items:center; gap:6px;
+  #campaign-switch{ position:fixed; top:120px; left:16px; z-index:9; display:flex; align-items:center; gap:6px;
         padding:5px 11px; background:linear-gradient(180deg,rgba(40,32,18,.93),rgba(22,17,10,.9));
         border:1px solid rgba(232,200,122,.5); border-radius:8px; box-shadow:0 2px 12px rgba(0,0,0,.55); }
   #campaign-switch:hover{ border-color:#e8c87a; box-shadow:0 2px 14px rgba(232,200,122,.3); }
@@ -134,7 +134,7 @@
   #legend .kbadge{ margin:0; flex:0 0 auto; }
 
   /* 軍隊清單面板 */
-  #roster{ position:fixed; left:14px; top:124px; width:236px; max-height:64vh; overflow-y:auto;
+  #roster{ position:fixed; left:14px; top:162px; width:236px; max-height:60vh; overflow-y:auto;
            background:rgba(16,12,8,.84); border:1px solid rgba(201,168,106,.34); border-radius:9px;
            padding:9px 11px; font-size:11.5px; letter-spacing:.4px; line-height:1.45;
            display:none; z-index:6; }
@@ -238,8 +238,8 @@
   /* 手機 / 窄螢幕響應式 */
   @media (max-width: 760px){
     #hud{ font-size:10px; top:8px; left:10px; padding:5px 9px 6px; }
-    #campaign-switch{ top:52px; left:10px; font-size:10px; }
-    #campaign-switch .cs-item{ padding:4px 9px; }
+    #campaign-switch{ top:96px; left:10px; }
+    #campaign-switch #cs-select{ font-size:11px; }
     #bars{ width:132px; font-size:10px; top:8px; right:8px; }
     #legend{ width:150px; font-size:9px; line-height:1.4; top:58px; right:8px; padding:7px 8px; }
     #legend .lg-hr{ margin:5px 0; }
