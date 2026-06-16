@@ -11,6 +11,7 @@ window.SEKI = window.SEKI || {};
   function holdOf(shot) { return shot.hold * (shot.t >= 7.6 ? 1.6 : 0.7); }
   const _t = new THREE.Vector3(), _p = new THREE.Vector3();
   let idx = 0, phase = 'tween', shotTimer = 0, tweenTimer = 0, az = 0;
+  let _cardShown = false;   // 旁白卡片是否已於本鏡就位後顯示(避免飛入期間旁白先行)
 
   function targetLL(lng, lat) {
     const p = S.engine.project(lng, lat, 0);
@@ -27,6 +28,7 @@ window.SEKI = window.SEKI || {};
     az = S.storyboard[0].cam.az; S.player.time = S.storyboard[0].t;
     if (S.player.cinemaScale == null) S.player.cinemaScale = 1; // 子彈時間係數初始化
     if (S.setEventCard) S.setEventCard(S.storyboard[0]);
+    _cardShown = true; S.currentShot = S.storyboard[0];   // 開場首鏡卡片即刻顯示
     if (S.setFocus) S.setFocus(S.storyboard[0].focus); };
 
   S.currentShot = null;
@@ -73,8 +75,10 @@ window.SEKI = window.SEKI || {};
     const sb = S.storyboard, cur = sb[idx];
     if (S.currentShot !== cur) {
       S.currentShot = cur;
-      if (S.setEventCard) S.setEventCard(cur);
+      // 高亮可在飛入時就切換(指向即將聚焦的部隊);但「旁白卡片」延到 tween→hold(單位已推進到本鏡 t、
+      // 就位)時才更新,避免「說明比鏡頭/單位早一步」的時間落差。
       if (S.setFocus) S.setFocus(cur.focus);
+      _cardShown = false;
     }
     const eng = S.engine, cam = eng.camera;
     // 全域相機距離係數（新增，gate）：config.camDistScale<1 → 鏡頭整體拉近、地形與部隊一起放大呈現。
@@ -102,6 +106,7 @@ window.SEKI = window.SEKI || {};
       }
       if (cam.position.distanceTo(want) < cur.cam.dist * DS * 0.04 || tweenTimer > 3.2) {
         phase = 'hold'; shotTimer = 0; S.player.time = cur.t;
+        if (!_cardShown && S.setEventCard) { S.setEventCard(cur); _cardShown = true; }  // 單位就位後才上旁白
       }
     } else { // hold：電影運鏡——dolly 推拉 / orbit 公轉 / pan 隨砲火角度掃 / 子彈時間
       shotTimer += dt;
