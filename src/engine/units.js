@@ -324,13 +324,20 @@ window.SEKI = window.SEKI || {};
       u.moveDir = { dx: s2.lng - s.lng, dz: -(s2.lat - s.lat) };
     }
     // 2) 防重疊（XZ 平面分離，數次迭代）
-    const MIN = 8.5;
-    for (let it = 0; it < 5; it++) {
+    //    敵對雙方保持「火線間距」(config.standoff)：線列步兵/砲兵隔開互轟，不互相覆蓋穿插；
+    //    但衝鋒/突破/潰逃者貼身接戰(closing)不套用間距，讓騎兵能撞進敵陣。
+    const MIN_SAME = 8.5;
+    const STANDOFF = (S.config && S.config.standoff) || MIN_SAME;
+    const closingRe = /charge|breakthrough|rout/;
+    for (let it = 0; it < 6; it++) {
       for (let i = 0; i < _units.length; i++) for (let j = i + 1; j < _units.length; j++) {
-        const A = _units[i].p, B = _units[j].p;
+        const UA = _units[i], UB = _units[j], A = UA.p, B = UB.p;
         let dx = B.x - A.x, dz = B.z - A.z;
         let d = Math.hypot(dx, dz) || 0.01;
-        if (d < MIN) { const push = (MIN - d) / 2 / d; dx *= push; dz *= push;
+        const opposing = UA.data.side !== UB.data.side;
+        const closing = closingRe.test((UA.cur && UA.cur.st) || '') || closingRe.test((UB.cur && UB.cur.st) || '');
+        const min = (opposing && !closing) ? STANDOFF : MIN_SAME;
+        if (d < min) { const push = (min - d) / 2 / d; dx *= push; dz *= push;
           A.x -= dx; A.z -= dz; B.x += dx; B.z += dz; }
       }
     }

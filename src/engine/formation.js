@@ -19,9 +19,9 @@ window.SEKI = window.SEKI || {};
      line 橫隊(寬扁) / column 行軍縱隊(窄長) / square 抗騎方陣(Phase4 真空心) /
      charge 騎兵衝鋒(楔形) / rout 潰散(鬆) / hold 駐守。 */
   const NAPO_SCALE = {
-    line:   { x:1.40, z:0.80 }, column: { x:0.50, z:1.70 },
-    square: { x:1.05, z:1.05 }, charge: { x:0.85, z:1.25 },
-    rout:   { x:1.35, z:1.35 }, hold:   { x:1.20, z:0.88 },
+    line:   { x:1.30, z:0.95 }, column: { x:0.55, z:1.60 },
+    square: { x:1.05, z:1.05 }, charge: { x:0.90, z:1.20 },
+    rout:   { x:1.40, z:1.40 }, hold:   { x:1.15, z:0.95 },
   };
   function napoMode(st) {
     switch (st) {
@@ -203,7 +203,10 @@ window.SEKI = window.SEKI || {};
         const cap = mounted ? 300 : (a.kind === 'command' ? 90 : (isCannon ? 28 : 700));
         const per = isCannon ? 500 : (mounted ? 26 : 18);
         const count = Math.max(mounted ? 12 : (isCannon ? 4 : 24), Math.min(cap, Math.round(a.troops / per)));
-        const coat = (a.factionColor != null) ? a.factionColor : undefined;
+        // 提亮軍服：冬日陰天光照偏暗，把陣營色微混白提亮 → 法軍藍/俄綠/奧白一眼分明
+        const coat = (a.factionColor != null)
+          ? new THREE.Color(a.factionColor).lerp(new THREE.Color(0xffffff), 0.20).getHex()
+          : undefined;
         const ngeo = S.buildNapoleonicGeo(variant, { coat });
         // 著色器骨架動畫材質（行軍擺腿/開槍/奔馳）；無 anim.js 時退回靜態標準材質
         const nmat = S.makeAnimatedMaterial
@@ -219,16 +222,35 @@ window.SEKI = window.SEKI || {};
         const NP = S.NAPOLEONIC || { fileSpacing:0.66, rankSpacing:0.80, jitterPos:0.05 };
         const fileSp = (mounted ? 1.7 : isCannon ? 2.4 : 1.0) * NP.fileSpacing;
         const rankSp = (mounted ? 1.9 : isCannon ? 2.4 : 1.0) * NP.rankSpacing;
-        const cols = Math.max(4, Math.round(Math.sqrt(count * 2.4)));   // 寬扁(橫隊基準)
-        const rows = Math.ceil(count / cols);
-        for (let i = 0; i < count; i++) {
-          const c = i % cols, r = Math.floor(i / cols);
-          const lx = (c - (cols-1)/2) * fileSp + Math.sin(i*12.9) * NP.jitterPos;
-          const lz = ((rows-1)/2 - r) * rankSp + Math.cos(i*7.7) * NP.jitterPos;   // r=0 前(+Z)
-          const yaw = Math.sin(i*4.1) * 0.05;
-          base.push({ x: lx, z: lz, yaw });
-          _m.compose(_p.set(lx, 0, lz), _q.setFromAxisAngle(_up, yaw), _s);
-          nbody.setMatrixAt(i, _m);
+        // 自然散布：由多個小隊(連/中隊/砲組)組成，疏密不一、有聚有散——不再單一死板方塊。
+        const clSize = mounted ? 24 : (isCannon ? 3 : 44);
+        const nCl = Math.max(1, Math.ceil(count / clSize));
+        const cCols = Math.max(1, Math.round(Math.sqrt(nCl * 1.8)));     // 小隊略寬扁排列
+        const cRows = Math.ceil(nCl / cCols);
+        // 小隊間距須大於小隊本身尺寸，才有「連與連之間的空隙」、不致併成一坨重疊
+        const gapX = mounted ? 11.0 : (isCannon ? 9.0 : 9.6);
+        const gapZ = mounted ? 8.6 : (isCannon ? 7.0 : 7.6);
+        const seed = (a.id ? a.id.length : 1) * 1.7;
+        let idx = 0;
+        for (let c = 0; c < nCl && idx < count; c++) {
+          const ccx = c % cCols, ccz = Math.floor(c / cCols);
+          // 小隊中心：規則格 + 隨機偏移(聚散不一)
+          const cx = (ccx - (cCols-1)/2) * gapX + Math.sin(c*5.1 + seed) * (mounted ? 2.4 : 1.9);
+          const cz = ((cRows-1)/2 - ccz) * gapZ + Math.cos(c*3.3 + seed) * (mounted ? 1.8 : 1.4);
+          const tight = 0.80 + 0.5 * Math.abs(Math.sin(c*2.7 + seed));   // 有的密(~0.8)有的散(~1.3)
+          const cn = Math.min(clSize, count - idx);
+          const cw = Math.max(3, Math.round(Math.sqrt(cn * 2.2)));       // 小隊寬(橫隊基準)
+          const cd = Math.ceil(cn / cw);
+          const spx = fileSp * tight, spz = rankSp * tight;
+          for (let k = 0; k < cn; k++, idx++) {
+            const fi = k % cw, ri = Math.floor(k / cw);
+            const lx = cx + (fi - (cw-1)/2) * spx + (Math.sin(idx*12.9) + 0.6*Math.sin(idx*3.7)) * 0.13 * tight;
+            const lz = cz + ((cd-1)/2 - ri) * spz + (Math.cos(idx*7.7) + 0.6*Math.cos(idx*2.3)) * 0.13 * tight;  // ri=0 前(+Z)
+            const yaw = (Math.sin(idx*4.1) + 0.5*Math.sin(idx*1.7)) * 0.06;
+            base.push({ x: lx, z: lz, yaw });
+            _m.compose(_p.set(lx, 0, lz), _q.setFromAxisAngle(_up, yaw), _s);
+            nbody.setMatrixAt(idx, _m);
+          }
         }
         nbody.instanceMatrix.needsUpdate = true;
         eng.scene.add(nbody);
@@ -283,7 +305,10 @@ window.SEKI = window.SEKI || {};
         } else { dx = -gp.x; dz = -gp.z; }   // 前三場維持朝場景中心
       }
       const want = Math.atan2(dx, dz);
-      f.facing += ((want - f.facing + Math.PI*3) % (Math.PI*2) - Math.PI) * 0.1;
+      // 物理化轉向：限制每幀最大轉角(wheel 感)，整個方陣漸進回旋、不瞬間旋轉。
+      let _dF = ((want - f.facing + Math.PI*3) % (Math.PI*2) - Math.PI);
+      const _maxStep = (f.napo || f.phalanx) ? 0.03 : 0.1;   // napo/phalanx 緩慢回旋；其餘維持原速
+      f.facing += Math.max(-_maxStep, Math.min(_maxStep, _dF * 0.08));
       const s = u.cur ? u.cur.s : f.data.troops;
       let n = Math.max(0, Math.min(f.max, Math.round(s / f.strengthPer)));
       // 現代戰役（諾曼第）：搶灘步兵在海上時概念上仍在登陸艇內，不顯示士兵方陣；

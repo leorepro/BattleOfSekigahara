@@ -237,5 +237,6 @@ window.SEKI = window.SEKI || {};
 
   S.variantIsMounted = function (variant) { return /cuirassier|hussar|dragoon|cav/.test(variant || ''); };
 
-  S.NAPOLEONIC = { fileSpacing: 0.66, rankSpacing: 0.80, jitterPos: 0.05 };
+  // 間距須大於單兵寬(~0.5)+槍枝,避免士兵重疊;以「並肩有間隙」為準
+  S.NAPOLEONIC = { fileSpacing: 0.82, rankSpacing: 0.98, jitterPos: 0.05 };
 })(window.SEKI);

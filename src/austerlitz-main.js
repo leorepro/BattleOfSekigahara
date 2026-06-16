@@ -51,6 +51,8 @@
     satelliteTexture: 'assets/terrain/austerlitz-sat.jpg',
     // 有界公轉：每段只掃固定小角度
     boundedOrbit: true, orbitSpan: 32,
+    // 敵對雙方火線間距：線列步兵/砲兵隔開互轟、不互相穿插覆蓋（衝鋒/突破/潰逃者貼身接戰除外）
+    standoff: 20,
   };
 
   S.player = { time: -8, playing: true, speed: 0.35, program: true, T_START: -8, T_END: 12 };

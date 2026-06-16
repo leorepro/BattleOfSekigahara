@@ -190,13 +190,16 @@ window.SEKI = window.SEKI || {};
 
   function buildNotes() {
     const s = S.sources; if (!s || !el.notesBody) return;
-    const list = (arr, cls) => '<ul>' + arr.map(x => `<li class="${cls||''}">${x}</li>`).join('') + '</ul>';
+    // 各區段為選用：缺項(如某戰役未提供 primary/data)則略過，不渲染標題、不報錯。
+    const sec = (title, arr, cls) => (arr && arr.length)
+      ? `<h3>${title}</h3><ul>` + arr.map(x => `<li class="${cls||''}">${x}</li>`).join('') + '</ul>'
+      : '';
     el.notesBody.innerHTML =
-      `<p>${s.overview}</p>` +
-      `<h3>考據與呈現說明 · Caveats</h3>${list(s.caveats, 'caveat')}` +
-      `<h3>參考書目 · Books</h3>${list(s.books)}` +
-      `<h3>近世史料 · Primary Sources</h3>${list(s.primary)}` +
-      `<h3>資料來源 · Data</h3>${list(s.data)}`;
+      (s.overview ? `<p>${s.overview}</p>` : '') +
+      sec('考據與呈現說明 · Caveats', s.caveats, 'caveat') +
+      sec('參考書目 · Books', s.books) +
+      sec('近世史料 · Primary Sources', s.primary) +
+      sec('資料來源 · Data', s.data);
   }
 
   const CREST_NAME = { daiichi:'大一大万大吉', jiMonji:'児文字', mukaiCho:'対い蝶',
