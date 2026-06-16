@@ -105,6 +105,55 @@
     snow.geo.attributes.position.needsUpdate = true;
   }
 
+  /* ---------- 扎錢湖冰面 + 冰湖砲擊 finale ---------- */
+  //   史實名場面：南線聯軍潰逃越扎錢湖冰面，高地火砲轟冰、冰裂。沿用「破除迷思」史觀
+  //   （UI sources caveat 並陳：拿破崙宣稱數千溺斃 vs 史學家考證僅撈 2-3 具）。
+  let ice = null;
+  const POND = { lng: 16.780, lat: 49.073 };   // 扎錢湖南緣
+  function initIce() {
+    if (!S.engine || !S.engine.project) return;
+    const c = S.engine.project(POND.lng, POND.lat, 0);
+    const y = (S.terrain ? S.terrain.heightAt(c.x, c.z) : 0) + 0.25;
+    // 冰面（淺青白、半透、微反光）
+    const geo = new THREE.PlaneGeometry(46, 30, 1, 1);
+    geo.rotateX(-Math.PI / 2);
+    const mat = new THREE.MeshStandardMaterial({ color: 0xcfe0e6, roughness: 0.25, metalness: 0.1,
+      transparent: true, opacity: 0.72 });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.set(c.x, y, c.z);
+    mesh.receiveShadow = true;
+    S.engine.scene.add(mesh);
+    // 裂紋線段（初始隱藏，砲擊時漸顯）
+    const cgeo = new THREE.BufferGeometry();
+    const segs = 9, pts = [];
+    for (let i = 0; i < segs; i++) {
+      const a0 = Math.random() * 6.28, len = 6 + Math.random() * 12;
+      const x0 = (Math.random() * 2 - 1) * 18, z0 = (Math.random() * 2 - 1) * 11;
+      pts.push(x0, 0.03, z0, x0 + Math.cos(a0) * len, 0.03, z0 + Math.sin(a0) * len);
+    }
+    cgeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(pts), 3));
+    const cmat = new THREE.LineBasicMaterial({ color: 0x4a6b78, transparent: true, opacity: 0 });
+    const cracks = new THREE.LineSegments(cgeo, cmat);
+    cracks.position.copy(mesh.position);
+    S.engine.scene.add(cracks);
+    ice = { mesh, mat, cracks, cmat, c, y, acc: 0 };
+  }
+  function updateIce(t, dt) {
+    if (!ice) return;
+    // finale：t∈[8,11.5] 高地火砲轟冰面 → 砲擊 FX + 裂紋漸顯
+    const active = t >= 8 && t <= 11.5;
+    const k = active ? Math.min(1, (t - 8) / 1.5) : (t > 11.5 ? 1 : 0);
+    ice.cmat.opacity = 0.55 * k;
+    if (active && S.cannonadePond) {
+      ice.acc += dt;
+      if (ice.acc >= 0.5) {
+        ice.acc = 0;
+        const ox = (Math.random() * 2 - 1) * 20, oz = (Math.random() * 2 - 1) * 13;
+        S.cannonadePond(ice.c.x + ox, ice.y, ice.c.z + oz);
+      }
+    }
+  }
+
   /* ---------- 啟動 ---------- */
   function boot() {
     const eng = S.engine.init();
@@ -120,6 +169,7 @@
     if (S.initVolley) S.initVolley();       // 排槍/砲兵齊射 FX
     S.initWeather();
     initSnow();
+    initIce();
     S.initUI();
     S.setProgramMode(true);
 
@@ -153,6 +203,7 @@
       updateSnow(t, dt);
       // 子彈時間：storyboard 把慢動作係數寫到 S.player.cinemaScale，乘入動畫/特效的 dt
       const cdt = dt * ((S.player.cinemaScale != null) ? S.player.cinemaScale : 1);
+      updateIce(t, cdt);
       S.updateEffects(t, cdt);
       S.updateEngagements(t, cdt);
       if (S.updateMelee) S.updateMelee(t, cdt);
