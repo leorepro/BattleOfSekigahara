@@ -333,9 +333,24 @@ window.SEKI = window.SEKI || {};
           const sc = NAPO_SCALE[mode] || NAPO_SCALE.line;
           const cos = Math.cos(f.facing), sin = Math.sin(f.facing), B = f.base;
           const maxD = 2.4;   // 不上山/不落水：超過高度差沿陣面拉回
+          // 空心方陣：把士兵排到方框外緣(抗騎)，否則照 base 縮放
+          const sqPer = (mode === 'square') ? Math.max(1, Math.floor(n / 4)) : 0;
+          const sqHalf = (mode === 'square') ? (sqPer * 0.62 / 2 + 0.6) : 0;
           for (let i = 0; i < n; i++) {
             const b = B[i];
-            let bx = b.x * sc.x, bz = b.z * sc.z;
+            let bx, bz;
+            if (mode === 'square') {
+              const edge = Math.floor(i / sqPer) % 4;
+              const f01 = (sqPer > 1) ? (i % sqPer) / (sqPer - 1) : 0.5;
+              const uu = (f01 * 2 - 1) * sqHalf;
+              if (edge === 0)      { bx = uu;      bz = sqHalf; }
+              else if (edge === 1) { bx = sqHalf;  bz = -uu; }
+              else if (edge === 2) { bx = -uu;     bz = -sqHalf; }
+              else                 { bx = -sqHalf; bz = uu; }
+              bx += Math.sin(i * 9.3) * 0.05; bz += Math.cos(i * 5.1) * 0.05;   // 微抖
+            } else {
+              bx = b.x * sc.x; bz = b.z * sc.z;
+            }
             let wx = gp.x + bx * cos + bz * sin, wz = gp.z - bx * sin + bz * cos;
             let ty = S.terrain.heightAt(wx, wz);
             if (Math.abs(ty - gp.y) > maxD) {
