@@ -9,7 +9,9 @@ window.SEKI = window.SEKI || {};
   // 1 經度 ≈ 多少公尺（隨緯度變化），用來把經緯度等比投影到場景平面
   const M_PER_DEG_LAT = 111320;
   // 場景縮放：把「公尺」壓縮成場景單位（讓整個盆地約 100 單位寬）
-  const WORLD_SCALE = 1 / 60;
+  //   可由 config.worldScale 覆寫（如奧斯特利茨用 1/30 把戰場放大 2 倍呈現）；
+  //   未設則維持 1/60，其餘戰役零影響。project() 於執行期讀取（config 此時已就緒）。
+  const DEFAULT_WORLD_SCALE = 1 / 60;
 
   S.engine = {
     scene: null, camera: null, renderer: null, controls: null,
@@ -18,6 +20,7 @@ window.SEKI = window.SEKI || {};
     /* 經緯度 + 海拔(m) → THREE.Vector3 場景座標 */
     project(lng, lat, h = 0) {
       const o = S.geography.origin;
+      const WORLD_SCALE = (S.config && S.config.worldScale) || DEFAULT_WORLD_SCALE;
       const mPerDegLng = M_PER_DEG_LAT * Math.cos(o.lat * Math.PI / 180);
       const x = (lng - o.lng) * mPerDegLng * WORLD_SCALE;
       const z = -(lat - o.lat) * M_PER_DEG_LAT * WORLD_SCALE; // 北 = -Z

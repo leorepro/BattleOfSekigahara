@@ -10,6 +10,7 @@ window.SEKI = window.SEKI || {};
   let _casPrev = null; const _casAcc = { east: 0, west: 0 };   // 陣亡跳動偵測：上幀值 + 累積增量
   let eastMax = 1, westMax = 1;
   let _freeShotIdx = -1;   // 自由運鏡：目前對應的 storyboard 鏡頭索引
+  let _balPrevE = null, _balPrevW = null, _balFrame = 0, _balHitT = null;   // 兵力儀表重擊偵測
 
   // 時刻 T（距基準日 00:00 的小時數）→「九月十四日 戌刻 20:00」
   // 可由 SEKI.config.fmtTime(t, JIKOKU) 覆寫（如桶狹間用五月十九日）
@@ -40,7 +41,7 @@ window.SEKI = window.SEKI || {};
 
   S.initUI = function () {
     const ids = ['caption','evDate','evTitle','evTitleEn','evNarr','evCmd','btnPlay','scrub','spd','btnMode',
-      'tlabel','barEast','barWest','valEast','valWest','balLabel','card','cardBody','cardClose','btnAudio','bgm',
+      'bars','tlabel','barEast','barWest','valEast','valWest','balLabel','card','cardBody','cardClose','btnAudio','bgm',
       'btnNotes','notes','notesBody','notesClose','roster','btnRoster','toast','markers',
       'cwrap','casEast','casWest','casValEast','casValWest','casTrack','casTotal'];   // 累積陣亡條
     ids.forEach(id => el[id] = document.getElementById(id));
@@ -345,6 +346,23 @@ window.SEKI = window.SEKI || {};
         const d = (ss.east - ss.west) / tot;
         const SS = (S.config && S.config.sideShort) || { east:'東軍', west:'西軍' };
         el.balLabel.textContent = Math.abs(d) < 0.08 ? '抗衡' : (d > 0 ? `${SS.east}優勢` : `${SS.west}優勢`);
+      }
+      // ★重擊偵測：每 ~0.25s 取樣,某方兵力驟降超過門檻 → 兵力儀表震動 + 該方數字血色閃擊
+      if (el.bars) {
+        if (_balPrevE == null) { _balPrevE = ss.east; _balPrevW = ss.west; }
+        if ((++_balFrame % 12) === 0) {
+          const dE = _balPrevE - ss.east, dW = _balPrevW - ss.west;   // 正=損失
+          const HIT = 500;                                            // 0.25s 內折損逾此 → 重擊
+          if (dE > HIT || dW > HIT) {
+            el.bars.classList.remove('hit'); void el.bars.offsetWidth;  // reflow 重啟動畫
+            el.bars.classList.add('hit');
+            el.bars.classList.toggle('hit-east', dE >= dW);
+            el.bars.classList.toggle('hit-west', dW > dE);
+            clearTimeout(_balHitT);
+            _balHitT = setTimeout(() => el.bars && el.bars.classList.remove('hit','hit-east','hit-west'), 560);
+          }
+          _balPrevE = ss.east; _balPrevW = ss.west;
+        }
       }
     }
 

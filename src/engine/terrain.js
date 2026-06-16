@@ -8,7 +8,7 @@ window.SEKI = window.SEKI || {};
 
 (function (S) {
   const M_PER_DEG_LAT = 111320;
-  const WS = 1 / 60;          // 必須與 scene.js WORLD_SCALE 一致
+  let WS = 1 / 60;            // 必須與 scene.js WORLD_SCALE 一致；buildTerrain 入口依 config.worldScale 覆寫
   // 垂直誇張：可由 SEKI.config.exag 覆寫（桶狹間丘陵低矮，需更大誇張）
   function exag() { return (S.config && S.config.exag) || 2.4; }
 
@@ -200,6 +200,7 @@ window.SEKI = window.SEKI || {};
   }
 
   S.buildTerrain = function () {
+    WS = (S.config && S.config.worldScale) || (1 / 60);   // 與 scene.js project() 同源（config 此時已就緒）
     S.terrain = (S.heightmap && S.heightmap.data) ? buildFromDEM(S.heightmap) : buildProcedural();
     return S.terrain;
   };

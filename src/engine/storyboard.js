@@ -77,6 +77,9 @@ window.SEKI = window.SEKI || {};
       if (S.setFocus) S.setFocus(cur.focus);
     }
     const eng = S.engine, cam = eng.camera;
+    // 全域相機距離係數（新增，gate）：config.camDistScale<1 → 鏡頭整體拉近、地形與部隊一起放大呈現。
+    //   未設則 1（零影響其餘戰役）。套用於 tween/hold 的最終 dist 與 tween 收斂門檻。
+    const DS = (S.config && S.config.camDistScale) || 1;
     // 動態焦點（Phase 5 新增，gate）：focusUnit / meleeKey 存在且可解析 → 覆寫靜態注視點
     const dynBase = dynamicTarget(cur);
     const tgt = dynBase ? dynBase.clone() : targetOf(cur);
@@ -84,7 +87,7 @@ window.SEKI = window.SEKI || {};
     if (phase === 'tween') {
       tweenTimer += dt;
       az = cur.cam.az;
-      const want = spherical(tgt, cur.cam.dist, az, cur.cam.el);
+      const want = spherical(tgt, cur.cam.dist * DS, az, cur.cam.el);
       const k = 1 - Math.exp(-dt * 1.8);
       cam.position.lerp(want, k);
       eng.controls.target.lerp(tgt, k);
@@ -97,7 +100,7 @@ window.SEKI = window.SEKI || {};
         const kf = 1 - Math.exp(-dt * 2.2);
         cam.fov += (cur.cam.fov - cam.fov) * kf; cam.updateProjectionMatrix();
       }
-      if (cam.position.distanceTo(want) < cur.cam.dist * 0.04 || tweenTimer > 3.2) {
+      if (cam.position.distanceTo(want) < cur.cam.dist * DS * 0.04 || tweenTimer > 3.2) {
         phase = 'hold'; shotTimer = 0; S.player.time = cur.t;
       }
     } else { // hold：電影運鏡——dolly 推拉 / orbit 公轉 / pan 隨砲火角度掃 / 子彈時間
@@ -112,6 +115,7 @@ window.SEKI = window.SEKI || {};
       if (c2 && c2.dist != null) dist = mix(cur.cam.dist, c2.dist);
       else if (cur.cam.push != null) dist = cur.cam.dist - cur.cam.push * ease; // push>0 推近(縮短半徑)
       else dist = cur.cam.dist;
+      dist *= DS;                                          // 全域拉近係數
       const el = c2 ? mix(cur.cam.el, c2.el) : cur.cam.el;
       // 注視點：cam2 的 lng/lat 仍可平移；動態焦點存在時以動態焦點為基準（不被靜態 lng/lat 蓋掉）
       let tgt2;

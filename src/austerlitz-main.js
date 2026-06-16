@@ -37,9 +37,14 @@
     formationStyle: 'napoleonic',
     // 大地圖誇張係數（待真實 DEM 後微調）
     exag: 2.0,
+    // ★戰場放大 2 倍呈現：worldScale 1/30（預設 1/60）。僅影響本戰役（config 驅動），
+    //   連動：霧距/maxDistance/火線間距 ×2、weather.js 霧近遠 ×2、雪/冰裝飾 ×2、storyboard 相機 dist ×~2。
+    worldScale: 1 / 30,
+    // ★相機整體拉近呈現(放大畫面、部隊與地形一起變大)：<1 = 拉近。0.33≈放大 3 倍。可即時微調。
+    camDistScale: 0.33,
     // 冬季天色（霧白偏灰）
     skyColor: 0xc8ccce, fogColor: 0xcdd2d4,
-    fogNear: 200, fogFar: 1600, maxDistance: 1800,
+    fogNear: 400, fogFar: 3200, maxDistance: 3600,
     // 扎錢湖冰面：湖盆標高閾值以下著冰色（terrain.js 讀 seaColor/elevStops，Phase 1 Task 1.4 精修）
     frozenPond: { seaLevel: 200 },
     seaColor: 0xcfe0e6,
@@ -52,10 +57,19 @@
     // 有界公轉：每段只掃固定小角度
     boundedOrbit: true, orbitSpan: 32,
     // 敵對雙方火線間距：線列步兵/砲兵隔開互轟、不互相穿插覆蓋（衝鋒/突破/潰逃者貼身接戰除外）
-    standoff: 20,
-    // 時間軸節點用運鏡章節(9 鏡,每點都會切換鏡頭呈現)而非全部 53 事件(避免大量無鏡頭的點)
+    //   隨 worldScale 1/30 放大 ×2（原 20）
+    standoff: 40,
+    // 時間軸節點用運鏡章節(46 鏡電影分鏡,每點都會切換鏡頭呈現)而非零散事件(避免大量無鏡頭的點)
     timelineMarkers: 'storyboard',
   };
+
+  // ★時間軸節點均勻分散：46 鏡中多數擠在 t≤7（原非線性軸把 t≤7 壓進左 25%→節點黏成一團難點擊）。
+  //   改用「依分鏡索引等距」的 anchors（每鏡 t → 等距位置 i/(n-1)），讓節點等距排開、
+  //   且播放頭(timeToPos)與節點(buildMarkers 同用 timeToPos)始終對齊。t 嚴格遞增→映射單調合法。
+  if (S.storyboard && S.storyboard.length > 1) {
+    const n = S.storyboard.length;
+    S.config.timelineAnchors = S.storyboard.map((s, i) => [s.t, i / (n - 1)]);
+  }
 
   S.player = { time: -8, playing: true, speed: 0.35, program: true, T_START: -8, T_END: 12 };
 
@@ -75,7 +89,7 @@
   /* ---------- 飄雪粒子（午後 4:30 天降小雪，沿用 rain 粒子改白色雪片低速） ---------- */
   let snow = null;
   function initSnow() {
-    const N = 1200, SPAN = 175, TOP = 95;
+    const N = 1600, SPAN = 330, TOP = 180;   // 隨 worldScale ×2 放大覆蓋範圍
     const pos = new Float32Array(N * 3);
     const flakes = [];
     for (let i = 0; i < N; i++)
@@ -83,7 +97,7 @@
         ph: Math.random()*6.28 });
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    const mat = new THREE.PointsMaterial({ color: 0xeef2f6, size: 1.1, transparent: true, opacity: 0, depthWrite: false });
+    const mat = new THREE.PointsMaterial({ color: 0xeef2f6, size: 1.7, transparent: true, opacity: 0, depthWrite: false });
     const mesh = new THREE.Points(geo, mat);
     mesh.frustumCulled = false;
     S.engine.scene.add(mesh);
@@ -97,7 +111,7 @@
     snow.mesh.visible = amt > 0.01;
     if (!snow.mesh.visible) return;
     const tgt = S.engine.controls.target, cx = tgt.x, cz = tgt.z;
-    const fall = 14 * dt, p = snow.pos, { flakes, N, SPAN, TOP } = snow;
+    const fall = 26 * dt, p = snow.pos, { flakes, N, SPAN, TOP } = snow;
     for (let i = 0; i < N; i++) {
       const f = flakes[i];
       f.y -= fall; f.ph += dt;
@@ -118,9 +132,9 @@
     if (!S.engine || !S.engine.project) return;
     const c = S.engine.project(POND.lng, POND.lat, 0);
     const cy = (S.terrain ? S.terrain.heightAt(c.x, c.z) : 0);
-    const y = cy + 0.12;
-    // 冰面：貼合地形的低窪冰湖(較小、半透冰藍、微反光)，逐頂點貼地避免懸空白塊。
-    const W = 34, H = 26, SX = 16, SZ = 12;
+    const y = cy + 0.24;
+    // 冰面：貼合地形的低窪冰湖(半透冰藍、微反光)，逐頂點貼地避免懸空白塊。隨 worldScale ×2 放大。
+    const W = 68, H = 52, SX = 24, SZ = 18;
     const geo = new THREE.PlaneGeometry(W, H, SX, SZ);
     geo.rotateX(-Math.PI / 2);
     const pos = geo.attributes.position;
@@ -128,7 +142,7 @@
       const lx = pos.getX(i), lz = pos.getZ(i);
       const h = S.terrain ? S.terrain.heightAt(c.x + lx, c.z + lz) : cy;
       // 只在「低於周邊」的窪地視為水面(其餘抬到地表以下→被地形蓋住,不露白塊)
-      pos.setY(i, (h - cy) + (h <= cy + 1.2 ? 0.12 : -3));
+      pos.setY(i, (h - cy) + (h <= cy + 2.4 ? 0.24 : -6));
     }
     pos.needsUpdate = true; geo.computeVertexNormals();
     const mat = new THREE.MeshStandardMaterial({ color: 0xbcd2dc, roughness: 0.18, metalness: 0.25,
@@ -141,29 +155,69 @@
     const cgeo = new THREE.BufferGeometry();
     const segs = 9, pts = [];
     for (let i = 0; i < segs; i++) {
-      const a0 = Math.random() * 6.28, len = 6 + Math.random() * 12;
-      const x0 = (Math.random() * 2 - 1) * 18, z0 = (Math.random() * 2 - 1) * 11;
-      pts.push(x0, 0.03, z0, x0 + Math.cos(a0) * len, 0.03, z0 + Math.sin(a0) * len);
+      const a0 = Math.random() * 6.28, len = 12 + Math.random() * 24;
+      const x0 = (Math.random() * 2 - 1) * 36, z0 = (Math.random() * 2 - 1) * 22;
+      pts.push(x0, 0.06, z0, x0 + Math.cos(a0) * len, 0.06, z0 + Math.sin(a0) * len);
     }
     cgeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(pts), 3));
     const cmat = new THREE.LineBasicMaterial({ color: 0x4a6b78, transparent: true, opacity: 0 });
     const cracks = new THREE.LineSegments(cgeo, cmat);
     cracks.position.copy(mesh.position);
+    cracks.scale.set(0.35, 1, 0.35);          // 由小漸長(updateIce 撐大→裂紋向外擴散)
     S.engine.scene.add(cracks);
-    ice = { mesh, mat, cracks, cmat, c, y, acc: 0 };
+    // 破冰孔洞池：砲擊命中處浮現暗色「open water」圓孔並漸長，讓冰湖真的「破開」見水
+    const HOLE_N = 16, holes = [];
+    const holeGeo = new THREE.CircleGeometry(1, 16); holeGeo.rotateX(-Math.PI / 2);
+    for (let i = 0; i < HOLE_N; i++) {
+      const hm = new THREE.Mesh(holeGeo,
+        new THREE.MeshStandardMaterial({ color: 0x07101a, roughness: 0.35, metalness: 0.35,
+          transparent: true, opacity: 0, depthWrite: false }));
+      hm.visible = false; hm.renderOrder = 2; hm.rotation.y = Math.random() * 6.28;
+      S.engine.scene.add(hm);
+      holes.push({ mesh: hm, age: -1, rMax: 1 });
+    }
+    ice = { mesh, mat, cracks, cmat, c, y, acc: 0, holes, holeIdx: 0, baseOpacity: 0.5 };
   }
   function updateIce(t, dt) {
     if (!ice) return;
-    // finale：t∈[8,11.5] 高地火砲轟冰面 → 砲擊 FX + 裂紋漸顯
+    // finale：t∈[8,11.5] 高地火砲轟冰面 → 砲擊 FX + 裂紋擴散 + 破冰孔洞浮現 + 冰面漸沉變透
     const active = t >= 8 && t <= 11.5;
     const k = active ? Math.min(1, (t - 8) / 1.5) : (t > 11.5 ? 1 : 0);
-    ice.cmat.opacity = 0.55 * k;
-    if (active && S.cannonadePond) {
+    // 倒帶/循環回到 finale 之前 → 復原冰面、清空孔洞，避免重播時殘留破冰
+    if (!active && t < 8) {
+      if (ice._broken) {
+        for (const h of ice.holes) { h.age = -1; h.mesh.visible = false; h.mesh.material.opacity = 0; }
+        ice.mesh.position.y = ice.y; ice.mat.opacity = ice.baseOpacity;
+        ice.cracks.scale.set(0.35, 1, 0.35); ice.cmat.opacity = 0; ice._broken = false;
+      }
+      return;
+    }
+    ice._broken = true;
+    // 裂紋:漸顯 + 由 0.35 撐大到 1.0(向外擴散)
+    ice.cmat.opacity = 0.6 * k;
+    const cs = 0.35 + 0.65 * k; ice.cracks.scale.set(cs, 1, cs);
+    // 冰面:破裂後略沉、更透(露出底下暗水)
+    ice.mat.opacity = ice.baseOpacity * (1 - 0.4 * k);
+    ice.mesh.position.y = ice.y - 0.6 * k;
+    // 破冰孔洞:已啟用者持續長大、加深
+    for (const h of ice.holes) {
+      if (h.age < 0) continue;
+      h.age += dt;
+      const r = h.rMax * Math.min(1, h.age / 1.4);
+      h.mesh.scale.set(r, 1, r);
+      h.mesh.material.opacity = Math.min(0.92, h.age * 1.1);
+    }
+    if (active) {
       ice.acc += dt;
-      if (ice.acc >= 0.5) {
+      if (ice.acc >= 0.45) {
         ice.acc = 0;
-        const ox = (Math.random() * 2 - 1) * 20, oz = (Math.random() * 2 - 1) * 13;
-        S.cannonadePond(ice.c.x + ox, ice.y, ice.c.z + oz);
+        const ox = (Math.random() * 2 - 1) * 40, oz = (Math.random() * 2 - 1) * 26;
+        if (S.cannonadePond) S.cannonadePond(ice.c.x + ox, ice.y, ice.c.z + oz);
+        // 命中處浮現破冰孔(輪替孔洞池),從無到有長成 open water
+        const h = ice.holes[ice.holeIdx]; ice.holeIdx = (ice.holeIdx + 1) % ice.holes.length;
+        const hy = (S.terrain ? S.terrain.heightAt(ice.c.x + ox, ice.c.z + oz) : ice.y) + 0.18;
+        h.mesh.position.set(ice.c.x + ox, hy, ice.c.z + oz);
+        h.mesh.visible = true; h.age = 0; h.rMax = 4 + Math.random() * 6;
       }
     }
   }
