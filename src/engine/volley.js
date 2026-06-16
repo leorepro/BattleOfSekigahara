@@ -73,8 +73,6 @@ window.SEKI = window.SEKI || {};
         if ((st === 'attack' || st === 'breakthrough') && _timer[id] >= 2.4) {
           _timer[id] = 0;
           cannonBlast(p.x + fx * 4, p.y + 1.0, p.z + fz * 4, fx, fz);
-          const tg = (S.engagementTargetOf ? S.engagementTargetOf(u, t) : null);
-          if (tg && S.combatBurst) S.combatBurst(tg.x, tg.y + 0.4, tg.z);
         }
       } else if (a.kind === 'cavalry') {
         // 騎兵衝鋒：馬群後方拖塵（強度吃 chargeIntensity）
