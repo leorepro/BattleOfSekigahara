@@ -115,15 +115,25 @@
   function initIce() {
     if (!S.engine || !S.engine.project) return;
     const c = S.engine.project(POND.lng, POND.lat, 0);
-    const y = (S.terrain ? S.terrain.heightAt(c.x, c.z) : 0) + 0.25;
-    // 冰面（淺青白、半透、微反光）
-    const geo = new THREE.PlaneGeometry(46, 30, 1, 1);
+    const cy = (S.terrain ? S.terrain.heightAt(c.x, c.z) : 0);
+    const y = cy + 0.12;
+    // 冰面：貼合地形的低窪冰湖(較小、半透冰藍、微反光)，逐頂點貼地避免懸空白塊。
+    const W = 34, H = 26, SX = 16, SZ = 12;
+    const geo = new THREE.PlaneGeometry(W, H, SX, SZ);
     geo.rotateX(-Math.PI / 2);
-    const mat = new THREE.MeshStandardMaterial({ color: 0xcfe0e6, roughness: 0.25, metalness: 0.1,
-      transparent: true, opacity: 0.72 });
+    const pos = geo.attributes.position;
+    for (let i = 0; i < pos.count; i++) {
+      const lx = pos.getX(i), lz = pos.getZ(i);
+      const h = S.terrain ? S.terrain.heightAt(c.x + lx, c.z + lz) : cy;
+      // 只在「低於周邊」的窪地視為水面(其餘抬到地表以下→被地形蓋住,不露白塊)
+      pos.setY(i, (h - cy) + (h <= cy + 1.2 ? 0.12 : -3));
+    }
+    pos.needsUpdate = true; geo.computeVertexNormals();
+    const mat = new THREE.MeshStandardMaterial({ color: 0xbcd2dc, roughness: 0.18, metalness: 0.25,
+      transparent: true, opacity: 0.5, depthWrite: false });
     const mesh = new THREE.Mesh(geo, mat);
     mesh.position.set(c.x, y, c.z);
-    mesh.receiveShadow = true;
+    mesh.renderOrder = 1;
     S.engine.scene.add(mesh);
     // 裂紋線段（初始隱藏，砲擊時漸顯）
     const cgeo = new THREE.BufferGeometry();

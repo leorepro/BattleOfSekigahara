@@ -54,6 +54,19 @@ window.SEKI = window.SEKI || {};
     return 'french-line';
   }
 
+  // 最近敵方單位位置（供 napo 駐守時正面朝敵）
+  function napoEnemyPos(side, gp) {
+    if (!S.armies || !S.unitById) return null;
+    let best = null, bd = 1e18;
+    for (const b of S.armies) {
+      if (b.side === side) continue;
+      const u = S.unitById(b.id); if (!u || !u.cur || u.cur.s <= 1) continue;
+      const q = u.group.position, d = (q.x - gp.x) * (q.x - gp.x) + (q.z - gp.z) * (q.z - gp.z);
+      if (d < bd) { bd = d; best = q; }
+    }
+    return best;
+  }
+
   // 合併多個 box geometry 成一個 BufferGeometry
   function mergeBoxes(boxes) {
     let vc = 0; boxes.forEach(g => vc += g.attributes.position.count);
@@ -201,8 +214,8 @@ window.SEKI = window.SEKI || {};
         const isCannon = variant === 'cannon';
         // 比例制人數（雙方兵力差可見）；騎兵/砲較少、步兵較多。
         // cap 大幅下修控效能：精細模型(數百頂點)×上千實例×著色器動畫會壓垮 FPS。
-        const cap = mounted ? 130 : (a.kind === 'command' ? 70 : (isCannon ? 16 : 300));
-        const per = isCannon ? 400 : (mounted ? 40 : 42);
+        const cap = mounted ? 95 : (a.kind === 'command' ? 60 : (isCannon ? 16 : 220));
+        const per = isCannon ? 400 : (mounted ? 52 : 56);
         const count = Math.max(mounted ? 12 : (isCannon ? 4 : 20), Math.min(cap, Math.round(a.troops / per)));
         // 提亮軍服：冬日陰天光照偏暗，把陣營色微混白提亮 → 法軍藍/俄綠/奧白一眼分明
         const coat = (a.factionColor != null)
@@ -298,9 +311,13 @@ window.SEKI = window.SEKI || {};
       const gp = u.group.position;
       let dx = u.moveDir ? u.moveDir.dx : 0, dz = u.moveDir ? u.moveDir.dz : 0;
       if (Math.hypot(dx, dz) < 1e-4) {
-        // 靜止時面向敵人：phalanx 朝中門(接觸點)；已在門口則依陣營朝敵方來向(希臘朝西/波斯朝東)
+        // 靜止時面向敵人（真實軍隊駐守正面朝敵，而非朝場景中心亂轉）
         const cz = S.config && S.config.chokeZone;
-        if (f.phalanx && cz && S.engine) {
+        if (f.napo) {
+          const e = napoEnemyPos(f.data.side, gp);
+          if (e) { dx = e.x - gp.x; dz = e.z - gp.z; }
+          else { dx = f.east ? 1 : -1; dz = 0; }
+        } else if (f.phalanx && cz && S.engine) {
           const p = S.engine.project(cz.lng, cz.lat, 0);
           dx = p.x - gp.x; dz = p.z - gp.z;
           if (Math.hypot(dx, dz) < 4) { dx = f.east ? 1 : -1; dz = 0; }
