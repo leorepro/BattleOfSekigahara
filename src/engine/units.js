@@ -42,8 +42,23 @@ window.SEKI = window.SEKI || {};
     artillery: '<svg viewBox="0 0 24 24"><path d="M7 17a4 4 0 110-8 4 4 0 010 8zm0-2.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM10 11l11-3 .6 2-11 3L10 11zm-3 6h12v2H7v-2z"/></svg>'
   };
 
+  // 坡度重映射：warps[i] 為該段「累積行進耗力(歸一)」剖面 → 把時間分數 k 換成空間分數 kk，
+  //   上坡耗力高(同樣時間走較少距離=慢)、下坡耗力低(走較多=快)。平坦段為 null(線性)。
+  function warpFrac(profile, k) {
+    if (k <= 0) return 0; if (k >= 1) return 1;
+    const M = profile.length - 1;
+    for (let j = 0; j < M; j++) {
+      if (profile[j + 1] >= k) {
+        const seg = (profile[j + 1] - profile[j]) || 1e-6;
+        return (j + (k - profile[j]) / seg) / M;
+      }
+    }
+    return 1;
+  }
+
   // 關鍵影格間取樣；ctrls[i] 存在則該段沿二次貝茲曲線(繞地形)行進，否則直線。
-  S.sampleTrack = function (track, t, ctrls) {
+  //   warps[i] 存在則位置進度依坡度重映射(上坡慢/下坡快)；兵力 s 仍按時間線性(陣亡與坡無關)。
+  S.sampleTrack = function (track, t, ctrls, warps) {
     if (t <= track[0].t) return { ...track[0] };
     const last = track[track.length - 1];
     if (t >= last.t) return { ...last };
@@ -51,14 +66,15 @@ window.SEKI = window.SEKI || {};
       const a = track[i], b = track[i + 1];
       if (t >= a.t && t <= b.t) {
         const k = (t - a.t) / (b.t - a.t);
+        const kk = (warps && warps[i]) ? warpFrac(warps[i], k) : k;   // 坡度重映射後的空間分數
         const C = ctrls && ctrls[i];
         if (C) {                                   // 二次貝茲：A→控制點→B（彎過高地）
-          const u = 1 - k;
-          return { lng: u*u*a.lng + 2*u*k*C.lng + k*k*b.lng,
-                   lat: u*u*a.lat + 2*u*k*C.lat + k*k*b.lat,
+          const u = 1 - kk;
+          return { lng: u*u*a.lng + 2*u*kk*C.lng + kk*kk*b.lng,
+                   lat: u*u*a.lat + 2*u*kk*C.lat + kk*kk*b.lat,
                    s: a.s+(b.s-a.s)*k, st: a.st };
         }
-        return { lng:a.lng+(b.lng-a.lng)*k, lat:a.lat+(b.lat-a.lat)*k,
+        return { lng:a.lng+(b.lng-a.lng)*kk, lat:a.lat+(b.lat-a.lat)*kk,
                  s:a.s+(b.s-a.s)*k, st:a.st };
       }
     }
@@ -108,6 +124,37 @@ window.SEKI = window.SEKI || {};
           if (cost < bestCost * 0.92 && cost < WATER_PENALTY * 0.5) { bestCost = cost; best = C; }
         }
         a._ctrl[i] = best;
+      }
+    }
+  };
+
+  // 預算每段「坡度耗力剖面」：沿路徑取樣高度，上坡每步加重耗力、下坡減免 → 供 sampleTrack 重映射
+  // 進度(上坡慢/下坡快)。幾乎平坦的段留 null(維持線性，省運算)。
+  S.precomputeWarp = function () {
+    if (!S.terrain || !S.engine) return;
+    const M = 12, UP = 2.6, DOWN = 1.2;
+    for (const a of S.armies) {
+      const tk = a.track;
+      a._warp = new Array(tk.length - 1).fill(null);
+      for (let i = 0; i < tk.length - 1; i++) {
+        const A = tk[i], B = tk[i + 1], C = a._ctrl && a._ctrl[i];
+        const eff = new Float32Array(M + 1);
+        const pA = S.engine.project(A.lng, A.lat, 0);
+        let prevH = S.terrain.heightAt(pA.x, pA.z), cum = 0, varied = false;
+        for (let j = 1; j <= M; j++) {
+          const s = j / M;
+          let lng, lat;
+          if (C) { const u = 1 - s; lng = u*u*A.lng + 2*u*s*C.lng + s*s*B.lng; lat = u*u*A.lat + 2*u*s*C.lat + s*s*B.lat; }
+          else   { lng = A.lng + (B.lng - A.lng) * s; lat = A.lat + (B.lat - A.lat) * s; }
+          const p = S.engine.project(lng, lat, 0);
+          const h = S.terrain.heightAt(p.x, p.z);
+          const dh = h - prevH;
+          let cost = 1 + (dh > 0 ? dh * UP : dh * DOWN);     // 上坡(dh>0)耗力高=慢；下坡(dh<0)耗力低=快
+          cost = Math.max(0.4, Math.min(4, cost));
+          if (Math.abs(cost - 1) > 0.06) varied = true;
+          cum += cost; eff[j] = cum; prevH = h;
+        }
+        if (varied && cum > 1e-4) { for (let j = 0; j <= M; j++) eff[j] /= cum; a._warp[i] = eff; }
       }
     }
   };
@@ -314,6 +361,7 @@ window.SEKI = window.SEKI || {};
       _units.push(u);
     }
     S.precomputeRoutes();          // 依地形預算各部隊路徑控制點（繞開丘陵）
+    S.precomputeWarp();            // 依坡度預算各段行進耗力（上坡慢/下坡快）
     return _units;
   };
 
@@ -323,12 +371,12 @@ window.SEKI = window.SEKI || {};
     const eng = S.engine;
     // 1) 取樣位置
     for (const u of _units) {
-      const s = S.sampleTrack(u.data.track, t, u.data._ctrl);
+      const s = S.sampleTrack(u.data.track, t, u.data._ctrl, u.data._warp);
       const p = eng.project(s.lng, s.lat, 0);
       const y = S.terrain ? S.terrain.heightAt(p.x, p.z) : 0;
       u.p.set(p.x, y, p.z); u.cur = s;
       // 移動方向：比較稍後時刻
-      const s2 = S.sampleTrack(u.data.track, t + 0.12, u.data._ctrl);
+      const s2 = S.sampleTrack(u.data.track, t + 0.12, u.data._ctrl, u.data._warp);
       u.moveDir = { dx: s2.lng - s.lng, dz: -(s2.lat - s.lat) };
     }
     // 2) 防重疊（XZ 平面分離，數次迭代）
