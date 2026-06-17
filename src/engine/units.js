@@ -472,11 +472,12 @@ window.SEKI = window.SEKI || {};
       u.el.style.opacity = (dead ? 0.45 : 1) * (isDim ? 0.35 : 1);
       u.el.classList.toggle('focus', isFocus);
       u.el.classList.toggle('dim', isDim);
-      // 血條：兵力 / 初始兵力
+      // 血條：兵力 / 初始兵力；依剩餘比例變色 — <30% 紅 / 30–60% 黃 / ≥60% 綠
       if (u.hpEl) {
         const pct = Math.max(0, Math.min(100, (s.s / u.data.troops) * 100));
         u.hpEl.style.width = pct + '%';
-        u.hpEl.classList.toggle('low', pct < 40);
+        u.hpEl.style.background = pct < 30 ? '#e23b2e' : (pct < 60 ? '#ecc23a' : '#46c24a');
+        u.hpEl.classList.toggle('low', pct < 30);
       }
 
       // 箭頭：行軍/交戰/突破且確有位移時顯示
