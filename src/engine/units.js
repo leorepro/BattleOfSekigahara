@@ -322,6 +322,23 @@ window.SEKI = window.SEKI || {};
       ring.rotation.x = -Math.PI / 2; ring.position.y = 0.25; group.add(ring);
       if (MODERN && a.kind === 'aircraft') ring.visible = false;   // 飛機在空中，地面選擇環無意義
 
+      // 部隊定位標記（config.unitMarkers）：陣營色倒錐「map pin」浮於部隊上方，不吃霧、依相機距離縮放
+      //   → 遠景/大地圖下仍清楚看到各部隊位置與陣營(藍=法/紅綠白=聯軍);近景自動縮小不擾。
+      let marker = null;
+      if (S.config && S.config.unitMarkers) {
+        const mcol = (a.side === 'east') ? EAST : WEST;          // 用鮮明陣營色(藍=法/紅=聯軍)更易辨敵我
+        const isCmd = a.kind === 'command';
+        const mgeo = new THREE.ConeGeometry(isCmd ? 1.7 : 1.3, isCmd ? 3.6 : 2.8, 6);
+        mgeo.rotateX(Math.PI);                                   // 尖端朝下,指向部隊
+        const mmat = new THREE.MeshBasicMaterial({ color: mcol, fog: false });   // fog:false → 遠景/霧中仍鮮明
+        marker = new THREE.Mesh(mgeo, mmat);
+        marker.position.y = POLE_H + 6; marker.renderOrder = 4;
+        // 細暗邊(背面略放大)→ 在亮衛星底圖上更立體、不蓋住顏色
+        const edge = new THREE.Mesh(mgeo, new THREE.MeshBasicMaterial({ color: 0x0d1015, fog: false, side: THREE.BackSide }));
+        edge.scale.setScalar(1.14); marker.add(edge);
+        group.add(marker);
+      }
+
       // 點選 hitbox（透明）
       const hit = new THREE.Mesh(
         new THREE.BoxGeometry(6, POLE_H + 4, 6),
@@ -352,7 +369,7 @@ window.SEKI = window.SEKI || {};
       const arrow = makeMoveArrow(color);
       arrow.visible = false; eng.scene.add(arrow.root);
 
-      const u = { data:a, group, flag, fmat, ring, pole, hit, el, body, fadeMats,
+      const u = { data:a, group, flag, fmat, ring, pole, hit, el, body, fadeMats, marker,
         yoff: (MODERN && a.kind === 'aircraft') ? 26 : 0,                 // 飛機飛行高度
         ramp: (body && body.getObjectByName) ? body.getObjectByName('ramp') : null,
         troopsEl: el.querySelector('.troops'), hpEl: el.querySelector('.hp i'),
@@ -408,6 +425,15 @@ window.SEKI = window.SEKI || {};
       const s = u.cur;
       const y = S.terrain ? S.terrain.heightAt(u.p.x, u.p.z) : 0;
       u.group.position.set(u.p.x, y + (u.yoff || 0), u.p.z);
+      // 部隊定位標記：依相機距離縮放→螢幕大小約略固定(遠景放大顯眼/近景縮小不擾);潰滅則隱藏
+      if (u.marker) {
+        const dead0 = s && s.s <= 1;
+        u.marker.visible = !dead0;
+        if (!dead0) {
+          const d = S.engine.camera.position.distanceTo(u.group.position);
+          u.marker.scale.setScalar(Math.max(0.5, Math.min(4.2, d * 0.0098)));
+        }
+      }
       // 現代模型轉向：移動者面向移動方向；靜止開火者（碉堡/砲/泊船）面向戰場中心(灘頭/岸)
       if (u.body) {
         let dx = u.moveDir.dx, dz = u.moveDir.dz;

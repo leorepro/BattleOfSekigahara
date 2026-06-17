@@ -42,6 +42,8 @@
     worldScale: 1 / 30,
     // ★相機整體拉近呈現(放大畫面、部隊與地形一起變大)：<1 = 拉近。0.33≈放大 3 倍。可即時微調。
     camDistScale: 0.33,
+    // ★部隊定位標記:陣營色倒錐 map pin(不吃霧、依距離縮放)→ 大地圖遠景仍清楚看到各部隊位置與陣營
+    unitMarkers: true,
     // 冬季天色（霧白偏灰）
     skyColor: 0xc8ccce, fogColor: 0xcdd2d4,
     fogNear: 400, fogFar: 3200, maxDistance: 3600,
