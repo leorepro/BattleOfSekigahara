@@ -109,7 +109,7 @@ window.SEKI = window.SEKI || {};
         if (!_cardShown && S.setEventCard) { S.setEventCard(cur); _cardShown = true; }  // 單位就位後才上旁白
       }
     } else { // hold：電影運鏡——dolly 推拉 / orbit 公轉 / pan 隨砲火角度掃 / 子彈時間
-      shotTimer += dt;
+      if (S.player.playing) shotTimer += dt;             // ★暫停時凍結(shotTimer 不前進→時間/血條不變)
       const H = holdOf(cur), p = Math.min(1, shotTimer / H);
       const ease = p * p * (3 - 2 * p);                 // smoothstep
       const c2 = cur.cam2;                               // 終點鏡位(部分覆寫)：推拉/pan/pull-out/orbit/fov
@@ -150,12 +150,16 @@ window.SEKI = window.SEKI || {};
         const kf = 1 - Math.exp(-dt * 3.0);
         cam.fov += (wantFov - cam.fov) * kf; cam.updateProjectionMatrix();
       }
-      // 慢動作：關鍵鏡在 hold 期間讓戰場時刻緩慢推進(span 小→很慢)，呈現 slow-mo
-      // 節目播放速度：每鏡可設 span(此鏡 hold 期間推進的戰場小時數)；span/hold=有效倍速，
-      //   小→慢動作(0.2x)、大→接近即時(1x)、未設則凍結成定格。自動夾住不超過下一鏡時刻。
-      let span = cur.span || 0;
+      // 戰場時刻在 hold 期間「連續推進」(戰況不凍結→兵力/血條/走位持續變化,除非暫停)。
+      //   每鏡可顯式設 span(子彈時間慢動作,如突破/騎兵衝鋒);未設則預設=推進到下一鏡時刻
+      //   (gap),使整場戰鬥連續演進、相機只是停在各關鍵點。自動夾住不超過下一鏡。
       const nextT = sb[(idx + 1) % sb.length].t;
-      if (nextT > cur.t) span = Math.min(span, nextT - cur.t - 0.05);
+      const gap = nextT - cur.t;
+      // config.continuousTime(僅奧斯特利茨):未設 span 的鏡頭預設推進到下一鏡(戰況連續、血條持續變化);
+      //   其他戰役維持原行為(未設 span → 凍結定格)。
+      const cont = !!(S.config && S.config.continuousTime);
+      let span = (cur.span != null) ? cur.span : (cont && gap > 0 ? gap : 0);
+      if (gap > 0 && span > 0) span = Math.min(span, gap - 0.02);
       S.player.time = span > 0 ? cur.t + p * span : cur.t;
       if (shotTimer >= H && S.player.playing) {
         idx = (idx + 1) % sb.length; phase = 'tween'; tweenTimer = 0;

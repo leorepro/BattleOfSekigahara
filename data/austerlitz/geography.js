@@ -39,7 +39,7 @@ SEKI.geography = {
     /* --- 法軍本陣 / 聯軍方向 --- */
     { name_zh:"拿破崙本陣（Žuráň 丘）", name_ja:"Zuran Hill · Napoleon's HQ", type:"camp", lng:16.722, lat:49.156, h:286,
       note:"拿破崙設指揮所的小丘，居高俯瞰中央與北線。霧散後於此下令蘇爾特突破，戰後將大本營前移普拉欽" },
-    { name_zh:"奧斯特利茨城堡", name_ja:"Slavkov (Austerlitz) Castle", type:"town", lng:16.876, lat:49.153, h:210,
+    { name_zh:"奧斯特利茨城堡", name_ja:"Slavkov (Austerlitz) Castle", type:"town", icon:"🏰", major:true, lng:16.876, lat:49.153, h:210,
       note:"戰場東側城鎮（今捷克斯拉夫科夫），會戰得名於此。聯軍自東面奧洛穆茨方向開來" },
     { name_zh:"奧洛穆茨方向（聯軍來向）", name_ja:"toward Olmütz", type:"road", lng:16.880, lat:49.130, h:230,
       note:"俄奧聯軍自東北奧洛穆茨(Olmütz)開進；巴格拉季昂北線敗後亦向此退卻" },

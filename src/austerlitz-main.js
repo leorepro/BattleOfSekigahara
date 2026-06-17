@@ -44,6 +44,8 @@
     camDistScale: 0.33,
     // ★部隊定位標記:陣營色倒錐 map pin(不吃霧、依距離縮放)→ 大地圖遠景仍清楚看到各部隊位置與陣營
     unitMarkers: true,
+    // ★戰況連續推進:hold 期間時間持續前進(兵力/血條/走位不凍結,除非暫停);其他戰役不啟用
+    continuousTime: true,
     // 冬季天色（霧白偏灰）
     skyColor: 0xc8ccce, fogColor: 0xcdd2d4,
     fogNear: 400, fogFar: 3200, maxDistance: 3600,
@@ -225,6 +227,37 @@
     }
   }
 
+  /* ---------- 奧斯特利茨城堡（Slavkov 巴洛克château）3D 地標 ---------- */
+  //   劇情多次提及城堡(會戰得名於此、聯軍自東面奧洛穆茨開來)。在真實座標放一座簡化château:
+  //   米白石造主樓 + 兩翼 + 雙角塔(綠銅尖頂) + 中央山牆,讓地圖上看得到城堡。
+  const CASTLE = { lng: 16.876, lat: 49.153 };
+  function initCastle() {
+    if (!S.engine || !S.engine.project) return;
+    const c = S.engine.project(CASTLE.lng, CASTLE.lat, 0);
+    const gy = S.terrain ? S.terrain.heightAt(c.x, c.z) : 0;
+    const g = new THREE.Group(); g.position.set(c.x, gy, c.z);
+    const stone = new THREE.MeshStandardMaterial({ color: 0xe6ddc6, roughness: 0.85, metalness: 0.04 });
+    const roof  = new THREE.MeshStandardMaterial({ color: 0x6d7b74, roughness: 0.6,  metalness: 0.25 }); // 綠銅瓦
+    const copper= new THREE.MeshStandardMaterial({ color: 0x4f7d6e, roughness: 0.5,  metalness: 0.35 });
+    const block = (w,h,d,x,y,z,mat)=>{ const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat||stone); m.position.set(x,y+h/2,z); m.castShadow=true; g.add(m); return m; };
+    // 主樓 + 兩翼(U 形)
+    block(13, 6, 6, 0, 0, 0);
+    block(5, 5, 9, -7, 0, 3.5);     // 左翼
+    block(5, 5, 9,  7, 0, 3.5);     // 右翼
+    // 主樓斜屋頂(扁稜柱) + 中央山牆
+    const r=new THREE.Mesh(new THREE.CylinderGeometry(0.01,4.2,13,4,1), roof); // 四稜長條當坡頂
+    r.rotation.z=Math.PI/2; r.rotation.y=Math.PI/4; r.position.set(0,6+1.6,0); r.scale.set(1,1,0.5); g.add(r);
+    block(4, 3, 1, 0, 6, -3, stone);            // 中央山牆
+    // 雙角塔 + 綠銅尖頂
+    for (const sx of [-7, 7]) {
+      const t=new THREE.Mesh(new THREE.CylinderGeometry(1.6,1.7,8,12), stone); t.position.set(sx,4,-1); t.castShadow=true; g.add(t);
+      const cap=new THREE.Mesh(new THREE.ConeGeometry(2.1,3.2,12), copper); cap.position.set(sx,8+1.6,-1); g.add(cap);
+    }
+    // 入口前庭矮欄(示意)
+    block(13, 0.6, 0.5, 0, 0, 7.5, stone);
+    S.engine.scene.add(g);
+  }
+
   /* ---------- 啟動 ---------- */
   function boot() {
     const eng = S.engine.init();
@@ -241,6 +274,7 @@
     S.initWeather();
     initSnow();
     initIce();
+    initCastle();
     S.initUI();
     S.setProgramMode(true);
 

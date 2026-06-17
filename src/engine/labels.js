@@ -27,17 +27,19 @@ window.SEKI = window.SEKI || {};
     for (const f of S.geography.features) {
       if (SKIP[f.type]) continue;
 
+      // 可由 feature 自訂 icon / major（不動共用 ICON 表，避免影響其他戰役如日本城🏯）
+      const isMajor = (f.major != null) ? f.major : !!MAJOR[f.type];
       const el = document.createElement('div');
-      el.className = 'lbl lbl-geo ' + (MAJOR[f.type] ? 'geo-major' : 'geo-minor');
-      const icon = ICON[f.type] || '·';
+      el.className = 'lbl lbl-geo ' + (isMajor ? 'geo-major' : 'geo-minor');
+      const icon = f.icon || ICON[f.type] || '·';
       const ja = (f.name_ja && f.name_ja !== f.name_zh) ? `<span class="ja"> ${f.name_ja}</span>` : '';
       el.innerHTML = `<span class="ic">${icon}</span>${f.name_zh}${ja}`;
 
       const obj = new THREE.CSS2DObject(el);
       const p = eng.project(f.lng, f.lat, f.h);
       const surfaceY = S.terrain ? S.terrain.heightAt(p.x, p.z) : p.y;
-      obj.position.set(p.x, surfaceY + (MAJOR[f.type] ? 7 : 4), p.z);
-      obj.userData = { major: !!MAJOR[f.type] };
+      obj.position.set(p.x, surfaceY + (isMajor ? 7 : 4), p.z);
+      obj.userData = { major: isMajor };
       eng.scene.add(obj);
       S.geoLabels.push(obj);
     }

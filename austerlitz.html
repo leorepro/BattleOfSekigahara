@@ -38,7 +38,9 @@
   .lbl-unit .hp i{ display:block; height:100%; width:100%; border-radius:2px; transition:width .3s linear; }
   .side-east .hp i{ background:#2a54d6; } .side-west .hp i{ background:#d12a2a; }
   .lbl-unit .hp i.low{ background:#d8a838; }
-  .lbl-unit.dim .hp{ display:none; }
+  /* 淡化的部隊仍顯示血條(每支部隊都看得到耗損);僅日文副名隱藏以減少雜訊 */
+  .lbl-unit.dim .hp{ display:block; }
+  .lbl-unit.dim .ja{ display:none; }
   .side-east{ color:#9cc0ff; } .side-west{ color:#ff9c9c; }
 
   /* 交戰標記 A ⚔ B */
@@ -389,33 +391,33 @@
   <script src="lib/three/CSS2DRenderer.js"></script>
 
   <!-- 資料（奧斯特利茨） -->
-  <script src="data/austerlitz/geography.js"></script>
-  <script src="data/austerlitz/heightmap.js?v=3x"></script>
-  <script src="data/austerlitz/armies.js"></script>
-  <script src="data/austerlitz/weather.js"></script>
-  <script src="data/austerlitz/storyboard.js"></script>
-  <script src="data/austerlitz/sources.js"></script>
-  <script src="data/austerlitz/engagements.js"></script>
-  <script src="data/austerlitz/events.js"></script>
+  <script src="data/austerlitz/geography.js?v=6"></script>
+  <script src="data/austerlitz/heightmap.js?v=6"></script>
+  <script src="data/austerlitz/armies.js?v=6"></script>
+  <script src="data/austerlitz/weather.js?v=6"></script>
+  <script src="data/austerlitz/storyboard.js?v=6"></script>
+  <script src="data/austerlitz/sources.js?v=6"></script>
+  <script src="data/austerlitz/engagements.js?v=6"></script>
+  <script src="data/austerlitz/events.js?v=6"></script>
 
   <!-- 引擎（共用引擎，依序載入掛到全域 SEKI 命名空間） -->
-  <script src="src/engine/scene.js?v=3x"></script>
-  <script src="src/engine/terrain.js?v=3x"></script>
-  <script src="src/engine/labels.js?v=3x"></script>
-  <script src="src/engine/crest.js?v=3x"></script>
-  <script src="src/engine/units.js?v=3z"></script>
-  <script src="src/engine/formation.js?v=3x"></script>
-  <script src="src/engine/napoleonic.js?v=3x"></script>
-  <script src="src/engine/anim.js?v=3x"></script>
-  <script src="src/engine/maneuver.js?v=3x"></script>
-  <script src="src/engine/routes.js?v=3x"></script>
-  <script src="src/engine/effects.js?v=3x"></script>
-  <script src="src/engine/volley.js?v=3x"></script>
-  <script src="src/engine/melee.js?v=3x"></script>
-  <script src="src/engine/engage.js?v=3x"></script>
-  <script src="src/engine/weather.js?v=3x"></script>
-  <script src="src/engine/storyboard.js?v=3x"></script>
-  <script src="src/engine/ui.js?v=3x"></script>
-  <script src="src/austerlitz-main.js?v=3x"></script>
+  <script src="src/engine/scene.js?v=6"></script>
+  <script src="src/engine/terrain.js?v=6"></script>
+  <script src="src/engine/labels.js?v=6"></script>
+  <script src="src/engine/crest.js?v=6"></script>
+  <script src="src/engine/units.js?v=6"></script>
+  <script src="src/engine/formation.js?v=6"></script>
+  <script src="src/engine/napoleonic.js?v=6"></script>
+  <script src="src/engine/anim.js?v=6"></script>
+  <script src="src/engine/maneuver.js?v=6"></script>
+  <script src="src/engine/routes.js?v=6"></script>
+  <script src="src/engine/effects.js?v=6"></script>
+  <script src="src/engine/volley.js?v=6"></script>
+  <script src="src/engine/melee.js?v=6"></script>
+  <script src="src/engine/engage.js?v=6"></script>
+  <script src="src/engine/weather.js?v=6"></script>
+  <script src="src/engine/storyboard.js?v=6"></script>
+  <script src="src/engine/ui.js?v=6"></script>
+  <script src="src/austerlitz-main.js?v=6"></script>
 </body>
 </html>

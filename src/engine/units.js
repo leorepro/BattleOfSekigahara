@@ -469,7 +469,7 @@ window.SEKI = window.SEKI || {};
       u.troopsEl.innerHTML = (dead ? `<span style="opacity:.7">潰滅</span>`
         : `${fmt(s.s)} <span style="opacity:.65">${ST_LABEL[s.st] || ''}</span>`)
         + (defected && !dead ? ` <span style="color:#ffd24a">⚡裏切</span>` : '');
-      u.el.style.opacity = (dead ? 0.45 : 1) * (isDim ? 0.35 : 1);
+      u.el.style.opacity = (dead ? 0.45 : 1) * (isDim ? 0.62 : 1);   // 淡化不過度,確保每支部隊血條清楚可見
       u.el.classList.toggle('focus', isFocus);
       u.el.classList.toggle('dim', isDim);
       // 血條：兵力 / 初始兵力；依剩餘比例變色 — <30% 紅 / 30–60% 黃 / ≥60% 綠
