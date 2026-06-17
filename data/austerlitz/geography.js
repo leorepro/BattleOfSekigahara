@@ -37,12 +37,26 @@ SEKI.geography = {
       note:"扎錢湖西鄰，南線潰退隘路另一冰湖" },
 
     /* --- 法軍本陣 / 聯軍方向 --- */
-    { name_zh:"拿破崙本陣（Žuráň 丘）", name_ja:"Zuran Hill · Napoleon's HQ", type:"camp", lng:16.722, lat:49.156, h:286,
+    { name_zh:"拿破崙本陣（Žuráň 丘）", name_ja:"Zuran Hill · Napoleon's HQ", type:"camp", icon:"⚑", major:true, lng:16.722, lat:49.156, h:286,
       note:"拿破崙設指揮所的小丘，居高俯瞰中央與北線。霧散後於此下令蘇爾特突破，戰後將大本營前移普拉欽" },
     { name_zh:"奧斯特利茨城堡", name_ja:"Slavkov (Austerlitz) Castle", type:"town", icon:"🏰", major:true, lng:16.876, lat:49.153, h:210,
       note:"戰場東側城鎮（今捷克斯拉夫科夫），會戰得名於此。聯軍自東面奧洛穆茨方向開來" },
-    { name_zh:"奧洛穆茨方向（聯軍來向）", name_ja:"toward Olmütz", type:"road", lng:16.880, lat:49.130, h:230,
+    { name_zh:"奧洛穆茨方向（聯軍來向）", name_ja:"toward Olmütz", type:"road", icon:"➤", lng:16.880, lat:49.130, h:230,
       note:"俄奧聯軍自東北奧洛穆茨(Olmütz)開進；巴格拉季昂北線敗後亦向此退卻" },
+
+    /* --- 補：劇情提到但原先未標的戰場地點（2026-06-17 盤點補上）--- */
+    { name_zh:"普拉欽村", name_ja:"Prace (Pratzen) village", type:"town", lng:16.762, lat:49.128, h:300,
+      note:"普拉欽高地中央村落，米羅拉多維奇與聖海拉爾師反覆爭奪、為高地戰線中樞" },
+    { name_zh:"普拉欽堡（南高點）", name_ja:"Pratzeberg", type:"hill", icon:"▲", major:true, lng:16.766, lat:49.112, h:324,
+      note:"高地南側最高點(海拔324m)，法軍霧中先登、楔入高地與南線之間；居高俯瞰冰湖方向" },
+    { name_zh:"布拉奇奧維茨", name_ja:"Blasowitz (Blažovice)", type:"town", lng:16.793, lat:49.166, h:250,
+      note:"北場樞紐村落，拉納先頭與聯軍反覆爭奪，法軍步兵增援先到而奪取" },
+    { name_zh:"科貝爾尼茲", name_ja:"Kobelnitz (Kobylnice)", type:"town", lng:16.778, lat:49.120, h:215,
+      note:"索科爾尼茲北側村落；普熱比舍夫斯基第三縱隊退路被切後，於此試圖泅渡戈爾德巴赫河東岸" },
+    { name_zh:"布爾諾方向（法軍後方）", name_ja:"toward Brünn (Brno)", type:"road", icon:"➤", lng:16.520, lat:49.190, h:260,
+      note:"法軍/拿破崙自西北布爾諾(Brno)開來、沿布爾諾–奧爾米茨大道部署" },
+    { name_zh:"維也納方向（法軍退路）", name_ja:"toward Vienna", type:"road", icon:"➤", lng:16.700, lat:48.920, h:200,
+      note:"法軍與維也納的交通線在南方；聯軍主攻南線即意圖切斷此退路" },
   ],
 
   /* 防線/進軍折線（[lng,lat] 序列） */

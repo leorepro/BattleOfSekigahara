@@ -158,7 +158,8 @@ window.SEKI = window.SEKI || {};
       // config.continuousTime(僅奧斯特利茨):未設 span 的鏡頭預設推進到下一鏡(戰況連續、血條持續變化);
       //   其他戰役維持原行為(未設 span → 凍結定格)。
       const cont = !!(S.config && S.config.continuousTime);
-      let span = (cur.span != null) ? cur.span : (cont && gap > 0 ? gap : 0);
+      // hold 只推進 65% gap,剩 35% 留給下一段 tween → 鏡頭飛行時軍隊也持續行軍(非只有鏡頭動)
+      let span = (cur.span != null) ? cur.span : (cont && gap > 0 ? gap * 0.65 : 0);
       if (gap > 0 && span > 0) span = Math.min(span, gap - 0.02);
       S.player.time = span > 0 ? cur.t + p * span : cur.t;
       if (shotTimer >= H && S.player.playing) {

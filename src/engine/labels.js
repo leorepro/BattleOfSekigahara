@@ -25,7 +25,7 @@ window.SEKI = window.SEKI || {};
     S.geoLabels = [];
 
     for (const f of S.geography.features) {
-      if (SKIP[f.type]) continue;
+      if (SKIP[f.type] && !f.icon && !f.major) continue;   // camp/road 預設不標,但有自訂 icon/major 者仍顯示
 
       // 可由 feature 自訂 icon / major（不動共用 ICON 表，避免影響其他戰役如日本城🏯）
       const isMajor = (f.major != null) ? f.major : !!MAJOR[f.type];

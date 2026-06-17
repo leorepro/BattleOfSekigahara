@@ -326,13 +326,17 @@ window.SEKI = window.SEKI || {};
       //   → 遠景/大地圖下仍清楚看到各部隊位置與陣營(藍=法/紅綠白=聯軍);近景自動縮小不擾。
       let marker = null;
       if (S.config && S.config.unitMarkers) {
-        const mcol = (a.side === 'east') ? EAST : WEST;          // 用鮮明陣營色(藍=法/紅=聯軍)更易辨敵我
+        const mcol = (a.side === 'east') ? EAST : WEST;          // 陣營色(藍=法/紅=聯軍)
         const isCmd = a.kind === 'command';
-        const mgeo = new THREE.ConeGeometry(isCmd ? 1.7 : 1.3, isCmd ? 3.6 : 2.8, 6);
-        mgeo.rotateX(Math.PI);                                   // 尖端朝下,指向部隊
+        // 標記形狀依兵種區分(不再單調一致):步=六稜錐 / 騎=菱形 / 砲=方塊 / 帥=大八稜錐
+        let mgeo;
+        if (a.kind === 'cavalry') { mgeo = new THREE.OctahedronGeometry(1.7); }
+        else if (a.kind === 'artillery') { mgeo = new THREE.BoxGeometry(2.2, 2.2, 2.2); mgeo.rotateY(Math.PI / 4); }
+        else if (isCmd) { mgeo = new THREE.ConeGeometry(2.0, 4.4, 8); mgeo.rotateX(Math.PI); }
+        else { mgeo = new THREE.ConeGeometry(1.4, 2.9, 6); mgeo.rotateX(Math.PI); }
         const mmat = new THREE.MeshBasicMaterial({ color: mcol, fog: false });   // fog:false → 遠景/霧中仍鮮明
         marker = new THREE.Mesh(mgeo, mmat);
-        marker.position.y = POLE_H + 6; marker.renderOrder = 4;
+        marker.position.y = POLE_H + (isCmd ? 7 : 6); marker.renderOrder = 4;
         // 細暗邊(背面略放大)→ 在亮衛星底圖上更立體、不蓋住顏色
         const edge = new THREE.Mesh(mgeo, new THREE.MeshBasicMaterial({ color: 0x0d1015, fog: false, side: THREE.BackSide }));
         edge.scale.setScalar(1.14); marker.add(edge);

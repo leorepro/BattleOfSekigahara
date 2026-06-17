@@ -231,6 +231,7 @@
   //   劇情多次提及城堡(會戰得名於此、聯軍自東面奧洛穆茨開來)。在真實座標放一座簡化château:
   //   米白石造主樓 + 兩翼 + 雙角塔(綠銅尖頂) + 中央山牆,讓地圖上看得到城堡。
   const CASTLE = { lng: 16.876, lat: 49.153 };
+  let castleFlag = null;   // 城堡佔領旗(依戰局切換佔領方)
   function initCastle() {
     if (!S.engine || !S.engine.project) return;
     const c = S.engine.project(CASTLE.lng, CASTLE.lat, 0);
@@ -255,7 +256,26 @@
     }
     // 入口前庭矮欄(示意)
     block(13, 0.6, 0.5, 0, 0, 7.5, stone);
+    // 佔領旗:旗桿 + 旗面,顏色依戰局切換佔領方(更新於主迴圈 updateCastle)
+    const fpole = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 16, 8),
+      new THREE.MeshStandardMaterial({ color: 0x3a2c18, roughness: 0.8 }));
+    fpole.position.set(-5.5, 6 + 8, -2); g.add(fpole);
+    const fmat = new THREE.MeshStandardMaterial({ color: 0xd11418, emissive: 0xd11418,
+      emissiveIntensity: 0.3, side: THREE.DoubleSide, roughness: 0.7 });
+    const flag = new THREE.Mesh(new THREE.PlaneGeometry(5.5, 3.4), fmat);
+    flag.position.set(-5.5 + 2.9, 6 + 14, -2); flag.castShadow = true; g.add(flag);
+    castleFlag = { mat: fmat, side: 'west' };
     S.engine.scene.add(g);
+  }
+  // 城堡佔領旗:聯軍(紅)據守至法軍勝後(全線崩潰 t≥9.5)翻為法軍(藍)
+  function updateCastle(t) {
+    if (!castleFlag) return;
+    const side = t >= 9.5 ? 'east' : 'west';
+    if (side !== castleFlag.side) {
+      castleFlag.side = side;
+      const c = side === 'east' ? 0x1c46d2 : 0xd11418;
+      castleFlag.mat.color.setHex(c); castleFlag.mat.emissive.setHex(c);
+    }
   }
 
   /* ---------- 啟動 ---------- */
@@ -310,6 +330,7 @@
       const cdt = dt * ((S.player.cinemaScale != null) ? S.player.cinemaScale : 1);
       if (S.tickAnim) S.tickAnim(cdt);   // 單兵肢體動畫時間(乘子彈時間)
       updateIce(t, cdt);
+      updateCastle(t);
       S.updateEffects(t, cdt);
       S.updateEngagements(t, cdt);
       if (S.updateMelee) S.updateMelee(t, cdt);
